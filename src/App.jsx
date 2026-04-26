@@ -41,12 +41,12 @@ function App() {
             <Route path="/sign-in/*" element={<SignInPage />} />
             <Route path="/sign-up/*" element={<SignUpPage />} />
             <Route path="/upgrade" element={<Upgrade />} />
+            <Route path="/courses" element={<Courses />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
 
             {/* Protected routes */}
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/courses" element={<ProtectedRoute><Courses /></ProtectedRoute>} />
             <Route path="/lesson/:language/:lessonId" element={<ProtectedRoute><Lesson /></ProtectedRoute>} />
             <Route path="/code/:language/:lessonId" element={<ProtectedRoute><CodingPage /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
