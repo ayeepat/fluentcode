@@ -3,6 +3,9 @@ import React, { Suspense, createContext, useContext, useState, useEffect } from 
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
+import { inject } from "@vercel/analytics";
+
+inject();
 
 const DEV_BYPASS = import.meta.env.VITE_DEV_BYPASS === "true";
 
