@@ -379,8 +379,7 @@ export default function Landing() {
             Support the project
           </h3>
           <p className="text-sm text-zinc-400 mb-5 max-w-sm mx-auto leading-relaxed">
-            FluentCode is built by an indie developer. If the app helps you,
-            consider supporting the project to keep the servers running.
+            If the app helps you, consider supporting the project to keep the servers running.
           </p>
           <a
             href="https://boosty.to/fluentcode/donate"

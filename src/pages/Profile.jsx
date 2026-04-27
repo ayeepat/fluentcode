@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useUser, useClerk } from "@clerk/clerk-react";
 import { getAllLessons } from "@/lib/curriculum";
-import { ArrowLeft, Flame, Target, BookOpen, TrendingUp, LogOut, Zap, CreditCard } from "lucide-react";
+import { ArrowLeft, Flame, Target, BookOpen, TrendingUp, LogOut, Heart } from "lucide-react";
 import { progressDb } from "@/lib/progressDb";
 
 const ease = [0.16, 1, 0.3, 1];
@@ -48,7 +48,6 @@ export default function Profile() {
   const lang = progress?.language || "python";
   const allLessons = getAllLessons(lang);
   const completed = progress?.completed_lessons || [];
-  const isPro = progress?.is_pro || false;
   const accuracy =
     progress?.total_exercises > 0
       ? Math.round((progress.correct_exercises / progress.total_exercises) * 100)
@@ -74,7 +73,6 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Nav */}
       <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-4 bg-white/90 backdrop-blur-md border-b border-zinc-100">
         <Link
           to="/dashboard"
@@ -87,23 +85,13 @@ export default function Profile() {
           fluentcode
         </Link>
         <div className="flex items-center gap-2">
-          {isPro ? (
-            <Link
-              to="/subscription"
-              className="flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-900 transition-colors px-3 py-1.5 rounded-full hover:bg-zinc-100"
-            >
-              <CreditCard size={13} />
-              Subscription
-            </Link>
-          ) : (
-            <Link
-              to="/upgrade"
-              className="flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-900 transition-colors px-3 py-1.5 rounded-full hover:bg-zinc-100"
-            >
-              <Zap size={13} />
-              Upgrade
-            </Link>
-          )}
+          <Link
+            to="/upgrade"
+            className="flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-900 transition-colors px-3 py-1.5 rounded-full hover:bg-zinc-100"
+          >
+            <Heart size={13} className="text-rose-500" />
+            Support
+          </Link>
           <button
             onClick={() => signOut()}
             className="flex items-center gap-1 text-sm text-zinc-500 hover:text-red-500 transition-colors px-3 py-1.5 rounded-full hover:bg-zinc-100"
@@ -115,7 +103,6 @@ export default function Profile() {
       </nav>
 
       <div className="max-w-xl mx-auto px-6 py-14">
-        {/* Avatar + name */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -125,18 +112,10 @@ export default function Profile() {
           <div className="w-14 h-14 rounded-full bg-zinc-100 flex items-center justify-center text-base font-semibold text-zinc-700 mx-auto mb-4">
             {initials}
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            {displayName}
-            {isPro && (
-              <span className="ml-2 text-xs font-semibold bg-zinc-900 text-white px-2 py-0.5 rounded-full align-middle">
-                PRO
-              </span>
-            )}
-          </h1>
+          <h1 className="text-2xl font-bold tracking-tight">{displayName}</h1>
           <p className="text-sm text-zinc-400 mt-1">{userEmail}</p>
         </motion.div>
 
-        {/* Stats */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -155,7 +134,6 @@ export default function Profile() {
           ))}
         </motion.div>
 
-        {/* Progress bar */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -176,7 +154,6 @@ export default function Profile() {
           </div>
         </motion.div>
 
-        {/* Mistake patterns */}
         {progress?.mistake_patterns?.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 12 }}

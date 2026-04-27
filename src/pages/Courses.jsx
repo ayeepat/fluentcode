@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { curriculum } from "@/lib/curriculum";
-import { Check, Lock, Circle, ArrowRight, BookOpen, Zap, User, LogOut } from "lucide-react";
+import { Check, Lock, Circle, ArrowRight, BookOpen, Heart, User, LogOut } from "lucide-react";
 import { useUser, useClerk } from "@clerk/clerk-react";
 import { progressDb } from "@/lib/progressDb";
 
@@ -65,7 +65,6 @@ export default function Courses() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Navbar */}
       <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-4 bg-white/90 backdrop-blur-md border-b border-zinc-100">
         <Link to="/" className="text-sm font-semibold tracking-tight text-zinc-900">
           fluentcode
@@ -74,8 +73,8 @@ export default function Courses() {
           <NavBtn to="/dashboard" icon={<BookOpen size={12} />}>
             Dashboard
           </NavBtn>
-          <NavBtn to="/upgrade" icon={<Zap size={12} />}>
-            Upgrade
+          <NavBtn to="/upgrade" icon={<Heart size={12} className="text-rose-500" />}>
+            Support
           </NavBtn>
           <NavBtn to="/profile" icon={<User size={12} />}>
             Profile
@@ -91,7 +90,6 @@ export default function Courses() {
       </nav>
 
       <div className="max-w-2xl mx-auto px-6 py-14">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -103,7 +101,6 @@ export default function Courses() {
             {completedCount} of {totalLessons} lessons completed
           </p>
 
-          {/* Progress bar */}
           <div className="mt-4 h-1 bg-zinc-100 rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
@@ -114,7 +111,6 @@ export default function Courses() {
           </div>
         </motion.div>
 
-        {/* Language tabs */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -136,7 +132,6 @@ export default function Courses() {
           ))}
         </motion.div>
 
-        {/* Modules */}
         <AnimatePresence mode="wait">
           <motion.div
             key={selectedLang}
@@ -161,7 +156,6 @@ export default function Courses() {
                     </span>
                   </div>
 
-                  {/* Module progress bar */}
                   <div className="h-0.5 bg-zinc-100 rounded-full overflow-hidden mb-3">
                     <div
                       className="h-full bg-emerald-500 rounded-full transition-all duration-500"
