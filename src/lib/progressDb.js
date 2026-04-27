@@ -1,4 +1,7 @@
+// src/lib/progressDb.js
 import { supabase } from "./supabaseClient";
+
+const FREE_DAILY_LIMIT = 10;
 
 export const progressDb = {
   async getProgress(clerkUserId, email) {
@@ -32,6 +35,8 @@ export const progressDb = {
         total_exercises: 0,
         correct_exercises: 0,
         mistake_patterns: [],
+        daily_ai_count: 0,
+        last_ai_date: null,
       })
       .select()
       .single();
@@ -58,5 +63,70 @@ export const progressDb = {
     }
 
     return data;
+  },
+
+  // Call this before every AI request
+  async checkAndIncrementAiCount(clerkUserId, isPro) {
+    // Pro users have unlimited requests
+    if (isPro) return { allowed: true, remaining: null };
+
+    const { data, error } = await supabase
+      .from("user_progress")
+      .select("daily_ai_count, last_ai_date")
+      .eq("clerk_user_id", clerkUserId)
+      .single();
+
+    if (error) {
+      console.error("Failed to check AI count:", error);
+      // Allow the request if we can't check (fail open)
+      return { allowed: true, remaining: null };
+    }
+
+    const today = new Date().toDateString();
+    const lastDate = data?.last_ai_date;
+    const currentCount = lastDate === today ? (data?.daily_ai_count || 0) : 0;
+
+    if (currentCount >= FREE_DAILY_LIMIT) {
+      return {
+        allowed: false,
+        remaining: 0,
+        limit: FREE_DAILY_LIMIT,
+      };
+    }
+
+    // Increment the count
+    await supabase
+      .from("user_progress")
+      .update({
+        daily_ai_count: currentCount + 1,
+        last_ai_date: today,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("clerk_user_id", clerkUserId);
+
+    return {
+      allowed: true,
+      remaining: FREE_DAILY_LIMIT - (currentCount + 1),
+      limit: FREE_DAILY_LIMIT,
+    };
+  },
+
+  // Just check remaining without incrementing (for display)
+  async getAiRequestsRemaining(clerkUserId, isPro) {
+    if (isPro) return null; // null means unlimited
+
+    const { data, error } = await supabase
+      .from("user_progress")
+      .select("daily_ai_count, last_ai_date")
+      .eq("clerk_user_id", clerkUserId)
+      .single();
+
+    if (error) return FREE_DAILY_LIMIT;
+
+    const today = new Date().toDateString();
+    const lastDate = data?.last_ai_date;
+    const currentCount = lastDate === today ? (data?.daily_ai_count || 0) : 0;
+
+    return Math.max(0, FREE_DAILY_LIMIT - currentCount);
   },
 };

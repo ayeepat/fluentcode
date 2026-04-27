@@ -1,122 +1,13 @@
 // src/pages/Upgrade.jsx
-import { useState, useEffect } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Check, X, ArrowLeft, Zap, Loader2 } from "lucide-react";
-import { useUser, SignUpButton } from "@clerk/clerk-react";
-import { progressDb } from "@/lib/progressDb";
+import { ArrowLeft, Heart, CheckCircle, ExternalLink, Sparkles, Zap } from "lucide-react";
 
 const ease = [0.16, 1, 0.3, 1];
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 export default function Upgrade() {
-  const { user, isSignedIn, isLoaded } = useUser();
-  const [searchParams] = useSearchParams();
-  const [loading, setLoading] = useState(false);
-  const [isPro, setIsPro] = useState(false);
-  const [checkingPro, setCheckingPro] = useState(true);
-
-  const success = searchParams.get("success") === "true";
-  const canceled = searchParams.get("canceled") === "true";
-
-  useEffect(() => {
-    if (!isLoaded || !isSignedIn || !user) {
-      setCheckingPro(false);
-      return;
-    }
-
-    const checkPro = async () => {
-      try {
-        const data = await progressDb.getProgress(
-          user.id,
-          user.primaryEmailAddress?.emailAddress
-        );
-        setIsPro(data?.is_pro || false);
-      } catch (err) {
-        console.error("Failed to check pro status:", err);
-      } finally {
-        setCheckingPro(false);
-      }
-    };
-
-    checkPro();
-  }, [isLoaded, isSignedIn, user]);
-
-  const handleUpgrade = async () => {
-    if (!user) return;
-    setLoading(true);
-
-    try {
-      const res = await fetch(
-        `${SUPABASE_URL}/functions/v1/create-checkout-session`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-          },
-          body: JSON.stringify({
-            clerkUserId: user.id,
-            email: user.primaryEmailAddress?.emailAddress,
-          }),
-        }
-      );
-
-      const data = await res.json();
-
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        console.error("No checkout URL returned:", data);
-        alert("Something went wrong. Please try again.");
-        setLoading(false);
-      }
-    } catch (err) {
-      console.error("Checkout error:", err);
-      alert("Something went wrong. Please try again.");
-      setLoading(false);
-    }
-  };
-
-  const tiers = [
-    {
-      name: "Free",
-      price: "$0",
-      period: "forever",
-      description: "Perfect for getting started",
-      features: [
-        { name: "Full Python & Java curriculum", included: true },
-        { name: "AI-powered code feedback", included: true, limit: "7 prompts/day" },
-        { name: "Progress tracking", included: true },
-        { name: "Exercise solutions", included: true },
-        { name: "Unlimited AI feedback", included: false },
-        { name: "Priority support", included: false },
-        { name: "Certificate of completion", included: false },
-      ],
-      popular: false,
-    },
-    {
-      name: "Pro",
-      price: "$0.99",
-      period: "per month",
-      description: "Unlock your full potential",
-      features: [
-        { name: "Full Python & Java curriculum", included: true },
-        { name: "AI-powered code feedback", included: true, limit: "Unlimited" },
-        { name: "Progress tracking", included: true },
-        { name: "Exercise solutions", included: true },
-        { name: "Unlimited AI feedback", included: true },
-        { name: "Priority support", included: true },
-        { name: "Certificate of completion", included: true },
-      ],
-      popular: true,
-    },
-  ];
-
   return (
     <div className="min-h-screen bg-white">
-      {/* Nav */}
       <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-4 bg-white/90 backdrop-blur-md border-b border-zinc-100">
         <Link
           to="/dashboard"
@@ -132,148 +23,156 @@ export default function Upgrade() {
       </nav>
 
       <div className="max-w-3xl mx-auto px-6 py-20">
-        {/* Success message */}
-        {success && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-10 bg-emerald-50 border border-emerald-200 rounded-2xl p-5 text-center"
-          >
-            <p className="text-emerald-700 font-semibold mb-1">🎉 Welcome to Pro!</p>
-            <p className="text-sm text-emerald-600">
-              Your upgrade was successful. You now have unlimited access.
-            </p>
-          </motion.div>
-        )}
-
-        {/* Canceled message */}
-        {canceled && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-10 bg-amber-50 border border-amber-200 rounded-2xl p-5 text-center"
-          >
-            <p className="text-amber-700 font-semibold mb-1">Payment canceled</p>
-            <p className="text-sm text-amber-600">
-              No worries — you can upgrade anytime.
-            </p>
-          </motion.div>
-        )}
-
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease }}
           className="text-center mb-16"
         >
-          <p className="text-xs font-medium tracking-widest text-zinc-400 uppercase mb-4">
-            Pricing
-          </p>
-          <h1 className="text-4xl font-bold tracking-tight mb-3">
-            Simple, transparent pricing
+          <div className="w-16 h-16 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Heart size={32} fill="currentColor" />
+          </div>
+          <h1 className="text-4xl font-bold tracking-tight mb-4">
+            FluentCode is free for everyone.
           </h1>
-          <p className="text-zinc-500 text-sm">Start for free. Upgrade anytime.</p>
+          <p className="text-zinc-500 text-base mb-2 leading-relaxed max-w-xl mx-auto">
+            I'm building this project to make coding education accessible.
+            All core features are free — no subscriptions, no paywalls.
+          </p>
+          <p className="text-zinc-400 text-sm max-w-lg mx-auto">
+            If the app helps you, consider supporting the project. Your donation
+            keeps the servers running and helps me add new features.
+          </p>
         </motion.div>
 
-        {/* Cards */}
-        <div className="grid md:grid-cols-2 gap-4">
-          {tiers.map((tier, idx) => (
-            <motion.div
-              key={tier.name}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: idx * 0.08, ease }}
-              className={`relative rounded-2xl border p-8 ${
-                tier.popular
-                  ? "border-zinc-900 shadow-[0_4px_32px_rgba(0,0,0,0.1)]"
-                  : "border-zinc-200"
-              }`}
+        {/* Comparison cards */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1, ease }}
+          className="grid md:grid-cols-2 gap-4 mb-12"
+        >
+          {/* Free tier */}
+          <div className="border border-zinc-200 rounded-2xl p-7">
+            <div className="flex items-center gap-2 mb-5">
+              <Sparkles size={16} className="text-zinc-400" />
+              <h2 className="text-base font-semibold text-zinc-900">Free</h2>
+            </div>
+            <div className="flex items-baseline gap-1 mb-1">
+              <span className="text-3xl font-bold tracking-tight">$0</span>
+              <span className="text-sm text-zinc-400">/ forever</span>
+            </div>
+            <p className="text-xs text-zinc-400 mb-6">Everything you need to learn</p>
+
+            <ul className="space-y-2.5 mb-6">
+              {[
+                "Full Python & Java curriculum",
+                "AI feedback — 10 reviews/day",
+                "Progress tracking & streaks",
+                "Exercise solutions",
+                "All lessons unlocked",
+              ].map((f) => (
+                <li key={f} className="flex items-start gap-2.5 text-sm text-zinc-600">
+                  <CheckCircle size={14} className="text-emerald-500 shrink-0 mt-0.5" />
+                  {f}
+                </li>
+              ))}
+            </ul>
+
+            <div className="text-center py-2.5 px-6 rounded-full text-sm font-medium bg-zinc-100 text-zinc-400">
+              Current plan
+            </div>
+          </div>
+
+          {/* Supporter tier */}
+          <div className="border border-zinc-900 rounded-2xl p-7 relative shadow-[0_4px_32px_rgba(0,0,0,0.1)]">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-zinc-900 text-white text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1">
+              <Heart size={11} />
+              Supporter
+            </div>
+
+            <div className="flex items-center gap-2 mb-5">
+              <Zap size={16} className="text-amber-500" />
+              <h2 className="text-base font-semibold text-zinc-900">Support Us</h2>
+            </div>
+            <div className="flex items-baseline gap-1 mb-1">
+              <span className="text-3xl font-bold tracking-tight">Any amount</span>
+            </div>
+            <p className="text-xs text-zinc-400 mb-6">Help keep FluentCode alive</p>
+
+            <ul className="space-y-2.5 mb-6">
+              {[
+                "Everything in Free",
+                "Unlimited AI feedback",
+                "Support an indie developer",
+                "Priority feature requests",
+                "Early access to new courses",
+              ].map((f) => (
+                <li key={f} className="flex items-start gap-2.5 text-sm text-zinc-600">
+                  <CheckCircle size={14} className="text-emerald-500 shrink-0 mt-0.5" />
+                  {f}
+                </li>
+              ))}
+            </ul>
+
+            <a
+              href="https://boosty.to/fluentcode/donate"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 w-full bg-zinc-900 text-white py-2.5 px-6 rounded-full text-sm font-medium hover:bg-zinc-700 transition-all duration-200"
             >
-              {tier.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-zinc-900 text-white text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1">
-                  <Zap size={11} />
-                  Most popular
-                </div>
-              )}
+              Support on Boosty <ExternalLink size={13} />
+            </a>
+          </div>
+        </motion.div>
 
-              {/* Tier header */}
-              <div className="mb-7">
-                <h2 className="text-base font-semibold text-zinc-900 mb-4">{tier.name}</h2>
-                <div className="flex items-baseline gap-1 mb-1">
-                  <span className="text-4xl font-bold tracking-tight">{tier.price}</span>
-                  <span className="text-sm text-zinc-400">/ {tier.period}</span>
-                </div>
-                <p className="text-xs text-zinc-400 mt-1">{tier.description}</p>
+        {/* How it works */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2, ease }}
+          className="border border-zinc-100 rounded-2xl p-7 mb-8"
+        >
+          <h3 className="text-sm font-semibold uppercase tracking-widest text-zinc-400 mb-5">
+            How supporting works
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                step: "01",
+                title: "Donate on Boosty",
+                desc: "Choose any amount that feels right. Even $1 makes a difference.",
+              },
+              {
+                step: "02",
+                title: "Email us your username",
+                desc: "Send your FluentCode email to fluentcodesupport@gmail.com",
+              },
+              {
+                step: "03",
+                title: "Get unlimited access",
+                desc: "We'll unlock unlimited AI feedback on your account within 24 hours.",
+              },
+            ].map(({ step, title, desc }) => (
+              <div key={step}>
+                <p className="text-xs font-semibold text-zinc-300 tracking-widest mb-2 uppercase">
+                  {step}
+                </p>
+                <h4 className="text-sm font-semibold text-zinc-900 mb-1">{title}</h4>
+                <p className="text-xs text-zinc-500 leading-relaxed">{desc}</p>
               </div>
+            ))}
+          </div>
+        </motion.div>
 
-              {/* Features */}
-              <ul className="space-y-2.5 mb-8">
-                {tier.features.map((feature, i) => (
-                  <li key={i} className="flex items-start gap-3 text-sm">
-                    {feature.included ? (
-                      <Check size={14} className="text-emerald-500 shrink-0 mt-0.5" />
-                    ) : (
-                      <X size={14} className="text-zinc-300 shrink-0 mt-0.5" />
-                    )}
-                    <span className={feature.included ? "text-zinc-700" : "text-zinc-400"}>
-                      {feature.name}
-                      {feature.limit && feature.included && (
-                        <span className="text-zinc-400 ml-1 text-xs">({feature.limit})</span>
-                      )}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-
-              {/* CTA */}
-              {tier.name === "Free" ? (
-                isSignedIn ? (
-                  <div className="block text-center py-2.5 px-6 rounded-full text-sm font-medium bg-zinc-100 text-zinc-400 cursor-default">
-                    {isPro ? "Free plan" : "Current plan"}
-                  </div>
-                ) : (
-                  <SignUpButton mode="modal">
-                    <button className="w-full bg-zinc-900 text-white py-2.5 px-6 rounded-full text-sm font-medium hover:bg-zinc-700 transition-all duration-200">
-                      Sign up free
-                    </button>
-                  </SignUpButton>
-                )
-              ) : isSignedIn ? (
-                isPro ? (
-                  <div className="block text-center py-2.5 px-6 rounded-full text-sm font-medium bg-emerald-50 text-emerald-600 border border-emerald-200 cursor-default">
-                    ✓ Current plan
-                  </div>
-                ) : (
-                  <button
-                    onClick={handleUpgrade}
-                    disabled={loading || checkingPro}
-                    className="w-full bg-zinc-900 text-white py-2.5 px-6 rounded-full text-sm font-medium hover:bg-zinc-700 transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2"
-                  >
-                    {loading ? (
-                      <>
-                        <Loader2 size={14} className="animate-spin" />
-                        Redirecting to Stripe...
-                      </>
-                    ) : (
-                      "Upgrade to Pro"
-                    )}
-                  </button>
-                )
-              ) : (
-                <SignUpButton mode="modal">
-                  <button className="w-full bg-zinc-900 text-white py-2.5 px-6 rounded-full text-sm font-medium hover:bg-zinc-700 transition-all duration-200">
-                    Start Pro
-                  </button>
-                </SignUpButton>
-              )}
-            </motion.div>
-          ))}
-        </div>
-
-        <p className="text-center text-zinc-400 text-xs mt-10">
-          All plans include full curriculum access. Upgrade to remove daily limits.
-        </p>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3, ease }}
+          className="text-center text-zinc-400 text-xs"
+        >
+          100% of donations go toward server costs and development. Thank you for supporting us. ❤️
+        </motion.p>
       </div>
     </div>
   );

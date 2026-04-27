@@ -1,12 +1,12 @@
 // src/pages/CodingPage.jsx
 import { useState, useEffect, useMemo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
 import { getLessonById, getAllLessons } from "@/lib/curriculum";
 import CodeEditor from "@/components/editor/CodeEditor";
 import AIFeedbackPanel from "@/components/editor/AIFeedbackPanel";
-import { Play, Send, ArrowLeft, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { Play, Send, ArrowLeft, ArrowRight, Eye, EyeOff, Heart } from "lucide-react";
 import { progressDb } from "@/lib/progressDb";
 import { evaluateCode } from "@/lib/groqClient";
 
@@ -24,6 +24,8 @@ export default function CodingPage() {
   const [progress, setProgress] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [aiRemaining, setAiRemaining] = useState(null);
+  const [limitReached, setLimitReached] = useState(false);
 
   const result = useMemo(() => {
     return getLessonById(language, lessonId);
@@ -41,6 +43,7 @@ export default function CodingPage() {
     setFeedback(null);
     setSubmitted(false);
     setShowSolution(false);
+    setLimitReached(false);
   }, [result]);
 
   useEffect(() => {
@@ -64,6 +67,13 @@ export default function CodingPage() {
         );
 
         setProgress(data);
+
+        // Check remaining AI requests
+        const remaining = await progressDb.getAiRequestsRemaining(
+          user.id,
+          data?.is_pro
+        );
+        setAiRemaining(remaining);
       } catch (err) {
         console.error("Failed to load progress:", err);
       } finally {
@@ -107,6 +117,28 @@ export default function CodingPage() {
 
   const handleSubmit = async () => {
     if (submitting) return;
+
+    // Check AI limit before submitting
+    if (user) {
+      const check = await progressDb.checkAndIncrementAiCount(
+        user.id,
+        progress?.is_pro
+      );
+
+      if (!check.allowed) {
+        setLimitReached(true);
+        setFeedback({
+          isCorrect: false,
+          feedback: "You've used all 10 free AI reviews for today. Come back tomorrow, or support the project to unlock unlimited reviews!",
+          mistakePatterns: [],
+          suggestions: [],
+        });
+        setSubmitted(true);
+        return;
+      }
+
+      setAiRemaining(check.remaining);
+    }
 
     setSubmitting(true);
     setFeedback(null);
@@ -191,9 +223,20 @@ export default function CodingPage() {
           Lesson
         </button>
 
-        <span className="text-xs text-zinc-400 hidden sm:block max-w-xs truncate">
-          {lesson.title}
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-zinc-400 hidden sm:block max-w-xs truncate">
+            {lesson.title}
+          </span>
+          {aiRemaining !== null && (
+            <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+              aiRemaining <= 2
+                ? "bg-amber-50 text-amber-600"
+                : "bg-zinc-100 text-zinc-500"
+            }`}>
+              {aiRemaining} AI reviews left today
+            </span>
+          )}
+        </div>
 
         {nextLesson ? (
           <button
@@ -220,6 +263,23 @@ export default function CodingPage() {
           {lesson.exercise.prompt}
         </p>
       </div>
+
+      {/* Limit reached banner */}
+      {limitReached && (
+        <div className="px-4 py-3 bg-amber-50 border-b border-amber-100 shrink-0">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-amber-700">
+              Daily AI limit reached. Come back tomorrow or support the project for unlimited access.
+            </p>
+            <Link
+              to="/upgrade"
+              className="inline-flex items-center gap-1.5 text-xs font-medium bg-zinc-900 text-white px-3 py-1.5 rounded-full hover:bg-zinc-700 transition-all shrink-0 ml-3"
+            >
+              <Heart size={11} /> Support
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Main area */}
       <div className="flex-1 flex overflow-hidden">
@@ -252,11 +312,11 @@ export default function CodingPage() {
 
             <button
               onClick={handleSubmit}
-              disabled={submitting}
+              disabled={submitting || limitReached}
               className="flex items-center gap-1.5 px-4 py-1.5 bg-zinc-900 text-white rounded-lg text-sm font-medium hover:bg-zinc-700 disabled:opacity-40 transition-all duration-200"
             >
               <Send size={12} />
-              {submitting ? "Checking…" : "Submit"}
+              {submitting ? "Checking…" : limitReached ? "Limit reached" : "Submit"}
             </button>
 
             <button
@@ -298,6 +358,8 @@ export default function CodingPage() {
             userCode={code}
             feedback={feedback}
             language={language}
+            userId={user?.id}
+            isPro={progress?.is_pro}
           />
         </div>
       </div>

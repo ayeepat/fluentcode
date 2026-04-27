@@ -2,10 +2,9 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Check, Zap, CreditCard, Menu, X, Mail } from "lucide-react";
+import { ArrowRight, Check, Heart, Menu, X, Mail } from "lucide-react";
 import { curriculum } from "@/lib/curriculum";
 import { useUser, SignUpButton, SignInButton, useClerk } from "@clerk/clerk-react";
-import { progressDb } from "@/lib/progressDb";
 
 const ease = [0.16, 1, 0.3, 1];
 
@@ -20,29 +19,12 @@ export default function Landing() {
   const { signOut } = useClerk();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [isPro, setIsPro] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  useEffect(() => {
-    if (!isSignedIn || !user) return;
-    const checkPro = async () => {
-      try {
-        const data = await progressDb.getProgress(
-          user.id,
-          user.primaryEmailAddress?.emailAddress
-        );
-        setIsPro(data?.is_pro || false);
-      } catch (err) {
-        console.error("Failed to check pro:", err);
-      }
-    };
-    checkPro();
-  }, [isSignedIn, user]);
 
   const handleSignOut = () => {
     signOut();
@@ -74,11 +56,7 @@ export default function Landing() {
           {isSignedIn && (
             <>
               <NavLink to="/dashboard">Dashboard</NavLink>
-              {isPro ? (
-                <NavLink to="/subscription" icon={<CreditCard size={12} />}>Subscription</NavLink>
-              ) : (
-                <NavLink to="/upgrade" icon={<Zap size={12} />}>Upgrade</NavLink>
-              )}
+              <NavLink to="/upgrade" icon={<Heart size={12} className="text-rose-500" />}>Support</NavLink>
             </>
           )}
           <div className="w-px h-4 bg-zinc-200 mx-2" />
@@ -136,15 +114,9 @@ export default function Landing() {
               <MobileNavLink to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
                 Dashboard
               </MobileNavLink>
-              {isPro ? (
-                <MobileNavLink to="/subscription" onClick={() => setMobileMenuOpen(false)}>
-                  Subscription
-                </MobileNavLink>
-              ) : (
-                <MobileNavLink to="/upgrade" onClick={() => setMobileMenuOpen(false)}>
-                  Upgrade
-                </MobileNavLink>
-              )}
+              <MobileNavLink to="/upgrade" onClick={() => setMobileMenuOpen(false)}>
+                Support us
+              </MobileNavLink>
             </>
           )}
           <div className="w-full h-px bg-zinc-100 my-2" />
@@ -183,7 +155,7 @@ export default function Landing() {
         <motion.div {...fadeUp(0.05)}>
           <span className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 bg-zinc-100 px-3 py-1.5 rounded-full mb-8">
             <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-            Free to start · No credit card
+            100% free · No credit card · No limits
           </span>
         </motion.div>
 
@@ -200,8 +172,8 @@ export default function Landing() {
           {...fadeUp(0.18)}
           className="text-base text-zinc-500 mb-10 max-w-md leading-relaxed"
         >
-          Real exercises, an AI tutor that knows your patterns, and a curriculum
-          designed to actually stick.
+          Real exercises, an AI tutor that helps you improve, and a curriculum
+          designed to actually stick. Completely free.
         </motion.p>
 
         <motion.div
@@ -218,7 +190,7 @@ export default function Landing() {
           ) : (
             <SignUpButton mode="modal">
               <button className="inline-flex items-center gap-2 bg-zinc-900 text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-zinc-700 transition-all duration-200">
-                Get started free <ArrowRight size={13} />
+                Start learning free <ArrowRight size={13} />
               </button>
             </SignUpButton>
           )}
@@ -235,7 +207,7 @@ export default function Landing() {
           {...fadeUp(0.32)}
           className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-14"
         >
-          {["Free to start", "No credit card required", "AI-powered feedback"].map((item) => (
+          {["100% free forever", "10 AI reviews per day", "No credit card needed"].map((item) => (
             <span key={item} className="flex items-center gap-1.5 text-xs text-zinc-400">
               <Check size={12} className="text-zinc-300" />
               {item}
@@ -273,8 +245,8 @@ export default function Landing() {
             },
             {
               step: "03",
-              title: "Get feedback",
-              desc: "Your AI tutor reviews every submission and gives targeted, encouraging guidance.",
+              title: "Get AI feedback",
+              desc: "Your AI tutor reviews every submission and gives targeted, encouraging guidance. 10 free reviews per day.",
             },
           ].map(({ step, title, desc }, i) => (
             <motion.div
@@ -378,7 +350,7 @@ export default function Landing() {
             <div className="flex items-center justify-center gap-4">
               <SignUpButton mode="modal">
                 <button className="inline-flex items-center gap-2 bg-zinc-900 text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-zinc-700 transition-all duration-200">
-                  Get started free <ArrowRight size={13} />
+                  Start learning free <ArrowRight size={13} />
                 </button>
               </SignUpButton>
               <SignInButton mode="modal">
@@ -391,6 +363,37 @@ export default function Landing() {
         </section>
       )}
 
+      {/* Support banner */}
+      <section className="px-6 py-16 border-t border-zinc-100">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.6, ease }}
+          className="max-w-2xl mx-auto text-center"
+        >
+          <div className="w-10 h-10 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Heart size={20} fill="currentColor" />
+          </div>
+          <h3 className="text-lg font-semibold text-zinc-900 mb-2">
+            Support the project
+          </h3>
+          <p className="text-sm text-zinc-400 mb-5 max-w-sm mx-auto leading-relaxed">
+            FluentCode is built by an indie developer. If the app helps you,
+            consider supporting the project to keep the servers running.
+          </p>
+          <a
+            href="https://boosty.to/fluentcode/donate"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-zinc-900 text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-zinc-700 transition-all duration-200"
+          >
+            <Heart size={13} />
+            Support on Boosty
+          </a>
+        </motion.div>
+      </section>
+
       {/* Footer */}
       <footer className="border-t border-zinc-100 bg-zinc-50">
         <div className="max-w-4xl mx-auto px-6 py-16">
@@ -399,7 +402,7 @@ export default function Landing() {
             <div>
               <p className="text-sm font-semibold text-zinc-900 mb-3">fluentcode</p>
               <p className="text-xs text-zinc-400 leading-relaxed">
-                Learn to code with real exercises and AI-powered feedback. Built for people who actually want to learn.
+                Learn to code with real exercises and AI-powered feedback. 100% free, built for people who actually want to learn.
               </p>
             </div>
 
@@ -413,7 +416,7 @@ export default function Landing() {
                   Courses
                 </Link>
                 <Link to="/upgrade" className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors">
-                  Pricing
+                  Support us
                 </Link>
                 <Link to="/terms" className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors">
                   Terms of Service

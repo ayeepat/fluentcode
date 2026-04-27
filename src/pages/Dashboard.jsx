@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useUser, useClerk } from "@clerk/clerk-react";
 import { curriculum, getAllLessons } from "@/lib/curriculum";
-import { ArrowRight, Flame, Target, BookOpen, User, Zap, LogOut, CreditCard } from "lucide-react";
+import { ArrowRight, Flame, Target, BookOpen, User, Heart, LogOut, Sparkles } from "lucide-react";
 import { progressDb } from "@/lib/progressDb";
 
 const ease = [0.16, 1, 0.3, 1];
@@ -20,6 +20,7 @@ export default function Dashboard() {
   const { signOut } = useClerk();
   const [progress, setProgress] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [aiRemaining, setAiRemaining] = useState(null);
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -34,6 +35,12 @@ export default function Dashboard() {
         const email = user.primaryEmailAddress?.emailAddress;
         const data = await progressDb.getProgress(clerkUserId, email);
         setProgress(data);
+
+        const remaining = await progressDb.getAiRequestsRemaining(
+          clerkUserId,
+          data?.is_pro
+        );
+        setAiRemaining(remaining);
       } catch (err) {
         console.error("Failed to load progress:", err);
       } finally {
@@ -103,15 +110,9 @@ export default function Dashboard() {
           <NavBtn to="/courses" icon={<BookOpen size={12} />}>
             Courses
           </NavBtn>
-          {isPro ? (
-            <NavBtn to="/subscription" icon={<CreditCard size={12} />}>
-              Subscription
-            </NavBtn>
-          ) : (
-            <NavBtn to="/upgrade" icon={<Zap size={12} />}>
-              Upgrade
-            </NavBtn>
-          )}
+          <NavBtn to="/upgrade" icon={<Heart size={12} className="text-rose-500" />}>
+            Support
+          </NavBtn>
           <NavBtn to="/profile" icon={<User size={12} />}>
             Profile
           </NavBtn>
@@ -132,15 +133,15 @@ export default function Dashboard() {
           <h1 className="text-3xl font-bold tracking-tight">
             {displayName}
             {isPro && (
-              <span className="ml-2 text-xs font-semibold bg-zinc-900 text-white px-2 py-0.5 rounded-full align-middle">
-                PRO
+              <span className="ml-2 text-xs font-semibold bg-emerald-500 text-white px-2 py-0.5 rounded-full align-middle uppercase tracking-wider">
+                Supporter
               </span>
             )}
           </h1>
         </motion.div>
 
         {/* Stats */}
-        <motion.div {...stagger(1)} className="grid grid-cols-3 gap-3 mb-8">
+        <motion.div {...stagger(1)} className="grid grid-cols-3 gap-3 mb-4">
           {stats.map(({ label, value, icon: Icon }) => (
             <div
               key={label}
@@ -152,6 +153,42 @@ export default function Dashboard() {
             </div>
           ))}
         </motion.div>
+
+        {/* AI requests remaining */}
+        {aiRemaining !== null && (
+          <motion.div {...stagger(1.5)} className="mb-8">
+            <div className="flex items-center justify-between border border-zinc-100 rounded-2xl px-5 py-4">
+              <div className="flex items-center gap-3">
+                <Sparkles size={15} className="text-zinc-300" />
+                <div>
+                  <div className="text-sm font-medium text-zinc-700">AI Reviews Today</div>
+                  <div className="text-xs text-zinc-400">
+                    {aiRemaining === 0 ? "Resets tomorrow" : `${aiRemaining} remaining`}
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="flex gap-0.5">
+                  {Array.from({ length: 10 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className={`w-2 h-2 rounded-full ${
+                        i < (10 - aiRemaining)
+                          ? "bg-zinc-900"
+                          : "bg-zinc-100"
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span className={`text-sm font-bold tabular-nums ${
+                  aiRemaining <= 2 ? "text-amber-500" : "text-zinc-900"
+                }`}>
+                  {aiRemaining}/10
+                </span>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Progress bar */}
         <motion.div {...stagger(2)} className="mb-10">
