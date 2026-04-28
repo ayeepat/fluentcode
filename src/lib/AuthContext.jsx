@@ -1,6 +1,6 @@
 // src/lib/AuthContext.jsx
-import { createContext, useContext, useState, useEffect } from "react";
-import { localDb } from "./localStorageDb";
+import { createContext, useContext } from "react";
+import { useUser, useAuth as useClerkAuth } from "@clerk/clerk-react";
 
 const AuthContext = createContext({
   user: null,
@@ -9,28 +9,17 @@ const AuthContext = createContext({
 });
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { user, isLoaded: isUserLoaded, isSignedIn } = useUser();
+  const { isLoaded: isAuthLoaded } = useClerkAuth();
 
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const me = await localDb.auth.me();
-        setUser(me);
-      } catch (error) {
-        console.error("Failed to load user:", error);
-        setUser(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    loadUser();
-  }, []);
+  const isLoading = !isUserLoaded || !isAuthLoaded;
 
   const value = {
     user,
-    setUser,
-    isAuthenticated: !!user,
+    setUser: () => {
+      console.warn("setUser is handled by Clerk. Use Clerk components to update user data.");
+    },
+    isAuthenticated: !!isSignedIn,
     isLoading,
   };
 
