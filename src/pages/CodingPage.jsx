@@ -16,7 +16,6 @@ export default function CodingPage() {
   const { user, isLoaded: isUserLoaded, isSignedIn } = useUser();
 
   const [code, setCode] = useState("");
-  const [hasStartedTyping, setHasStartedTyping] = useState(false);
   const [output, setOutput] = useState("");
   const [feedback, setFeedback] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -36,9 +35,7 @@ export default function CodingPage() {
       setIsLoading(false);
       return;
     }
-
     setCode(result.lesson.exercise.starterCode || "");
-    setHasStartedTyping(false);
     setOutput("");
     setFeedback(null);
     setSubmitted(false);
@@ -53,22 +50,16 @@ export default function CodingPage() {
           setIsLoading(false);
           return;
         }
-
         if (!isUserLoaded) return;
-
         if (!isSignedIn || !user) {
           setIsLoading(false);
           return;
         }
-
         const data = await progressDb.getProgress(
           user.id,
           user.primaryEmailAddress?.emailAddress
         );
-
         setProgress(data);
-
-        // Check remaining AI requests
         const remaining = await progressDb.getAiRequestsRemaining(
           user.id,
           data?.is_pro
@@ -80,18 +71,8 @@ export default function CodingPage() {
         setIsLoading(false);
       }
     };
-
     load();
   }, [result, isUserLoaded, isSignedIn, user]);
-
-  const handleCodeChange = (newCode) => {
-    if (!hasStartedTyping) {
-      setHasStartedTyping(true);
-      setCode("");
-      return;
-    }
-    setCode(newCode);
-  };
 
   if (!isUserLoaded || isLoading) {
     return (
@@ -118,25 +99,23 @@ export default function CodingPage() {
   const handleSubmit = async () => {
     if (submitting) return;
 
-    // Check AI limit before submitting
     if (user) {
       const check = await progressDb.checkAndIncrementAiCount(
         user.id,
         progress?.is_pro
       );
-
       if (!check.allowed) {
         setLimitReached(true);
         setFeedback({
           isCorrect: false,
-          feedback: "You've used all 10 free AI reviews for today. Come back tomorrow, or support the project to unlock unlimited reviews!",
+          feedback:
+            "You've used all 10 free AI reviews for today. Come back tomorrow, or support the project to unlock unlimited reviews!",
           mistakePatterns: [],
           suggestions: [],
         });
         setSubmitted(true);
         return;
       }
-
       setAiRemaining(check.remaining);
     }
 
@@ -151,7 +130,6 @@ export default function CodingPage() {
       if (!user) return;
 
       const alreadyDone = progress?.completed_lessons?.includes(lessonId);
-
       const updatedCompleted =
         aiResponse.isCorrect && !alreadyDone
           ? [...(progress?.completed_lessons || []), lessonId]
@@ -175,8 +153,8 @@ export default function CodingPage() {
         last === yesterday
           ? (progress?.streak_days || 0) + 1
           : last === today
-            ? progress?.streak_days || 0
-            : 1;
+          ? progress?.streak_days || 0
+          : 1;
 
       const updated = await progressDb.updateProgress(user.id, {
         completed_lessons: updatedCompleted,
@@ -228,11 +206,13 @@ export default function CodingPage() {
             {lesson.title}
           </span>
           {aiRemaining !== null && (
-            <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-              aiRemaining <= 2
-                ? "bg-amber-50 text-amber-600"
-                : "bg-zinc-100 text-zinc-500"
-            }`}>
+            <span
+              className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                aiRemaining <= 2
+                  ? "bg-amber-50 text-amber-600"
+                  : "bg-zinc-100 text-zinc-500"
+              }`}
+            >
               {aiRemaining} AI reviews left today
             </span>
           )}
@@ -269,7 +249,8 @@ export default function CodingPage() {
         <div className="px-4 py-3 bg-amber-50 border-b border-amber-100 shrink-0">
           <div className="flex items-center justify-between">
             <p className="text-sm text-amber-700">
-              Daily AI limit reached. Come back tomorrow or support the project for unlimited access.
+              Daily AI limit reached. Come back tomorrow or support the project
+              for unlimited access.
             </p>
             <Link
               to="/upgrade"
@@ -286,7 +267,11 @@ export default function CodingPage() {
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Code editor */}
           <div className="flex-1 overflow-hidden p-2">
-            <CodeEditor value={code} onChange={handleCodeChange} language={language} />
+            <CodeEditor
+              value={code}
+              onChange={setCode}
+              language={language}
+            />
           </div>
 
           {/* Output panel */}
@@ -316,7 +301,11 @@ export default function CodingPage() {
               className="flex items-center gap-1.5 px-4 py-1.5 bg-zinc-900 text-white rounded-lg text-sm font-medium hover:bg-zinc-700 disabled:opacity-40 transition-all duration-200"
             >
               <Send size={12} />
-              {submitting ? "Checking…" : limitReached ? "Limit reached" : "Submit"}
+              {submitting
+                ? "Checking…"
+                : limitReached
+                ? "Limit reached"
+                : "Submit"}
             </button>
 
             <button
