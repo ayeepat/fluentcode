@@ -25,13 +25,25 @@ export default function Dashboard() {
   const [aiRemaining, setAiRemaining] = useState(null);
 
   useEffect(() => {
-    if (!isLoaded || !isSignedIn || !supabaseClient) return;
+    // Wait for auth to load
+    if (!isLoaded) return;
+    // If not signed in, stop loading
+    if (!isSignedIn) {
+      setLoading(false);
+      return;
+    }
+    // Wait for supabase client (max ~5 seconds then give up)
+    if (!supabaseClient) return;
 
     const loadProgress = async () => {
       try {
         const clerkUserId = user.id;
         const email = user.primaryEmailAddress?.emailAddress;
-        const data = await progressDb.getProgress(supabaseClient, clerkUserId, email);
+        const data = await progressDb.getProgress(
+          supabaseClient,
+          clerkUserId,
+          email
+        );
         setProgress(data);
 
         const remaining = await progressDb.getAiRequestsRemaining(
@@ -50,6 +62,17 @@ export default function Dashboard() {
     loadProgress();
   }, [isLoaded, isSignedIn, user, supabaseClient]);
 
+  // Safety timeout — if still loading after 8 seconds, stop
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (loading) {
+        console.warn("Loading timeout hit — forcing render");
+        setLoading(false);
+      }
+    }, 8000);
+    return () => clearTimeout(timeout);
+  }, [loading]);
+
   if (!isLoaded || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
@@ -66,7 +89,9 @@ export default function Dashboard() {
   const nextLesson = allLessons.find((l) => !completed.includes(l.id));
   const accuracy =
     progress?.total_exercises > 0
-      ? Math.round((progress.correct_exercises / progress.total_exercises) * 100)
+      ? Math.round(
+          (progress.correct_exercises / progress.total_exercises) * 100
+        )
       : 0;
   const progressPct =
     allLessons.length > 0
@@ -123,7 +148,9 @@ export default function Dashboard() {
               className="border border-zinc-100 rounded-2xl p-5 hover:border-zinc-200 transition-colors duration-200"
             >
               <Icon size={15} className="text-zinc-300 mb-3" />
-              <div className="text-2xl font-bold tracking-tight mb-0.5">{value}</div>
+              <div className="text-2xl font-bold tracking-tight mb-0.5">
+                {value}
+              </div>
               <div className="text-xs text-zinc-400">{label}</div>
             </div>
           ))}
@@ -135,9 +162,13 @@ export default function Dashboard() {
               <div className="flex items-center gap-3">
                 <Sparkles size={15} className="text-zinc-300" />
                 <div>
-                  <div className="text-sm font-medium text-zinc-700">AI Reviews Today</div>
+                  <div className="text-sm font-medium text-zinc-700">
+                    AI Reviews Today
+                  </div>
                   <div className="text-xs text-zinc-400">
-                    {aiRemaining === 0 ? "Resets tomorrow" : `${aiRemaining} remaining`}
+                    {aiRemaining === 0
+                      ? "Resets tomorrow"
+                      : `${aiRemaining} remaining`}
                   </div>
                 </div>
               </div>
@@ -167,7 +198,9 @@ export default function Dashboard() {
         <motion.div {...stagger(2)} className="mb-10">
           <div className="flex justify-between text-xs text-zinc-400 mb-2">
             <span>{curriculum[lang]?.label} progress</span>
-            <span className="tabular-nums font-medium text-zinc-600">{progressPct}%</span>
+            <span className="tabular-nums font-medium text-zinc-600">
+              {progressPct}%
+            </span>
           </div>
           <div className="h-1.5 bg-zinc-100 rounded-full overflow-hidden">
             <motion.div
@@ -189,8 +222,12 @@ export default function Dashboard() {
               className="flex items-center justify-between p-5 border border-zinc-200 rounded-2xl hover:border-zinc-900 hover:shadow-[0_4px_24px_rgba(0,0,0,0.06)] transition-all duration-200 group"
             >
               <div>
-                <div className="text-xs text-zinc-400 mb-1">{nextLesson.moduleTitle}</div>
-                <div className="text-base font-semibold text-zinc-900">{nextLesson.title}</div>
+                <div className="text-xs text-zinc-400 mb-1">
+                  {nextLesson.moduleTitle}
+                </div>
+                <div className="text-base font-semibold text-zinc-900">
+                  {nextLesson.title}
+                </div>
               </div>
               <ArrowRight
                 size={15}
@@ -200,7 +237,9 @@ export default function Dashboard() {
           ) : (
             <div className="text-center py-16 border border-zinc-100 rounded-2xl">
               <p className="text-2xl mb-2">🎉</p>
-              <p className="font-semibold text-zinc-900 mb-1">All lessons complete!</p>
+              <p className="font-semibold text-zinc-900 mb-1">
+                All lessons complete!
+              </p>
               <p className="text-sm text-zinc-400">More content coming soon.</p>
             </div>
           )}
@@ -224,7 +263,9 @@ export default function Dashboard() {
               const modCompleted = modLessons.filter((l) =>
                 completed.includes(l.id)
               ).length;
-              const pct = Math.round((modCompleted / modLessons.length) * 100);
+              const pct = Math.round(
+                (modCompleted / modLessons.length) * 100
+              );
               return (
                 <Link
                   key={mod.id}
@@ -232,7 +273,9 @@ export default function Dashboard() {
                   className="flex items-center gap-4 px-4 py-3.5 border border-zinc-100 rounded-xl hover:border-zinc-300 transition-all duration-200 group"
                 >
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-zinc-700 truncate">{mod.title}</p>
+                    <p className="text-sm text-zinc-700 truncate">
+                      {mod.title}
+                    </p>
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
                     <div className="w-16 h-1 bg-zinc-100 rounded-full overflow-hidden">
