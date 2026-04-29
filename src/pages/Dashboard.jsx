@@ -6,6 +6,7 @@ import { useUser } from "@clerk/clerk-react";
 import { curriculum, getAllLessons } from "@/lib/curriculum";
 import { ArrowRight, Flame, Target, BookOpen, Sparkles } from "lucide-react";
 import { progressDb } from "@/lib/progressDb";
+import { useAuth } from "@/lib/AuthContext";
 import Navbar from "@/components/Navbar";
 
 const ease = [0.16, 1, 0.3, 1];
@@ -18,25 +19,23 @@ const stagger = (i) => ({
 
 export default function Dashboard() {
   const { user, isSignedIn, isLoaded } = useUser();
+  const { supabaseClient } = useAuth();
   const [progress, setProgress] = useState(null);
   const [loading, setLoading] = useState(true);
   const [aiRemaining, setAiRemaining] = useState(null);
 
   useEffect(() => {
-    if (!isLoaded) return;
-    if (!isSignedIn) {
-      setLoading(false);
-      return;
-    }
+    if (!isLoaded || !isSignedIn || !supabaseClient) return;
 
     const loadProgress = async () => {
       try {
         const clerkUserId = user.id;
         const email = user.primaryEmailAddress?.emailAddress;
-        const data = await progressDb.getProgress(clerkUserId, email);
+        const data = await progressDb.getProgress(supabaseClient, clerkUserId, email);
         setProgress(data);
 
         const remaining = await progressDb.getAiRequestsRemaining(
+          supabaseClient,
           clerkUserId,
           data?.is_pro
         );
@@ -49,7 +48,7 @@ export default function Dashboard() {
     };
 
     loadProgress();
-  }, [isLoaded, isSignedIn, user]);
+  }, [isLoaded, isSignedIn, user, supabaseClient]);
 
   if (!isLoaded || loading) {
     return (
@@ -105,7 +104,6 @@ export default function Dashboard() {
       <Navbar streak={streak} />
 
       <div className="max-w-2xl mx-auto px-6 py-14">
-        {/* Greeting */}
         <motion.div {...stagger(0)} className="mb-10">
           <p className="text-sm text-zinc-400 mb-1">{getGreeting()},</p>
           <h1 className="text-3xl font-bold tracking-tight">
@@ -118,7 +116,6 @@ export default function Dashboard() {
           </h1>
         </motion.div>
 
-        {/* Stats */}
         <motion.div {...stagger(1)} className="grid grid-cols-3 gap-3 mb-4">
           {stats.map(({ label, value, icon: Icon }) => (
             <div
@@ -132,7 +129,6 @@ export default function Dashboard() {
           ))}
         </motion.div>
 
-        {/* AI requests remaining */}
         {aiRemaining !== null && (
           <motion.div {...stagger(1.5)} className="mb-8">
             <div className="flex items-center justify-between border border-zinc-100 rounded-2xl px-5 py-4">
@@ -168,7 +164,6 @@ export default function Dashboard() {
           </motion.div>
         )}
 
-        {/* Progress bar */}
         <motion.div {...stagger(2)} className="mb-10">
           <div className="flex justify-between text-xs text-zinc-400 mb-2">
             <span>{curriculum[lang]?.label} progress</span>
@@ -184,7 +179,6 @@ export default function Dashboard() {
           </div>
         </motion.div>
 
-        {/* Next lesson */}
         <motion.div {...stagger(3)}>
           <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-4">
             {nextLesson ? "Continue learning" : "All done"}
@@ -212,7 +206,6 @@ export default function Dashboard() {
           )}
         </motion.div>
 
-        {/* All modules quick access */}
         <motion.div {...stagger(4)} className="mt-12">
           <div className="flex items-center justify-between mb-4">
             <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400">

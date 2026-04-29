@@ -1,5 +1,5 @@
 // src/lib/AuthContext.jsx
-import { createContext, useContext, useCallback } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { useUser, useAuth as useClerkAuth, useSession } from "@clerk/clerk-react";
 import { createClerkSupabaseClient } from "./supabaseClient";
 
@@ -7,34 +7,48 @@ const AuthContext = createContext({
   user: null,
   isAuthenticated: false,
   isLoading: true,
-  getSupabaseClient: () => null,
+  supabaseClient: null,
 });
 
 export function AuthProvider({ children }) {
   const { user, isLoaded: isUserLoaded, isSignedIn } = useUser();
   const { isLoaded: isAuthLoaded } = useClerkAuth();
   const { session } = useSession();
+  const [supabaseClient, setSupabaseClient] = useState(null);
+
+  useEffect(() => {
+    if (!session) {
+      setSupabaseClient(null);
+      return;
+    }
+
+    let cancelled = false;
+
+    const buildClient = async () => {
+      try {
+        const token = await session.getToken({ template: "supabase" });
+        if (!cancelled && token) {
+          setSupabaseClient(createClerkSupabaseClient(token));
+        }
+      } catch (err) {
+        console.error("Failed to get Clerk token:", err);
+      }
+    };
+
+    buildClient();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [session]);
 
   const isLoading = !isUserLoaded || !isAuthLoaded;
 
-  const getSupabaseClient = useCallback(async () => {
-    if (!session) return null;
-    try {
-      // We changed this to 'supabase_prod' to match the new template name
-      const token = await session.getToken({ template: "supabase_prod" });
-      return createClerkSupabaseClient(token);
-    } catch (error) {
-      console.error("Auth Handshake Error:", error);
-      return null;
-    }
-  }, [session]);
-
   const value = {
     user,
-    setUser: () => {},
     isAuthenticated: !!isSignedIn,
     isLoading,
-    getSupabaseClient,
+    supabaseClient,
   };
 
   return (

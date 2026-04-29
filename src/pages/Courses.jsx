@@ -6,23 +6,25 @@ import { curriculum } from "@/lib/curriculum";
 import { Check, Lock, Circle, ArrowRight } from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
 import { progressDb } from "@/lib/progressDb";
+import { useAuth } from "@/lib/AuthContext";
 import Navbar from "@/components/Navbar";
 
 const ease = [0.16, 1, 0.3, 1];
 
 export default function Courses() {
   const { user, isSignedIn, isLoaded } = useUser();
+  const { supabaseClient } = useAuth();
   const [progress, setProgress] = useState(null);
   const [selectedLang, setSelectedLang] = useState("python");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!isLoaded) return;
-    if (!isSignedIn) { setLoading(false); return; }
+    if (!isLoaded || !isSignedIn || !supabaseClient) return;
 
     const load = async () => {
       try {
         const data = await progressDb.getProgress(
+          supabaseClient,
           user.id,
           user.primaryEmailAddress?.emailAddress
         );
@@ -37,7 +39,7 @@ export default function Courses() {
       }
     };
     load();
-  }, [isLoaded, isSignedIn, user]);
+  }, [isLoaded, isSignedIn, user, supabaseClient]);
 
   if (loading) {
     return (
@@ -51,10 +53,12 @@ export default function Courses() {
   const streak = progress?.streak_days || 0;
   const lang = curriculum[selectedLang];
   const allFlat = lang.modules.flatMap((m) => m.lessons);
-
   const totalLessons = allFlat.length;
-  const completedCount = completed.filter((id) => allFlat.some((l) => l.id === id)).length;
-  const progressPct = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+  const completedCount = completed.filter((id) =>
+    allFlat.some((l) => l.id === id)
+  ).length;
+  const progressPct =
+    totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
 
   const isUnlocked = (lessonId) => {
     const idx = allFlat.findIndex((l) => l.id === lessonId);
@@ -78,7 +82,6 @@ export default function Courses() {
           <p className="text-sm text-zinc-400">
             {completedCount} of {totalLessons} lessons completed
           </p>
-
           <div className="mt-4 h-1 bg-zinc-100 rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
@@ -121,7 +124,9 @@ export default function Courses() {
           >
             {lang.modules.map((module) => {
               const modLessons = module.lessons;
-              const modCompleted = modLessons.filter((l) => completed.includes(l.id)).length;
+              const modCompleted = modLessons.filter((l) =>
+                completed.includes(l.id)
+              ).length;
 
               return (
                 <div key={module.id}>
@@ -133,16 +138,20 @@ export default function Courses() {
                       {modCompleted}/{modLessons.length}
                     </span>
                   </div>
-
                   <div className="h-0.5 bg-zinc-100 rounded-full overflow-hidden mb-3">
                     <div
                       className="h-full bg-emerald-500 rounded-full transition-all duration-500"
                       style={{
-                        width: `${modLessons.length > 0 ? Math.round((modCompleted / modLessons.length) * 100) : 0}%`,
+                        width: `${
+                          modLessons.length > 0
+                            ? Math.round(
+                                (modCompleted / modLessons.length) * 100
+                              )
+                            : 0
+                        }%`,
                       }}
                     />
                   </div>
-
                   <div className="space-y-1.5">
                     {module.lessons.map((lesson) => {
                       const done = completed.includes(lesson.id);
@@ -191,15 +200,25 @@ function LessonRow({ lesson, done, unlocked, lang }) {
       {done ? (
         <Check size={15} strokeWidth={3} className="text-emerald-500 shrink-0" />
       ) : (
-        <Circle size={15} className="text-zinc-300 group-hover:text-zinc-500 transition-colors shrink-0" />
+        <Circle
+          size={15}
+          className="text-zinc-300 group-hover:text-zinc-500 transition-colors shrink-0"
+        />
       )}
-      <span className={`text-sm flex-1 ${done ? "text-emerald-700 font-medium" : "text-zinc-700 font-medium"}`}>
+      <span
+        className={`text-sm flex-1 ${
+          done ? "text-emerald-700 font-medium" : "text-zinc-700 font-medium"
+        }`}
+      >
         {lesson.title}
       </span>
       {done ? (
         <span className="text-xs text-emerald-500 font-medium">Completed</span>
       ) : (
-        <ArrowRight size={13} className="text-zinc-300 group-hover:text-zinc-900 group-hover:translate-x-0.5 transition-all duration-200" />
+        <ArrowRight
+          size={13}
+          className="text-zinc-300 group-hover:text-zinc-900 group-hover:translate-x-0.5 transition-all duration-200"
+        />
       )}
     </Link>
   );

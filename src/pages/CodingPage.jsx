@@ -9,11 +9,13 @@ import AIFeedbackPanel from "@/components/editor/AIFeedbackPanel";
 import { Play, Send, ArrowLeft, ArrowRight, Eye, EyeOff, Heart } from "lucide-react";
 import { progressDb } from "@/lib/progressDb";
 import { evaluateCode } from "@/lib/groqClient";
+import { useAuth } from "@/lib/AuthContext";
 
 export default function CodingPage() {
   const { language, lessonId } = useParams();
   const navigate = useNavigate();
   const { user, isLoaded: isUserLoaded, isSignedIn } = useUser();
+  const { supabaseClient } = useAuth();
 
   const [code, setCode] = useState("");
   const [output, setOutput] = useState("");
@@ -44,23 +46,22 @@ export default function CodingPage() {
   }, [result]);
 
   useEffect(() => {
+    if (!result || !isUserLoaded || !isSignedIn || !supabaseClient) {
+      if (isUserLoaded) setIsLoading(false);
+      return;
+    }
+
     const load = async () => {
       try {
-        if (!result) {
-          setIsLoading(false);
-          return;
-        }
-        if (!isUserLoaded) return;
-        if (!isSignedIn || !user) {
-          setIsLoading(false);
-          return;
-        }
         const data = await progressDb.getProgress(
+          supabaseClient,
           user.id,
           user.primaryEmailAddress?.emailAddress
         );
         setProgress(data);
+
         const remaining = await progressDb.getAiRequestsRemaining(
+          supabaseClient,
           user.id,
           data?.is_pro
         );
@@ -71,8 +72,9 @@ export default function CodingPage() {
         setIsLoading(false);
       }
     };
+
     load();
-  }, [result, isUserLoaded, isSignedIn, user]);
+  }, [result, isUserLoaded, isSignedIn, user, supabaseClient]);
 
   if (!isUserLoaded || isLoading) {
     return (
@@ -97,13 +99,15 @@ export default function CodingPage() {
   };
 
   const handleSubmit = async () => {
-    if (submitting) return;
+    if (submitting || !supabaseClient) return;
 
     if (user) {
       const check = await progressDb.checkAndIncrementAiCount(
+        supabaseClient,
         user.id,
         progress?.is_pro
       );
+
       if (!check.allowed) {
         setLimitReached(true);
         setFeedback({
@@ -116,6 +120,7 @@ export default function CodingPage() {
         setSubmitted(true);
         return;
       }
+
       setAiRemaining(check.remaining);
     }
 
@@ -156,7 +161,7 @@ export default function CodingPage() {
           ? progress?.streak_days || 0
           : 1;
 
-      const updated = await progressDb.updateProgress(user.id, {
+      const updated = await progressDb.updateProgress(supabaseClient, user.id, {
         completed_lessons: updatedCompleted,
         total_exercises: (progress?.total_exercises || 0) + 1,
         correct_exercises: aiResponse.isCorrect
@@ -191,7 +196,6 @@ export default function CodingPage() {
 
   return (
     <div className="h-screen flex flex-col bg-white overflow-hidden">
-      {/* Top bar */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-100 shrink-0">
         <button
           onClick={() => navigate(`/lesson/${language}/${lessonId}`)}
@@ -237,14 +241,12 @@ export default function CodingPage() {
         )}
       </div>
 
-      {/* Exercise prompt */}
       <div className="px-4 py-3 border-b border-zinc-100 bg-zinc-50 shrink-0">
         <p className="text-sm text-zinc-600 leading-relaxed">
           {lesson.exercise.prompt}
         </p>
       </div>
 
-      {/* Limit reached banner */}
       {limitReached && (
         <div className="px-4 py-3 bg-amber-50 border-b border-amber-100 shrink-0">
           <div className="flex items-center justify-between">
@@ -262,10 +264,8 @@ export default function CodingPage() {
         </div>
       )}
 
-      {/* Main area */}
       <div className="flex-1 flex overflow-hidden">
         <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Code editor */}
           <div className="flex-1 overflow-hidden p-2">
             <CodeEditor
               value={code}
@@ -274,7 +274,6 @@ export default function CodingPage() {
             />
           </div>
 
-          {/* Output panel */}
           <div className="h-36 border-t border-zinc-100 bg-zinc-950 overflow-y-auto shrink-0">
             <div className="flex items-center gap-2 px-4 py-2 border-b border-zinc-800">
               <div className="w-2 h-2 rounded-full bg-zinc-700" />
@@ -285,7 +284,6 @@ export default function CodingPage() {
             </pre>
           </div>
 
-          {/* Action bar */}
           <div className="flex items-center gap-2 px-3 py-2.5 border-t border-zinc-100 shrink-0">
             <button
               onClick={handleRun}
@@ -317,7 +315,6 @@ export default function CodingPage() {
             </button>
           </div>
 
-          {/* Solution drawer */}
           <AnimatePresence>
             {showSolution && (
               <motion.div
@@ -340,7 +337,6 @@ export default function CodingPage() {
           </AnimatePresence>
         </div>
 
-        {/* AI feedback panel */}
         <div className="w-72 shrink-0 overflow-hidden border-l border-zinc-100">
           <AIFeedbackPanel
             lesson={lesson}
