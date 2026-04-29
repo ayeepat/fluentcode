@@ -6,22 +6,29 @@ import { useUser, useClerk } from "@clerk/clerk-react";
 import { getAllLessons } from "@/lib/curriculum";
 import { ArrowLeft, Flame, Target, BookOpen, TrendingUp, LogOut, Heart } from "lucide-react";
 import { progressDb } from "@/lib/progressDb";
+import { useAuth } from "@/lib/AuthContext";
+import Navbar from "@/components/Navbar";
 
 const ease = [0.16, 1, 0.3, 1];
 
 export default function Profile() {
   const { user, isLoaded, isSignedIn } = useUser();
   const { signOut } = useClerk();
+  const { supabaseClient } = useAuth();
   const [progress, setProgress] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!isLoaded) return;
-    if (!isSignedIn) { setLoading(false); return; }
+    if (!isSignedIn || !supabaseClient) {
+      setLoading(false);
+      return;
+    }
 
     const loadProgress = async () => {
       try {
         const data = await progressDb.getProgress(
+          supabaseClient,
           user.id,
           user.primaryEmailAddress?.emailAddress
         );
@@ -33,7 +40,7 @@ export default function Profile() {
       }
     };
     loadProgress();
-  }, [isLoaded, isSignedIn, user]);
+  }, [isLoaded, isSignedIn, user, supabaseClient]);
 
   if (!isLoaded || loading) {
     return (
@@ -48,6 +55,7 @@ export default function Profile() {
   const lang = progress?.language || "python";
   const allLessons = getAllLessons(lang);
   const completed = progress?.completed_lessons || [];
+  const streak = progress?.streak_days || 0;
   const accuracy =
     progress?.total_exercises > 0
       ? Math.round((progress.correct_exercises / progress.total_exercises) * 100)
@@ -58,7 +66,7 @@ export default function Profile() {
       : 0;
 
   const stats = [
-    { label: "Day streak", value: progress?.streak_days || 0, icon: Flame },
+    { label: "Day streak", value: streak, icon: Flame },
     { label: "Accuracy", value: `${accuracy}%`, icon: Target },
     { label: "Lessons done", value: completed.length, icon: BookOpen },
     { label: "Exercises", value: progress?.total_exercises || 0, icon: TrendingUp },
@@ -73,34 +81,7 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-white">
-      <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-4 bg-white/90 backdrop-blur-md border-b border-zinc-100">
-        <Link
-          to="/dashboard"
-          className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
-        >
-          <ArrowLeft size={14} />
-          Dashboard
-        </Link>
-        <Link to="/" className="text-sm font-semibold tracking-tight text-zinc-900">
-          fluentcode
-        </Link>
-        <div className="flex items-center gap-2">
-          <Link
-            to="/upgrade"
-            className="flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-900 transition-colors px-3 py-1.5 rounded-full hover:bg-zinc-100"
-          >
-            <Heart size={13} className="text-rose-500" />
-            Support
-          </Link>
-          <button
-            onClick={() => signOut()}
-            className="flex items-center gap-1 text-sm text-zinc-500 hover:text-red-500 transition-colors px-3 py-1.5 rounded-full hover:bg-zinc-100"
-          >
-            <LogOut size={13} />
-            Sign out
-          </button>
-        </div>
-      </nav>
+      <Navbar streak={streak} />
 
       <div className="max-w-xl mx-auto px-6 py-14">
         <motion.div

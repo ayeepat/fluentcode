@@ -1,5 +1,5 @@
 // src/lib/AuthContext.jsx
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useUser, useAuth as useClerkAuth, useSession } from "@clerk/clerk-react";
 import { createClerkSupabaseClient, supabase } from "./supabaseClient";
 
@@ -16,10 +16,9 @@ export function AuthProvider({ children }) {
   const { session } = useSession();
   const [supabaseClient, setSupabaseClient] = useState(null);
 
+  // Refresh the token every 50 seconds (token expires at 60s)
   useEffect(() => {
-    // If not signed in, use the default unauthenticated client
     if (!session) {
-      console.log("No session — using default supabase client");
       setSupabaseClient(supabase);
       return;
     }
@@ -28,33 +27,31 @@ export function AuthProvider({ children }) {
 
     const buildClient = async () => {
       try {
-        console.log("Fetching Clerk token...");
         const token = await session.getToken({ template: "supabase" });
-        console.log("Token received:", !!token);
-
         if (!cancelled) {
           if (token) {
             setSupabaseClient(createClerkSupabaseClient(token));
-            console.log("Authenticated Supabase client created");
           } else {
-            // Token failed — fall back to default client
-            console.warn("No token returned — falling back to default client");
             setSupabaseClient(supabase);
           }
         }
       } catch (err) {
         console.error("Failed to get Clerk token:", err);
         if (!cancelled) {
-          // Fall back to default client so the app doesn't hang
           setSupabaseClient(supabase);
         }
       }
     };
 
+    // Build immediately
     buildClient();
+
+    // Refresh every 50 seconds to stay ahead of the 60s expiry
+    const interval = setInterval(buildClient, 50000);
 
     return () => {
       cancelled = true;
+      clearInterval(interval);
     };
   }, [session]);
 
