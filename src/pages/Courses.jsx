@@ -1,21 +1,20 @@
 // src/pages/Courses.jsx
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { curriculum } from "@/lib/curriculum";
-import { Check, Lock, Circle, ArrowRight, BookOpen, Heart, User, LogOut } from "lucide-react";
-import { useUser, useClerk } from "@clerk/clerk-react";
+import { Check, Lock, Circle, ArrowRight } from "lucide-react";
+import { useUser } from "@clerk/clerk-react";
 import { progressDb } from "@/lib/progressDb";
+import Navbar from "@/components/Navbar";
 
 const ease = [0.16, 1, 0.3, 1];
 
 export default function Courses() {
   const { user, isSignedIn, isLoaded } = useUser();
-  const { signOut } = useClerk();
   const [progress, setProgress] = useState(null);
   const [selectedLang, setSelectedLang] = useState("python");
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -49,6 +48,7 @@ export default function Courses() {
   }
 
   const completed = progress?.completed_lessons || [];
+  const streak = progress?.streak_days || 0;
   const lang = curriculum[selectedLang];
   const allFlat = lang.modules.flatMap((m) => m.lessons);
 
@@ -65,29 +65,7 @@ export default function Courses() {
 
   return (
     <div className="min-h-screen bg-white">
-      <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-4 bg-white/90 backdrop-blur-md border-b border-zinc-100">
-        <Link to="/" className="text-sm font-semibold tracking-tight text-zinc-900">
-          fluentcode
-        </Link>
-        <div className="flex items-center gap-1">
-          <NavBtn to="/dashboard" icon={<BookOpen size={12} />}>
-            Dashboard
-          </NavBtn>
-          <NavBtn to="/upgrade" icon={<Heart size={12} className="text-rose-500" />}>
-            Support
-          </NavBtn>
-          <NavBtn to="/profile" icon={<User size={12} />}>
-            Profile
-          </NavBtn>
-          <button
-            onClick={() => signOut()}
-            className="flex items-center gap-1 text-sm text-zinc-500 hover:text-red-500 px-3 py-1.5 rounded-full hover:bg-zinc-100 transition-all duration-150 ml-1"
-          >
-            <LogOut size={12} />
-            Log out
-          </button>
-        </div>
-      </nav>
+      <Navbar streak={streak} />
 
       <div className="max-w-2xl mx-auto px-6 py-14">
         <motion.div
@@ -223,18 +201,6 @@ function LessonRow({ lesson, done, unlocked, lang }) {
       ) : (
         <ArrowRight size={13} className="text-zinc-300 group-hover:text-zinc-900 group-hover:translate-x-0.5 transition-all duration-200" />
       )}
-    </Link>
-  );
-}
-
-function NavBtn({ to, icon, children }) {
-  return (
-    <Link
-      to={to}
-      className="flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-900 px-3 py-1.5 rounded-full hover:bg-zinc-100 transition-all duration-150"
-    >
-      {icon}
-      {children}
     </Link>
   );
 }

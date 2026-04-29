@@ -2,10 +2,11 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useUser, useClerk } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
 import { curriculum, getAllLessons } from "@/lib/curriculum";
-import { ArrowRight, Flame, Target, BookOpen, User, Heart, LogOut, Sparkles } from "lucide-react";
+import { ArrowRight, Flame, Target, BookOpen, Sparkles } from "lucide-react";
 import { progressDb } from "@/lib/progressDb";
+import Navbar from "@/components/Navbar";
 
 const ease = [0.16, 1, 0.3, 1];
 
@@ -17,7 +18,6 @@ const stagger = (i) => ({
 
 export default function Dashboard() {
   const { user, isSignedIn, isLoaded } = useUser();
-  const { signOut } = useClerk();
   const [progress, setProgress] = useState(null);
   const [loading, setLoading] = useState(true);
   const [aiRemaining, setAiRemaining] = useState(null);
@@ -75,6 +75,7 @@ export default function Dashboard() {
       : 0;
 
   const isPro = progress?.is_pro || false;
+  const streak = progress?.streak_days || 0;
 
   const getGreeting = () => {
     const h = new Date().getHours();
@@ -90,7 +91,7 @@ export default function Dashboard() {
     "Coder";
 
   const stats = [
-    { label: "Day streak", value: progress?.streak_days || 0, icon: Flame },
+    { label: "Day streak", value: streak, icon: Flame },
     { label: "Accuracy", value: `${accuracy}%`, icon: Target },
     {
       label: "Completed",
@@ -101,30 +102,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Nav */}
-      <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-4 bg-white/90 backdrop-blur-md border-b border-zinc-100">
-        <Link to="/" className="text-sm font-semibold tracking-tight text-zinc-900">
-          fluentcode
-        </Link>
-        <div className="flex items-center gap-1">
-          <NavBtn to="/courses" icon={<BookOpen size={12} />}>
-            Courses
-          </NavBtn>
-          <NavBtn to="/upgrade" icon={<Heart size={12} className="text-rose-500" />}>
-            Support
-          </NavBtn>
-          <NavBtn to="/profile" icon={<User size={12} />}>
-            Profile
-          </NavBtn>
-          <button
-            onClick={() => signOut()}
-            className="flex items-center gap-1 text-sm text-zinc-500 hover:text-red-500 px-3 py-1.5 rounded-full hover:bg-zinc-100 transition-all duration-150 ml-1"
-          >
-            <LogOut size={12} />
-            Log out
-          </button>
-        </div>
-      </nav>
+      <Navbar streak={streak} />
 
       <div className="max-w-2xl mx-auto px-6 py-14">
         {/* Greeting */}
@@ -173,16 +151,16 @@ export default function Dashboard() {
                     <div
                       key={i}
                       className={`w-2 h-2 rounded-full ${
-                        i < (10 - aiRemaining)
-                          ? "bg-zinc-900"
-                          : "bg-zinc-100"
+                        i < 10 - aiRemaining ? "bg-zinc-900" : "bg-zinc-100"
                       }`}
                     />
                   ))}
                 </div>
-                <span className={`text-sm font-bold tabular-nums ${
-                  aiRemaining <= 2 ? "text-amber-500" : "text-zinc-900"
-                }`}>
+                <span
+                  className={`text-sm font-bold tabular-nums ${
+                    aiRemaining <= 2 ? "text-amber-500" : "text-zinc-900"
+                  }`}
+                >
                   {aiRemaining}/10
                 </span>
               </div>
@@ -281,17 +259,5 @@ export default function Dashboard() {
         </motion.div>
       </div>
     </div>
-  );
-}
-
-function NavBtn({ to, icon, children }) {
-  return (
-    <Link
-      to={to}
-      className="flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-900 px-3 py-1.5 rounded-full hover:bg-zinc-100 transition-all duration-150"
-    >
-      {icon}
-      {children}
-    </Link>
   );
 }

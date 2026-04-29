@@ -1,23 +1,44 @@
 // src/pages/Lesson.jsx
 import { useEffect, useState } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { getLessonById } from "@/lib/curriculum";
-import { ArrowLeft, Play, Lightbulb } from "lucide-react";
+import { Play, Lightbulb } from "lucide-react";
+import { useUser } from "@clerk/clerk-react";
+import { progressDb } from "@/lib/progressDb";
+import Navbar from "@/components/Navbar";
 
 const ease = [0.16, 1, 0.3, 1];
 
 export default function Lesson() {
   const { language, lessonId } = useParams();
   const navigate = useNavigate();
+  const { user, isLoaded, isSignedIn } = useUser();
   const [result, setResult] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [streak, setStreak] = useState(0);
 
   useEffect(() => {
     const data = getLessonById(language, lessonId);
     setResult(data);
     setIsLoading(false);
   }, [language, lessonId]);
+
+  useEffect(() => {
+    if (!isLoaded || !isSignedIn) return;
+    const loadStreak = async () => {
+      try {
+        const data = await progressDb.getProgress(
+          user.id,
+          user.primaryEmailAddress?.emailAddress
+        );
+        setStreak(data?.streak_days || 0);
+      } catch (err) {
+        console.error("Failed to load streak:", err);
+      }
+    };
+    loadStreak();
+  }, [isLoaded, isSignedIn, user]);
 
   if (isLoading) {
     return (
@@ -45,50 +66,30 @@ export default function Lesson() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Nav */}
-      <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-4 bg-white/90 backdrop-blur-md border-b border-zinc-100">
-        <button
-          onClick={() => navigate("/courses")}
-          className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
-        >
-          <ArrowLeft size={14} />
-          Courses
-        </button>
-        <span className="text-xs text-zinc-400 max-w-xs truncate hidden sm:block">
-          {module.title}
-        </span>
-        <Link
-          to="/dashboard"
-          className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
-        >
-          Dashboard
-        </Link>
-      </nav>
+      <Navbar
+        streak={streak}
+        backTo="/courses"
+        backLabel="Courses"
+        moduleTitle={module.title}
+      />
 
       <div className="max-w-2xl mx-auto px-6 py-14">
-        {/* Split motion.div into smaller parts so button isn't blocked */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease }}
         >
-          {/* Module label */}
           <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">
             {module.title}
           </p>
-
-          {/* Title */}
           <h1 className="text-4xl font-bold tracking-tight mb-8 text-balance">
             {lesson.title}
           </h1>
-
-          {/* Explanation */}
           <p className="text-base text-zinc-600 leading-relaxed mb-10">
             {lesson.explanation}
           </p>
         </motion.div>
 
-        {/* Key concept */}
         {lesson.concept && (
           <motion.div
             initial={{ opacity: 0, y: 12 }}
@@ -103,7 +104,6 @@ export default function Lesson() {
           </motion.div>
         )}
 
-        {/* Example */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -120,7 +120,6 @@ export default function Lesson() {
           </div>
         </motion.div>
 
-        {/* Debugging tip */}
         {lesson.exercise?.debuggingTip && (
           <motion.div
             initial={{ opacity: 0, y: 12 }}
@@ -140,7 +139,6 @@ export default function Lesson() {
           </motion.div>
         )}
 
-        {/* Exercise prompt */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -155,7 +153,6 @@ export default function Lesson() {
           </p>
         </motion.div>
 
-        {/* CTA — NO MOTION HERE! This fixes the click issue */}
         <button
           onClick={() => navigate(`/code/${language}/${lessonId}`)}
           className="w-full flex items-center justify-center gap-2 bg-zinc-900 text-white py-3.5 rounded-full text-sm font-semibold hover:bg-zinc-700 transition-all duration-200"
