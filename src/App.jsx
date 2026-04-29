@@ -4,6 +4,7 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react'
+import { Analytics } from '@vercel/analytics/react'
 import PageNotFound from './lib/PageNotFound'
 import { AuthProvider } from '@/lib/AuthContext'
 import Landing from "./pages/Landing"
@@ -58,6 +59,7 @@ function App() {
           </Routes>
         </Router>
         <Toaster />
+        <Analytics />
       </QueryClientProvider>
     </AuthProvider>
   )
