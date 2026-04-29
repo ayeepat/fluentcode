@@ -1,14 +1,30 @@
 // src/components/editor/CodeEditor.jsx
-import { useRef, useEffect } from "react";
+import { useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
 
 export default function CodeEditor({ value, onChange, language }) {
   const editorRef = useRef(null);
+  const [hasCleared, setHasCleared] = useState(false);
 
   const handleEditorDidMount = (editor) => {
     editorRef.current = editor;
-    // Ensure the editor is focused when mounted
     editor.focus();
+  };
+
+  const handleChange = (newValue) => {
+    // On first keystroke, check if user is typing over the starter code
+    if (!hasCleared && newValue !== value) {
+      // If the starter code is just a comment + template, clear it
+      const isStarterCode = value?.startsWith("# ") || value?.startsWith("//");
+      if (isStarterCode) {
+        // Get only the new character the user typed
+        const lastChar = newValue.slice(-1);
+        setHasCleared(true);
+        onChange(lastChar);
+        return;
+      }
+    }
+    onChange(newValue);
   };
 
   const languageMap = {
@@ -17,12 +33,12 @@ export default function CodeEditor({ value, onChange, language }) {
   };
 
   return (
-    <div className="h-full w-full border border-zinc-200 rounded-2xl overflow-hidden relative">
+    <div className="h-full w-full border border-zinc-200 rounded-2xl overflow-hidden">
       <Editor
         height="100%"
         language={languageMap[language] || "python"}
         value={value}
-        onChange={onChange}
+        onChange={handleChange}
         onMount={handleEditorDidMount}
         theme="vs-dark"
         options={{
