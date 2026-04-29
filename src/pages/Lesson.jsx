@@ -1,5 +1,5 @@
 // src/lib/AuthContext.jsx
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { useUser, useAuth as useClerkAuth, useSession } from "@clerk/clerk-react";
 import { createClerkSupabaseClient, supabase } from "./supabaseClient";
 
@@ -16,7 +16,6 @@ export function AuthProvider({ children }) {
   const { session } = useSession();
   const [supabaseClient, setSupabaseClient] = useState(null);
 
-  // Refresh the token every 50 seconds (token expires at 60s)
   useEffect(() => {
     if (!session) {
       setSupabaseClient(supabase);
@@ -43,10 +42,8 @@ export function AuthProvider({ children }) {
       }
     };
 
-    // Build immediately
     buildClient();
 
-    // Refresh every 50 seconds to stay ahead of the 60s expiry
     const interval = setInterval(buildClient, 50000);
 
     return () => {
