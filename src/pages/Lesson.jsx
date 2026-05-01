@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { getLessonById } from "@/lib/curriculum";
-import { Play, Lightbulb } from "lucide-react";
+import { Play, Lightbulb, HelpCircle } from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
 import { progressDb } from "@/lib/progressDb";
 import { useAuth } from "@/lib/AuthContext";
@@ -156,13 +156,23 @@ export default function Lesson() {
           </p>
         </motion.div>
 
-        <button
-          onClick={() => navigate(`/code/${language}/${lessonId}`)}
-          className="w-full flex items-center justify-center gap-2 bg-zinc-900 text-white py-3.5 rounded-full text-sm font-semibold hover:bg-zinc-700 transition-all duration-200"
-        >
-          <Play size={14} />
-          Start exercise
-        </button>
+        {/* Two CTAs — Code editor and Quiz */}
+        <div className="flex flex-col gap-3">
+          <button
+            onClick={() => navigate(`/code/${language}/${lessonId}`)}
+            className="w-full flex items-center justify-center gap-2 bg-zinc-900 text-white py-3.5 rounded-full text-sm font-semibold hover:bg-zinc-700 transition-all duration-200"
+          >
+            <Play size={14} />
+            Start exercise
+          </button>
+          <button
+            onClick={() => navigate(`/quiz/${language}/${lessonId}`)}
+            className="w-full flex items-center justify-center gap-2 border border-zinc-200 text-zinc-700 py-3.5 rounded-full text-sm font-semibold hover:border-zinc-900 hover:text-zinc-900 transition-all duration-200"
+          >
+            <HelpCircle size={14} />
+            Take quiz instead
+          </button>
+        </div>
       </div>
     </div>
   );
