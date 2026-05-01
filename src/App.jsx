@@ -19,6 +19,7 @@ import Privacy from "./pages/Privacy"
 import SignInPage from "./pages/SignIn"
 import SignUpPage from "./pages/SignUp"
 import Quiz from "./pages/Quiz"
+import QuizHub from "./pages/QuizHub"
 
 const ProtectedRoute = ({ children }) => {
   return (
@@ -37,7 +38,6 @@ function App() {
       <QueryClientProvider client={queryClientInstance}>
         <Router>
           <Routes>
-            {/* Public routes */}
             <Route path="/" element={<Landing />} />
             <Route path="/sign-in/*" element={<SignInPage />} />
             <Route path="/sign-up/*" element={<SignUpPage />} />
@@ -47,10 +47,10 @@ function App() {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/subscription" element={<Subscription />} />
 
-            {/* Protected routes */}
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/lesson/:language/:lessonId" element={<ProtectedRoute><Lesson /></ProtectedRoute>} />
             <Route path="/code/:language/:lessonId" element={<ProtectedRoute><CodingPage /></ProtectedRoute>} />
+            <Route path="/quiz" element={<ProtectedRoute><QuizHub /></ProtectedRoute>} />
             <Route path="/quiz/:language/:lessonId" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 

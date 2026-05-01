@@ -1,52 +1,53 @@
 // src/lib/quizGenerator.js
 
-/**
- * Generates multiple choice questions from a lesson object.
- * Returns an array of { question, options, correctIndex, explanation }
- */
 export function generateQuizQuestions(lesson, language) {
   const questions = [];
 
-  // Q1 — Concept question (always present)
   if (lesson.concept) {
-    const conceptQ = generateConceptQuestion(lesson, language);
-    if (conceptQ) questions.push(conceptQ);
+    const q = generateConceptQuestion(lesson, language);
+    if (q) questions.push(q);
   }
 
-  // Q2 — Example code reading question
   if (lesson.example) {
-    const exampleQ = generateExampleQuestion(lesson, language);
-    if (exampleQ) questions.push(exampleQ);
+    const q = generateExampleQuestion(lesson, language);
+    if (q) questions.push(q);
   }
 
-  // Q3 — Exercise question (what does the solution do)
   if (lesson.exercise?.solution) {
-    const solutionQ = generateSolutionQuestion(lesson, language);
-    if (solutionQ) questions.push(solutionQ);
+    const q = generateSolutionQuestion(lesson, language);
+    if (q) questions.push(q);
   }
 
-  // Q4 — Debugging tip / error avoidance question
   if (lesson.exercise?.debuggingTip) {
-    const debugQ = generateDebugQuestion(lesson, language);
-    if (debugQ) questions.push(debugQ);
+    const q = generateDebugQuestion(lesson, language);
+    if (q) questions.push(q);
   }
 
-  // Always return at least 2 questions
-  return questions.slice(0, 4);
+  if (lesson.example) {
+    const q = generateFillBlankQuestion(lesson, language);
+    if (q) questions.push(q);
+  }
+
+  if (lesson.concept) {
+    const q = generateTrueOrFalseQuestion(lesson, language);
+    if (q) questions.push(q);
+  }
+
+  if (lesson.example) {
+    const q = generatePredictOutputQuestion(lesson, language);
+    if (q) questions.push(q);
+  }
+
+  return questions.slice(0, 7);
 }
+
+// ─── Question generators ───────────────────────────────────────────────────
 
 function generateConceptQuestion(lesson, language) {
   const concept = lesson.concept;
-
-  // Extract key term from concept (first word that looks like code)
-  const codeMatch = concept.match(/`([^`]+)`/) ||
-    concept.match(/(\w+\(\))/) ||
-    concept.match(/(\w+)/);
-
-  const keyTerm = codeMatch ? codeMatch[1] : lesson.title;
-
   return {
     question: `What is the main concept taught in "${lesson.title}"?`,
+    hint: `Think about what the lesson title "${lesson.title}" is referring to.`,
     options: [
       concept.length > 120 ? concept.slice(0, 120) + "..." : concept,
       getWrongConceptOption(lesson, language, 0),
@@ -61,11 +62,14 @@ function generateConceptQuestion(lesson, language) {
 function generateExampleQuestion(lesson, language) {
   const lines = lesson.example.split("\n").filter(l => l.trim());
   const firstMeaningfulLine = lines.find(l =>
-    !l.trim().startsWith("#") && !l.trim().startsWith("//") && l.trim().length > 0
+    !l.trim().startsWith("#") &&
+    !l.trim().startsWith("//") &&
+    l.trim().length > 0
   ) || lines[0];
 
   return {
     question: `What does this code do?\n\`\`\`\n${firstMeaningfulLine}\n\`\`\``,
+    hint: `Look at the keywords in the code. What function or operation is being performed?`,
     options: [
       getCorrectExampleAnswer(lesson, firstMeaningfulLine, language),
       getWrongExampleOption(lesson, language, 0),
@@ -80,6 +84,7 @@ function generateExampleQuestion(lesson, language) {
 function generateSolutionQuestion(lesson, language) {
   return {
     question: `For this exercise: "${lesson.exercise.prompt.slice(0, 100)}..." — which approach is correct?`,
+    hint: `Re-read the exercise prompt carefully. What does it ask you to do?`,
     options: [
       summarizeSolution(lesson.exercise.solution, language),
       getWrongSolutionOption(lesson, language, 0),
@@ -94,7 +99,8 @@ function generateSolutionQuestion(lesson, language) {
 function generateDebugQuestion(lesson, language) {
   const tip = lesson.exercise.debuggingTip;
   return {
-    question: `Which of the following is the best debugging advice for "${lesson.title}"?`,
+    question: `Which is the best debugging advice for "${lesson.title}"?`,
+    hint: `Think about the most common mistake beginners make with this concept.`,
     options: [
       tip.length > 120 ? tip.slice(0, 120) + "..." : tip,
       getWrongDebugOption(lesson, language, 0),
@@ -106,7 +112,144 @@ function generateDebugQuestion(lesson, language) {
   };
 }
 
-// ─── Wrong answer generators ───────────────────────────────────────────────
+function generateFillBlankQuestion(lesson, language) {
+  const lines = lesson.example
+    .split("\n")
+    .filter(l => l.trim() && !l.trim().startsWith("#") && !l.trim().startsWith("//"));
+
+  if (lines.length === 0) return null;
+
+  // Pick a line with an interesting keyword
+  const targetLine = lines.find(l =>
+    l.includes("(") || l.includes("=") || l.includes("return")
+  ) || lines[0];
+
+  // Find a keyword to blank out
+  const keywords = language === "python"
+    ? ["print", "def", "return", "for", "if", "while", "import", "class", "append", "range"]
+    : ["System.out.println", "int", "String", "for", "if", "return", "class", "ArrayList", "static", "void"];
+
+  const foundKeyword = keywords.find(k => targetLine.includes(k));
+  if (!foundKeyword) return null;
+
+  const blanked = targetLine.replace(foundKeyword, "______");
+
+  const wrongKeywords = keywords
+    .filter(k => k !== foundKeyword)
+    .slice(0, 3);
+
+  if (wrongKeywords.length < 3) return null;
+
+  return {
+    question: `Fill in the blank:\n\`\`\`\n${blanked}\n\`\`\``,
+    hint: `This keyword is one of the core building blocks of ${lesson.title}. Check the example in the lesson.`,
+    options: [
+      foundKeyword,
+      wrongKeywords[0],
+      wrongKeywords[1],
+      wrongKeywords[2],
+    ],
+    correctIndex: 0,
+    explanation: `The correct keyword is \`${foundKeyword}\`. ${lesson.concept}`,
+  };
+}
+
+function generateTrueOrFalseQuestion(lesson, language) {
+  const concept = lesson.concept;
+
+  // Generate a TRUE statement from the concept
+  const trueStatement = concept.length > 100
+    ? concept.slice(0, 100) + "..."
+    : concept;
+
+  // Generate a FALSE statement
+  const falseStatement = getFalseStatement(lesson, language);
+
+  const isCorrectTrue = Math.random() > 0.5;
+
+  if (isCorrectTrue) {
+    return {
+      question: `True or False: "${trueStatement}"`,
+      hint: `Read the key concept section of this lesson carefully.`,
+      options: ["True", "False"],
+      correctIndex: 0,
+      explanation: `TRUE. ${concept}`,
+    };
+  } else {
+    return {
+      question: `True or False: "${falseStatement}"`,
+      hint: `Think carefully — is this actually how ${lesson.title} works?`,
+      options: ["True", "False"],
+      correctIndex: 1,
+      explanation: `FALSE. ${concept}`,
+    };
+  }
+}
+
+function generatePredictOutputQuestion(lesson, language) {
+  const lines = lesson.example.split("\n").filter(l => l.trim());
+
+  const printLine = lines.find(l =>
+    l.includes("print(") || l.includes("System.out.println")
+  );
+
+  if (!printLine) return null;
+
+  const correctOutput = getPredictedOutput(printLine, lesson, language);
+  if (!correctOutput) return null;
+
+  return {
+    question: `What is the output of this code?\n\`\`\`\n${printLine.trim()}\n\`\`\``,
+    hint: `Trace through the code step by step. What value is being passed to the print function?`,
+    options: [
+      correctOutput,
+      getWrongOutputOption(lesson, language, 0),
+      getWrongOutputOption(lesson, language, 1),
+      getWrongOutputOption(lesson, language, 2),
+    ],
+    correctIndex: 0,
+    explanation: `The output is "${correctOutput}". ${lesson.concept}`,
+  };
+}
+
+// ─── Helper functions ──────────────────────────────────────────────────────
+
+function getPredictedOutput(printLine, lesson, language) {
+  if (language === "python") {
+    const match = printLine.match(/print\("([^"]+)"\)/);
+    if (match) return match[1];
+    const match2 = printLine.match(/print\('([^']+)'\)/);
+    if (match2) return match2[1];
+  } else {
+    const match = printLine.match(/println\("([^"]+)"\)/);
+    if (match) return match[1];
+  }
+  return null;
+}
+
+function getFalseStatement(lesson, language) {
+  const falseStatements = language === "python" ? [
+    `Python requires you to declare variable types explicitly.`,
+    `The print() function in Python uses semicolons.`,
+    `Indentation in Python is optional and has no effect on the program.`,
+    `Python functions must always explicitly return a value.`,
+    `Lists in Python can only contain items of the same data type.`,
+    `Python requires a main() function to start execution.`,
+    `The def keyword in Python is used to declare variables.`,
+    `For loops in Python always require a numeric counter.`,
+  ] : [
+    `Java variables do not need a type declaration.`,
+    `In Java, code can be written outside of a class.`,
+    `Java does not require semicolons at the end of statements.`,
+    `The main method in Java can be named anything.`,
+    `Java is a dynamically typed language.`,
+    `ArrayList in Java has a fixed size.`,
+    `Java loops do not need curly braces.`,
+    `You can use print() directly in Java without a class.`,
+  ];
+
+  return falseStatements[(lesson.title.length + lesson.id.length) % falseStatements.length];
+}
 
 const pythonWrongConcepts = [
   "Variables must always be declared with a type keyword before use.",
@@ -178,7 +321,9 @@ function getWrongExampleOption(lesson, language, index) {
 
 function summarizeSolution(solution, language) {
   if (!solution) return "Write the correct code as shown in the example";
-  const lines = solution.split("\n").filter(l => l.trim() && !l.trim().startsWith("#") && !l.trim().startsWith("//"));
+  const lines = solution
+    .split("\n")
+    .filter(l => l.trim() && !l.trim().startsWith("#") && !l.trim().startsWith("//"));
   if (lines.length === 0) return "Follow the lesson concept";
   const first = lines[0].trim();
   if (first.length > 80) return first.slice(0, 80) + "...";
@@ -213,4 +358,19 @@ const wrongDebugOptions = [
 
 function getWrongDebugOption(lesson, language, index) {
   return wrongDebugOptions[(index + lesson.id.length) % wrongDebugOptions.length];
+}
+
+const wrongOutputOptions = [
+  "Nothing — the code has a syntax error",
+  "undefined",
+  "null",
+  "An error message",
+  "True",
+  "False",
+  "0",
+  "None",
+];
+
+function getWrongOutputOption(lesson, language, index) {
+  return wrongOutputOptions[(index + lesson.id.length) % wrongOutputOptions.length];
 }

@@ -1,12 +1,11 @@
 // src/components/Navbar.jsx
 import { Link } from "react-router-dom";
-import { BookOpen, Heart, User, LogOut, Flame } from "lucide-react";
+import { BookOpen, Heart, User, LogOut, Flame, HelpCircle } from "lucide-react";
 import { useClerk } from "@clerk/clerk-react";
 
 export default function Navbar({ streak = 0, backTo = null, backLabel = null, moduleTitle = null }) {
   const { signOut } = useClerk();
 
-  // Lesson page uses a different layout (back button on left, dashboard on right)
   if (backTo) {
     return (
       <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-4 bg-white/90 backdrop-blur-md border-b border-zinc-100">
@@ -39,7 +38,6 @@ export default function Navbar({ streak = 0, backTo = null, backLabel = null, mo
     );
   }
 
-  // Default navbar for Dashboard and Courses
   return (
     <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-4 bg-white/90 backdrop-blur-md border-b border-zinc-100">
       <div className="flex items-center gap-3">
@@ -58,6 +56,9 @@ export default function Navbar({ streak = 0, backTo = null, backLabel = null, mo
       <div className="flex items-center gap-1">
         <NavBtn to="/courses" icon={<BookOpen size={12} />}>
           Courses
+        </NavBtn>
+        <NavBtn to="/quiz" icon={<HelpCircle size={12} />}>
+          Quiz
         </NavBtn>
         <NavBtn to="/upgrade" icon={<Heart size={12} className="text-rose-500" />}>
           Support
