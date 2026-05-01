@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { curriculum } from "@/lib/curriculum";
-import { Check, Lock, Circle, ArrowRight, HelpCircle, Smartphone } from "lucide-react";
+import { Check, Lock, Circle, ArrowRight, HelpCircle, Smartphone, Code2 } from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
 import { progressDb } from "@/lib/progressDb";
 import { useAuth } from "@/lib/AuthContext";
@@ -16,7 +16,7 @@ export default function Courses() {
   const { supabaseClient } = useAuth();
   const [progress, setProgress] = useState(null);
   const [selectedLang, setSelectedLang] = useState("python");
-  const [mode, setMode] = useState("lessons"); // "lessons" or "quiz"
+  const [mode, setMode] = useState("lessons");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -76,7 +76,6 @@ export default function Courses() {
       <Navbar streak={streak} />
 
       <div className="max-w-2xl mx-auto px-6 py-14">
-
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -98,32 +97,38 @@ export default function Courses() {
           </div>
         </motion.div>
 
-        {/* Mode toggle — Lessons vs Quiz */}
+        {/* Mode segmented control */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.05, ease }}
-          className="flex gap-2 mb-5"
+          className="relative flex bg-zinc-100 rounded-2xl p-1 mb-6"
         >
+          {/* Sliding background indicator */}
+          <motion.div
+            layout
+            className="absolute top-1 bottom-1 rounded-xl bg-white shadow-sm"
+            style={{ width: "calc(50% - 4px)" }}
+            animate={{ x: mode === "lessons" ? 0 : "calc(100% + 4px)" }}
+            transition={{ type: "spring", stiffness: 400, damping: 35 }}
+          />
+
           <button
             onClick={() => setMode("lessons")}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
-              mode === "lessons"
-                ? "bg-zinc-900 text-white"
-                : "border border-zinc-200 text-zinc-500 hover:border-zinc-400 hover:text-zinc-900"
+            className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-colors duration-200 ${
+              mode === "lessons" ? "text-zinc-900" : "text-zinc-400"
             }`}
           >
+            <Code2 size={15} />
             Lessons
           </button>
           <button
             onClick={() => setMode("quiz")}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-1.5 ${
-              mode === "quiz"
-                ? "bg-zinc-900 text-white"
-                : "border border-zinc-200 text-zinc-500 hover:border-zinc-400 hover:text-zinc-900"
+            className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-colors duration-200 ${
+              mode === "quiz" ? "text-zinc-900" : "text-zinc-400"
             }`}
           >
-            <HelpCircle size={12} />
+            <HelpCircle size={15} />
             Quiz
           </button>
         </motion.div>
@@ -132,16 +137,18 @@ export default function Courses() {
         <AnimatePresence>
           {mode === "quiz" && (
             <motion.div
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
-              transition={{ duration: 0.2 }}
-              className="flex items-center gap-2.5 px-4 py-3 bg-blue-50 border border-blue-100 rounded-xl mb-6 text-sm text-blue-700"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.25, ease }}
+              className="overflow-hidden"
             >
-              <Smartphone size={14} className="text-blue-400 shrink-0" />
-              <span>
-                Quiz mode works great on mobile — no typing needed, just tap your answer.
-              </span>
+              <div className="flex items-center gap-2.5 px-4 py-3 bg-blue-50 border border-blue-100 rounded-xl mb-6 text-sm text-blue-700">
+                <Smartphone size={14} className="text-blue-400 shrink-0" />
+                <span>
+                  Quiz mode works great on mobile — no typing needed, just tap your answers.
+                </span>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -168,7 +175,7 @@ export default function Courses() {
           ))}
         </motion.div>
 
-        {/* Lesson list */}
+        {/* Content */}
         <AnimatePresence mode="wait">
           <motion.div
             key={`${selectedLang}-${mode}`}
@@ -220,7 +227,6 @@ export default function Courses() {
                       const unlocked = isUnlocked(lesson.id);
 
                       if (mode === "quiz") {
-                        // Quiz mode — no locks, no progress tracking
                         return (
                           <button
                             key={lesson.id}
@@ -245,7 +251,6 @@ export default function Courses() {
                         );
                       }
 
-                      // Lessons mode — original locked/unlocked behaviour
                       return (
                         <LessonRow
                           key={lesson.id}
