@@ -1,9 +1,9 @@
 // src/pages/Courses.jsx
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { curriculum } from "@/lib/curriculum";
-import { Check, Lock, Circle, ArrowRight } from "lucide-react";
+import { Check, Lock, Circle, ArrowRight, HelpCircle, Smartphone } from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
 import { progressDb } from "@/lib/progressDb";
 import { useAuth } from "@/lib/AuthContext";
@@ -16,7 +16,9 @@ export default function Courses() {
   const { supabaseClient } = useAuth();
   const [progress, setProgress] = useState(null);
   const [selectedLang, setSelectedLang] = useState("python");
+  const [mode, setMode] = useState("lessons"); // "lessons" or "quiz"
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isLoaded || !isSignedIn || !supabaseClient) return;
@@ -58,7 +60,9 @@ export default function Courses() {
     allFlat.some((l) => l.id === id)
   ).length;
   const progressPct =
-    totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+    totalLessons > 0
+      ? Math.round((completedCount / totalLessons) * 100)
+      : 0;
 
   const isUnlocked = (lessonId) => {
     const idx = allFlat.findIndex((l) => l.id === lessonId);
@@ -72,11 +76,13 @@ export default function Courses() {
       <Navbar streak={streak} />
 
       <div className="max-w-2xl mx-auto px-6 py-14">
+
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease }}
-          className="mb-10"
+          className="mb-8"
         >
           <h1 className="text-3xl font-bold tracking-tight mb-1.5">Courses</h1>
           <p className="text-sm text-zinc-400">
@@ -92,6 +98,55 @@ export default function Courses() {
           </div>
         </motion.div>
 
+        {/* Mode toggle — Lessons vs Quiz */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.05, ease }}
+          className="flex gap-2 mb-5"
+        >
+          <button
+            onClick={() => setMode("lessons")}
+            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+              mode === "lessons"
+                ? "bg-zinc-900 text-white"
+                : "border border-zinc-200 text-zinc-500 hover:border-zinc-400 hover:text-zinc-900"
+            }`}
+          >
+            Lessons
+          </button>
+          <button
+            onClick={() => setMode("quiz")}
+            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-1.5 ${
+              mode === "quiz"
+                ? "bg-zinc-900 text-white"
+                : "border border-zinc-200 text-zinc-500 hover:border-zinc-400 hover:text-zinc-900"
+            }`}
+          >
+            <HelpCircle size={12} />
+            Quiz
+          </button>
+        </motion.div>
+
+        {/* Mobile tip — only shown in quiz mode */}
+        <AnimatePresence>
+          {mode === "quiz" && (
+            <motion.div
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.2 }}
+              className="flex items-center gap-2.5 px-4 py-3 bg-blue-50 border border-blue-100 rounded-xl mb-6 text-sm text-blue-700"
+            >
+              <Smartphone size={14} className="text-blue-400 shrink-0" />
+              <span>
+                Quiz mode works great on mobile — no typing needed, just tap your answer.
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Language selector */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -113,9 +168,10 @@ export default function Courses() {
           ))}
         </motion.div>
 
+        {/* Lesson list */}
         <AnimatePresence mode="wait">
           <motion.div
-            key={selectedLang}
+            key={`${selectedLang}-${mode}`}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
@@ -134,28 +190,62 @@ export default function Courses() {
                     <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
                       {module.title}
                     </p>
-                    <span className="text-xs text-zinc-300 tabular-nums">
-                      {modCompleted}/{modLessons.length}
-                    </span>
+                    {mode === "lessons" && (
+                      <span className="text-xs text-zinc-300 tabular-nums">
+                        {modCompleted}/{modLessons.length}
+                      </span>
+                    )}
                   </div>
-                  <div className="h-0.5 bg-zinc-100 rounded-full overflow-hidden mb-3">
-                    <div
-                      className="h-full bg-emerald-500 rounded-full transition-all duration-500"
-                      style={{
-                        width: `${
-                          modLessons.length > 0
-                            ? Math.round(
-                                (modCompleted / modLessons.length) * 100
-                              )
-                            : 0
-                        }%`,
-                      }}
-                    />
-                  </div>
+
+                  {mode === "lessons" && (
+                    <div className="h-0.5 bg-zinc-100 rounded-full overflow-hidden mb-3">
+                      <div
+                        className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                        style={{
+                          width: `${
+                            modLessons.length > 0
+                              ? Math.round(
+                                  (modCompleted / modLessons.length) * 100
+                                )
+                              : 0
+                          }%`,
+                        }}
+                      />
+                    </div>
+                  )}
+
                   <div className="space-y-1.5">
-                    {module.lessons.map((lesson) => {
+                    {modLessons.map((lesson) => {
                       const done = completed.includes(lesson.id);
                       const unlocked = isUnlocked(lesson.id);
+
+                      if (mode === "quiz") {
+                        // Quiz mode — no locks, no progress tracking
+                        return (
+                          <button
+                            key={lesson.id}
+                            onClick={() =>
+                              navigate(
+                                `/quiz/${selectedLang}/${lesson.id}`
+                              )
+                            }
+                            className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border border-zinc-200 hover:border-zinc-900 transition-all duration-200 group text-left"
+                          >
+                            <HelpCircle
+                              size={14}
+                              className="text-zinc-300 group-hover:text-zinc-600 transition-colors shrink-0"
+                            />
+                            <span className="text-sm text-zinc-700 font-medium flex-1">
+                              {lesson.title}
+                            </span>
+                            <span className="text-xs text-zinc-400">
+                              7 questions
+                            </span>
+                          </button>
+                        );
+                      }
+
+                      // Lessons mode — original locked/unlocked behaviour
                       return (
                         <LessonRow
                           key={lesson.id}
@@ -198,7 +288,11 @@ function LessonRow({ lesson, done, unlocked, lang }) {
       }`}
     >
       {done ? (
-        <Check size={15} strokeWidth={3} className="text-emerald-500 shrink-0" />
+        <Check
+          size={15}
+          strokeWidth={3}
+          className="text-emerald-500 shrink-0"
+        />
       ) : (
         <Circle
           size={15}
@@ -207,13 +301,17 @@ function LessonRow({ lesson, done, unlocked, lang }) {
       )}
       <span
         className={`text-sm flex-1 ${
-          done ? "text-emerald-700 font-medium" : "text-zinc-700 font-medium"
+          done
+            ? "text-emerald-700 font-medium"
+            : "text-zinc-700 font-medium"
         }`}
       >
         {lesson.title}
       </span>
       {done ? (
-        <span className="text-xs text-emerald-500 font-medium">Completed</span>
+        <span className="text-xs text-emerald-500 font-medium">
+          Completed
+        </span>
       ) : (
         <ArrowRight
           size={13}

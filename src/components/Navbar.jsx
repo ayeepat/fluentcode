@@ -1,6 +1,6 @@
 // src/components/Navbar.jsx
 import { Link } from "react-router-dom";
-import { BookOpen, Heart, User, LogOut, Flame, HelpCircle } from "lucide-react";
+import { BookOpen, Heart, User, LogOut, Flame } from "lucide-react";
 import { useClerk } from "@clerk/clerk-react";
 
 export default function Navbar({ streak = 0, backTo = null, backLabel = null, moduleTitle = null }) {
@@ -56,9 +56,6 @@ export default function Navbar({ streak = 0, backTo = null, backLabel = null, mo
       <div className="flex items-center gap-1">
         <NavBtn to="/courses" icon={<BookOpen size={12} />}>
           Courses
-        </NavBtn>
-        <NavBtn to="/quiz" icon={<HelpCircle size={12} />}>
-          Quiz
         </NavBtn>
         <NavBtn to="/upgrade" icon={<Heart size={12} className="text-rose-500" />}>
           Support

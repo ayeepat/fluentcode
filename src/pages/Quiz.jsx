@@ -2,11 +2,8 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { useUser } from "@clerk/clerk-react";
 import { getLessonById, getAllLessons } from "@/lib/curriculum";
 import { generateQuizQuestions } from "@/lib/quizGenerator";
-import { progressDb } from "@/lib/progressDb";
-import { useAuth } from "@/lib/AuthContext";
 import {
   CheckCircle,
   XCircle,
@@ -21,8 +18,6 @@ const ease = [0.16, 1, 0.3, 1];
 export default function Quiz() {
   const { language, lessonId } = useParams();
   const navigate = useNavigate();
-  const { user, isLoaded, isSignedIn } = useUser();
-  const { supabaseClient } = useAuth();
 
   const [questions, setQuestions] = useState([]);
   const [currentQ, setCurrentQ] = useState(0);
@@ -31,31 +26,15 @@ export default function Quiz() {
   const [showHint, setShowHint] = useState(false);
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
-  const [progress, setProgress] = useState(null);
   const [lesson, setLesson] = useState(null);
-  const [module, setModule] = useState(null);
 
   useEffect(() => {
     const result = getLessonById(language, lessonId);
     if (!result) return;
     setLesson(result.lesson);
-    setModule(result.module);
     const qs = generateQuizQuestions(result.lesson, language);
-    setQuestions(qs.map(q => shuffleOptions(q)));
+    setQuestions(qs.map((q) => shuffleOptions(q)));
   }, [language, lessonId]);
-
-  useEffect(() => {
-    if (!isLoaded || !isSignedIn || !supabaseClient) return;
-    const load = async () => {
-      const data = await progressDb.getProgress(
-        supabaseClient,
-        user.id,
-        user.primaryEmailAddress?.emailAddress
-      );
-      setProgress(data);
-    };
-    load();
-  }, [isLoaded, isSignedIn, user, supabaseClient]);
 
   const shuffleOptions = (q) => {
     const indexed = q.options.map((opt, i) => ({
@@ -66,10 +45,10 @@ export default function Quiz() {
       const j = Math.floor(Math.random() * (i + 1));
       [indexed[i], indexed[j]] = [indexed[j], indexed[i]];
     }
-    const newCorrectIndex = indexed.findIndex(o => o.isCorrect);
+    const newCorrectIndex = indexed.findIndex((o) => o.isCorrect);
     return {
       ...q,
-      options: indexed.map(o => o.opt),
+      options: indexed.map((o) => o.opt),
       correctIndex: newCorrectIndex,
     };
   };
@@ -84,52 +63,23 @@ export default function Quiz() {
     setConfirmed(true);
     setShowHint(false);
     if (selectedOption === questions[currentQ].correctIndex) {
-      setScore(s => s + 1);
+      setScore((s) => s + 1);
     }
   };
 
-  const handleNext = async () => {
+  const handleNext = () => {
     if (currentQ < questions.length - 1) {
-      setCurrentQ(q => q + 1);
+      setCurrentQ((q) => q + 1);
       setSelectedOption(null);
       setConfirmed(false);
       setShowHint(false);
     } else {
       setFinished(true);
-      await saveProgress();
     }
   };
 
-  const saveProgress = async () => {
-    if (!user || !supabaseClient) return;
-    const passed = score >= Math.ceil(questions.length / 2);
-    if (!passed) return;
-    const alreadyDone = progress?.completed_lessons?.includes(lessonId);
-    if (alreadyDone) return;
-    const updatedCompleted = [
-      ...(progress?.completed_lessons || []),
-      lessonId,
-    ];
-    const today = new Date().toDateString();
-    const yesterday = new Date(Date.now() - 86400000).toDateString();
-    const last = progress?.last_active_date;
-    const newStreak =
-      last === yesterday
-        ? (progress?.streak_days || 0) + 1
-        : last === today
-        ? progress?.streak_days || 0
-        : 1;
-    await progressDb.updateProgress(supabaseClient, user.id, {
-      completed_lessons: updatedCompleted,
-      total_exercises: (progress?.total_exercises || 0) + 1,
-      correct_exercises: (progress?.correct_exercises || 0) + 1,
-      last_active_date: today,
-      streak_days: newStreak,
-    });
-  };
-
   const allLessons = getAllLessons(language);
-  const currentIdx = allLessons.findIndex(l => l.id === lessonId);
+  const currentIdx = allLessons.findIndex((l) => l.id === lessonId);
   const nextLesson = allLessons[currentIdx + 1];
   const passed = score >= Math.ceil(questions.length / 2);
 
@@ -141,20 +91,22 @@ export default function Quiz() {
     );
   }
 
-  // ─── Results screen ────────────────────────────────────────────────────────
+  // ─── Results screen ──────────────────────────────────────────────────────
   if (finished) {
     return (
       <div className="min-h-screen bg-white flex flex-col">
         <nav className="flex items-center justify-between px-6 py-4 border-b border-zinc-100">
           <button
-            onClick={() => navigate(`/lesson/${language}/${lessonId}`)}
+            onClick={() => navigate("/courses")}
             className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
           >
             <ArrowLeft size={14} />
-            Back to lesson
+            Courses
           </button>
-          <span className="text-sm font-semibold text-zinc-900">fluentcode</span>
-          <div className="w-24" />
+          <span className="text-sm font-semibold text-zinc-900">
+            fluentcode
+          </span>
+          <div className="w-20" />
         </nav>
 
         <div className="flex-1 flex flex-col items-center justify-center px-6 py-14">
@@ -187,26 +139,22 @@ export default function Quiz() {
               />
             </div>
             <div className="flex flex-col gap-3">
-              {passed && nextLesson && (
+              {nextLesson && (
                 <button
                   onClick={() =>
-                    navigate(`/lesson/${language}/${nextLesson.id}`)
+                    navigate(`/quiz/${language}/${nextLesson.id}`)
                   }
                   className="w-full flex items-center justify-center gap-2 bg-zinc-900 text-white py-3.5 rounded-full text-sm font-semibold hover:bg-zinc-700 transition-all"
                 >
-                  Next lesson <ArrowRight size={14} />
+                  Next quiz <ArrowRight size={14} />
                 </button>
               )}
-              {passed && (
-                <button
-                  onClick={() =>
-                    navigate(`/code/${language}/${lessonId}`)
-                  }
-                  className="w-full flex items-center justify-center gap-2 border border-zinc-200 text-zinc-700 py-3.5 rounded-full text-sm font-semibold hover:border-zinc-900 transition-all"
-                >
-                  Try the code exercise too
-                </button>
-              )}
+              <button
+                onClick={() => navigate(`/lesson/${language}/${lessonId}`)}
+                className="w-full flex items-center justify-center gap-2 border border-zinc-200 text-zinc-700 py-3.5 rounded-full text-sm font-semibold hover:border-zinc-900 transition-all"
+              >
+                Go to lesson
+              </button>
               <button
                 onClick={() => {
                   setCurrentQ(0);
@@ -216,7 +164,7 @@ export default function Quiz() {
                   setScore(0);
                   setFinished(false);
                   const qs = generateQuizQuestions(lesson, language);
-                  setQuestions(qs.map(q => shuffleOptions(q)));
+                  setQuestions(qs.map((q) => shuffleOptions(q)));
                 }}
                 className="w-full flex items-center justify-center gap-2 border border-zinc-200 text-zinc-700 py-3.5 rounded-full text-sm font-semibold hover:border-zinc-400 transition-all"
               >
@@ -235,20 +183,19 @@ export default function Quiz() {
     );
   }
 
-  // ─── Quiz screen ───────────────────────────────────────────────────────────
+  // ─── Quiz screen ─────────────────────────────────────────────────────────
   const q = questions[currentQ];
   const isCorrect = confirmed && selectedOption === q.correctIndex;
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      {/* Nav */}
       <nav className="flex items-center justify-between px-6 py-4 border-b border-zinc-100">
         <button
-          onClick={() => navigate(`/lesson/${language}/${lessonId}`)}
+          onClick={() => navigate("/courses")}
           className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
         >
           <ArrowLeft size={14} />
-          Lesson
+          Courses
         </button>
         <span className="text-xs text-zinc-400 max-w-[180px] truncate">
           {lesson.title}
@@ -285,14 +232,12 @@ export default function Quiz() {
               Question {currentQ + 1}
             </p>
 
-            {/* Question text */}
             <h2 className="text-lg font-semibold text-zinc-900 mb-2 leading-snug whitespace-pre-wrap">
               {q.question.includes("```")
                 ? q.question.split("```")[0]
                 : q.question}
             </h2>
 
-            {/* Code snippet */}
             {q.question.includes("```") && (
               <div className="bg-zinc-950 rounded-xl p-4 mb-4 overflow-x-auto">
                 <pre className="text-sm text-zinc-100 font-mono">
@@ -303,7 +248,7 @@ export default function Quiz() {
 
             {!q.question.includes("```") && <div className="mb-4" />}
 
-            {/* Hint — shown before confirming */}
+            {/* Hint */}
             <AnimatePresence>
               {showHint && !confirmed && q.hint && (
                 <motion.div
@@ -313,7 +258,10 @@ export default function Quiz() {
                   transition={{ duration: 0.2 }}
                   className="mb-4 px-4 py-3 bg-amber-50 border border-amber-100 rounded-xl flex gap-2 text-sm text-amber-800"
                 >
-                  <Lightbulb size={15} className="text-amber-500 shrink-0 mt-0.5" />
+                  <Lightbulb
+                    size={15}
+                    className="text-amber-500 shrink-0 mt-0.5"
+                  />
                   <span>{q.hint}</span>
                 </motion.div>
               )}
@@ -325,8 +273,7 @@ export default function Quiz() {
                 let style =
                   "border border-zinc-200 text-zinc-700 hover:border-zinc-400";
                 if (selectedOption === index && !confirmed) {
-                  style =
-                    "border-2 border-zinc-900 text-zinc-900 bg-zinc-50";
+                  style = "border-2 border-zinc-900 text-zinc-900 bg-zinc-50";
                 }
                 if (confirmed) {
                   if (index === q.correctIndex) {
@@ -336,8 +283,7 @@ export default function Quiz() {
                     index === selectedOption &&
                     index !== q.correctIndex
                   ) {
-                    style =
-                      "border-2 border-red-400 bg-red-50 text-red-800";
+                    style = "border-2 border-red-400 bg-red-50 text-red-800";
                   } else {
                     style = "border border-zinc-100 text-zinc-400";
                   }
@@ -351,7 +297,10 @@ export default function Quiz() {
                   >
                     <span className="shrink-0 w-5 h-5 rounded-full border border-current flex items-center justify-center text-xs mt-0.5">
                       {confirmed && index === q.correctIndex ? (
-                        <CheckCircle size={14} className="text-emerald-500" />
+                        <CheckCircle
+                          size={14}
+                          className="text-emerald-500"
+                        />
                       ) : confirmed && index === selectedOption ? (
                         <XCircle size={14} className="text-red-400" />
                       ) : (
@@ -364,7 +313,7 @@ export default function Quiz() {
               })}
             </div>
 
-            {/* Explanation after confirming */}
+            {/* Explanation */}
             <AnimatePresence>
               {confirmed && (
                 <motion.div
@@ -391,14 +340,13 @@ export default function Quiz() {
         <div className="mt-8 flex gap-3">
           {!confirmed ? (
             <>
-              {/* Hint button */}
               {q.hint && (
                 <button
-                  onClick={() => setShowHint(h => !h)}
+                  onClick={() => setShowHint((h) => !h)}
                   className="flex items-center gap-1.5 px-4 py-3.5 rounded-full text-sm text-amber-600 border border-amber-200 hover:bg-amber-50 transition-all shrink-0"
                 >
                   <Lightbulb size={14} />
-                  {showHint ? "Hide hint" : "Hint"}
+                  {showHint ? "Hide" : "Hint"}
                 </button>
               )}
               <button
