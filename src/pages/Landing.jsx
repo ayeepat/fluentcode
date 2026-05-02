@@ -155,7 +155,7 @@ export default function Landing() {
         <motion.div {...fadeUp(0.05)}>
           <span className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 bg-zinc-100 px-3 py-1.5 rounded-full mb-8">
             <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-            100% free · No credit card · No limits
+            100% free · 10 AI reviews/day · No credit card
           </span>
         </motion.div>
 

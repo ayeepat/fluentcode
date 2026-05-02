@@ -1,5 +1,5 @@
 // src/pages/Quiz.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
@@ -33,6 +33,10 @@ export default function Quiz() {
   const [finished, setFinished] = useState(false);
   const [lesson, setLesson] = useState(null);
   const [savedProgress, setSavedProgress] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  // Use a ref to track final score reliably without race conditions
+  const finalScoreRef = useRef(0);
 
   useEffect(() => {
     const result = getLessonById(language, lessonId);
@@ -41,19 +45,6 @@ export default function Quiz() {
     const qs = generateQuizQuestions(result.lesson, language);
     setQuestions(qs.map((q) => shuffleOptions(q)));
   }, [language, lessonId]);
-
-  // Save quiz completion when user finishes
-  useEffect(() => {
-    if (!finished || savedProgress || !isSignedIn || !supabaseClient) return;
-    const passed = score >= Math.ceil(questions.length / 2);
-    if (!passed) return; // Only save if they passed
-
-    const save = async () => {
-      await progressDb.completeQuiz(supabaseClient, user.id, lessonId);
-      setSavedProgress(true);
-    };
-    save();
-  }, [finished, savedProgress, isSignedIn, supabaseClient, score, questions.length, lessonId, user]);
 
   const shuffleOptions = (q) => {
     const indexed = q.options.map((opt, i) => ({
@@ -83,6 +74,7 @@ export default function Quiz() {
     setShowHint(false);
     if (selectedOption === questions[currentQ].correctIndex) {
       setScore((s) => s + 1);
+      finalScoreRef.current += 1;
     }
   };
 
@@ -93,7 +85,35 @@ export default function Quiz() {
       setConfirmed(false);
       setShowHint(false);
     } else {
-      setFinished(true);
+      // Use ref value — guaranteed to be accurate
+      handleFinish(finalScoreRef.current);
+    }
+  };
+
+  const handleFinish = async (finalScore) => {
+    setFinished(true);
+
+    if (!isSignedIn || !supabaseClient || saving) return;
+
+    const passed = finalScore >= Math.ceil(questions.length / 2);
+    if (!passed) return;
+
+    setSaving(true);
+    try {
+      const result = await progressDb.completeQuiz(
+        supabaseClient,
+        user.id,
+        lessonId
+      );
+      if (result) {
+        setSavedProgress(true);
+      } else {
+        console.error("completeQuiz returned null — check Supabase column");
+      }
+    } catch (err) {
+      console.error("Failed to save quiz progress:", err);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -105,6 +125,8 @@ export default function Quiz() {
     setScore(0);
     setFinished(false);
     setSavedProgress(false);
+    setSaving(false);
+    finalScoreRef.current = 0;
     const qs = generateQuizQuestions(lesson, language);
     setQuestions(qs.map((q) => shuffleOptions(q)));
   };
@@ -174,14 +196,18 @@ export default function Quiz() {
               />
             </div>
 
-            {/* Saved badge */}
-            {passed && savedProgress && (
+            {/* Status badge */}
+            {passed && (
               <motion.p
                 initial={{ opacity: 0, y: 4 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-xs text-emerald-600 mb-6"
+                className="text-xs mb-6"
               >
-                ✓ Progress saved
+                {saving ? (
+                  <span className="text-zinc-400">Saving progress...</span>
+                ) : savedProgress ? (
+                  <span className="text-emerald-600">✓ Progress saved</span>
+                ) : null}
               </motion.p>
             )}
 
