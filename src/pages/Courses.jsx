@@ -1,6 +1,6 @@
 // src/pages/Courses.jsx
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { curriculum } from "@/lib/curriculum";
 import { Check, Lock, Circle, ArrowRight, HelpCircle, Smartphone, Code2 } from "lucide-react";
@@ -19,29 +19,32 @@ export default function Courses() {
   const [mode, setMode] = useState("lessons");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
-  useEffect(() => {
-    if (!isLoaded || !isSignedIn || !supabaseClient) return;
-
-    const load = async () => {
-      try {
-        const data = await progressDb.getProgress(
-          supabaseClient,
-          user.id,
-          user.primaryEmailAddress?.emailAddress
-        );
-        if (data) {
-          setProgress(data);
-          setSelectedLang(data.language || "python");
-        }
-      } catch (err) {
-        console.error("Failed to load progress:", err);
-      } finally {
-        setLoading(false);
+  const loadProgress = useCallback(async () => {
+    if (!isLoaded || !isSignedIn || !supabaseClient || !user) return;
+    setLoading(true);
+    try {
+      const data = await progressDb.getProgress(
+        supabaseClient,
+        user.id,
+        user.primaryEmailAddress?.emailAddress
+      );
+      if (data) {
+        setProgress(data);
+        setSelectedLang(data.language || "python");
       }
-    };
-    load();
+    } catch (err) {
+      console.error("Failed to load progress:", err);
+    } finally {
+      setLoading(false);
+    }
   }, [isLoaded, isSignedIn, user, supabaseClient]);
+
+  // Refetch every time this page is navigated to
+  useEffect(() => {
+    loadProgress();
+  }, [loadProgress, location.key]);
 
   if (loading) {
     return (
@@ -51,24 +54,33 @@ export default function Courses() {
     );
   }
 
-  const completed = progress?.completed_lessons || [];
+  const completedLessons = progress?.completed_lessons || [];
+  const completedQuizzes = progress?.completed_quizzes || [];
   const streak = progress?.streak_days || 0;
   const lang = curriculum[selectedLang];
   const allFlat = lang.modules.flatMap((m) => m.lessons);
   const totalLessons = allFlat.length;
-  const completedCount = completed.filter((id) =>
+  const completedLessonCount = completedLessons.filter((id) =>
     allFlat.some((l) => l.id === id)
   ).length;
+  const completedQuizCount = completedQuizzes.filter((id) =>
+    allFlat.some((l) => l.id === id)
+  ).length;
+
   const progressPct =
     totalLessons > 0
-      ? Math.round((completedCount / totalLessons) * 100)
+      ? Math.round(
+          ((mode === "quiz" ? completedQuizCount : completedLessonCount) /
+            totalLessons) *
+            100
+        )
       : 0;
 
   const isUnlocked = (lessonId) => {
     const idx = allFlat.findIndex((l) => l.id === lessonId);
     if (idx === 0) return true;
     if (idx === -1) return false;
-    return completed.includes(allFlat[idx - 1]?.id);
+    return completedLessons.includes(allFlat[idx - 1]?.id);
   };
 
   return (
@@ -85,7 +97,9 @@ export default function Courses() {
         >
           <h1 className="text-3xl font-bold tracking-tight mb-1.5">Courses</h1>
           <p className="text-sm text-zinc-400">
-            {completedCount} of {totalLessons} lessons completed
+            {mode === "quiz"
+              ? `${completedQuizCount} of ${totalLessons} quizzes completed`
+              : `${completedLessonCount} of ${totalLessons} lessons completed`}
           </p>
           <div className="mt-4 h-1 bg-zinc-100 rounded-full overflow-hidden">
             <motion.div
@@ -104,7 +118,6 @@ export default function Courses() {
           transition={{ duration: 0.4, delay: 0.05, ease }}
           className="relative flex bg-zinc-100 rounded-2xl p-1 mb-6"
         >
-          {/* Sliding background indicator */}
           <motion.div
             layout
             className="absolute top-1 bottom-1 rounded-xl bg-white shadow-sm"
@@ -146,7 +159,8 @@ export default function Courses() {
               <div className="flex items-center gap-2.5 px-4 py-3 bg-blue-50 border border-blue-100 rounded-xl mb-6 text-sm text-blue-700">
                 <Smartphone size={14} className="text-blue-400 shrink-0" />
                 <span>
-                  Quiz mode works great on mobile — no typing needed, just tap your answers.
+                  Quiz mode works great on mobile — no typing needed, just tap
+                  your answers.
                 </span>
               </div>
             </motion.div>
@@ -187,8 +201,11 @@ export default function Courses() {
           >
             {lang.modules.map((module) => {
               const modLessons = module.lessons;
-              const modCompleted = modLessons.filter((l) =>
-                completed.includes(l.id)
+              const modCompletedLessons = modLessons.filter((l) =>
+                completedLessons.includes(l.id)
+              ).length;
+              const modCompletedQuizzes = modLessons.filter((l) =>
+                completedQuizzes.includes(l.id)
               ).length;
 
               return (
@@ -197,36 +214,37 @@ export default function Courses() {
                     <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
                       {module.title}
                     </p>
-                    {mode === "lessons" && (
-                      <span className="text-xs text-zinc-300 tabular-nums">
-                        {modCompleted}/{modLessons.length}
-                      </span>
-                    )}
+                    <span className="text-xs text-zinc-300 tabular-nums">
+                      {mode === "quiz"
+                        ? `${modCompletedQuizzes}/${modLessons.length}`
+                        : `${modCompletedLessons}/${modLessons.length}`}
+                    </span>
                   </div>
 
-                  {mode === "lessons" && (
-                    <div className="h-0.5 bg-zinc-100 rounded-full overflow-hidden mb-3">
-                      <div
-                        className="h-full bg-emerald-500 rounded-full transition-all duration-500"
-                        style={{
-                          width: `${
-                            modLessons.length > 0
-                              ? Math.round(
-                                  (modCompleted / modLessons.length) * 100
-                                )
-                              : 0
-                          }%`,
-                        }}
-                      />
-                    </div>
-                  )}
+                  <div className="h-0.5 bg-zinc-100 rounded-full overflow-hidden mb-3">
+                    <div
+                      className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                      style={{
+                        width: `${
+                          modLessons.length > 0
+                            ? Math.round(
+                                ((mode === "quiz"
+                                  ? modCompletedQuizzes
+                                  : modCompletedLessons) /
+                                  modLessons.length) *
+                                  100
+                              )
+                            : 0
+                        }%`,
+                      }}
+                    />
+                  </div>
 
                   <div className="space-y-1.5">
                     {modLessons.map((lesson) => {
-                      const done = completed.includes(lesson.id);
-                      const unlocked = isUnlocked(lesson.id);
-
                       if (mode === "quiz") {
+                        const quizDone = completedQuizzes.includes(lesson.id);
+
                         return (
                           <button
                             key={lesson.id}
@@ -235,21 +253,48 @@ export default function Courses() {
                                 `/quiz/${selectedLang}/${lesson.id}`
                               )
                             }
-                            className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border border-zinc-200 hover:border-zinc-900 transition-all duration-200 group text-left"
+                            className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border transition-all duration-200 group text-left ${
+                              quizDone
+                                ? "border-emerald-100 bg-emerald-50/30 hover:border-emerald-300"
+                                : "border-zinc-200 hover:border-zinc-900"
+                            }`}
                           >
-                            <HelpCircle
-                              size={14}
-                              className="text-zinc-300 group-hover:text-zinc-600 transition-colors shrink-0"
-                            />
-                            <span className="text-sm text-zinc-700 font-medium flex-1">
+                            {quizDone ? (
+                              <Check
+                                size={13}
+                                strokeWidth={3}
+                                className="text-emerald-500 shrink-0"
+                              />
+                            ) : (
+                              <HelpCircle
+                                size={14}
+                                className="text-zinc-300 group-hover:text-zinc-600 transition-colors shrink-0"
+                              />
+                            )}
+                            <span
+                              className={`text-sm font-medium flex-1 ${
+                                quizDone
+                                  ? "text-emerald-700"
+                                  : "text-zinc-700"
+                              }`}
+                            >
                               {lesson.title}
                             </span>
-                            <span className="text-xs text-zinc-400">
-                              7 questions
+                            <span
+                              className={`text-xs ${
+                                quizDone
+                                  ? "text-emerald-500"
+                                  : "text-zinc-400"
+                              }`}
+                            >
+                              {quizDone ? "Completed" : "7 questions"}
                             </span>
                           </button>
                         );
                       }
+
+                      const done = completedLessons.includes(lesson.id);
+                      const unlocked = isUnlocked(lesson.id);
 
                       return (
                         <LessonRow
