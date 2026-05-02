@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
-import { curriculum, getAllLessons } from "@/lib/curriculum";
+import { curriculum } from "@/lib/curriculum";
 import { progressDb } from "@/lib/progressDb";
 import { useAuth } from "@/lib/AuthContext";
 import Navbar from "@/components/Navbar";
@@ -49,7 +49,6 @@ export default function QuizHub() {
     );
   }
 
-  // Quiz completion is tracked separately from lesson completion
   const completedQuizzes = progress?.completed_quizzes || [];
   const streak = progress?.streak_days || 0;
   const lang = curriculum[selectedLang];
@@ -75,7 +74,6 @@ export default function QuizHub() {
           </p>
         </motion.div>
 
-        {/* Language selector */}
         <div className="flex gap-2 mb-10">
           {Object.entries(curriculum).map(([key, val]) => (
             <button
@@ -92,7 +90,6 @@ export default function QuizHub() {
           ))}
         </div>
 
-        {/* Modules and lessons */}
         <div className="space-y-10">
           {lang.modules.map((module, moduleIdx) => (
             <motion.div

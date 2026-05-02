@@ -1,9 +1,9 @@
-// src/pages/Lesson.jsx
+// src/pages/QuizIntro.jsx
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { getLessonById } from "@/lib/curriculum";
-import { Play, Lightbulb, HelpCircle } from "lucide-react";
+import { HelpCircle, Play, Lightbulb } from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
 import { progressDb } from "@/lib/progressDb";
 import { useAuth } from "@/lib/AuthContext";
@@ -22,7 +22,7 @@ function useIsMobile() {
   return mobile;
 }
 
-export default function Lesson() {
+export default function QuizIntro() {
   const { language, lessonId } = useParams();
   const navigate = useNavigate();
   const { user, isLoaded, isSignedIn } = useUser();
@@ -32,9 +32,7 @@ export default function Lesson() {
   const [streak, setStreak] = useState(0);
   const isMobile = useIsMobile();
 
-  // Reset when params change (fixes "Next lesson" not updating screen)
   useEffect(() => {
-    setIsLoading(true);
     const data = getLessonById(language, lessonId);
     setResult(data);
     setIsLoading(false);
@@ -56,11 +54,6 @@ export default function Lesson() {
     };
     loadStreak();
   }, [isLoaded, isSignedIn, user, supabaseClient]);
-
-  // Scroll to top when lesson changes
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [lessonId]);
 
   if (isLoading) {
     return (
@@ -90,14 +83,13 @@ export default function Lesson() {
     <div className="min-h-screen bg-white">
       <Navbar
         streak={streak}
-        backTo="/courses"
-        backLabel="Courses"
+        backTo="/quiz"
+        backLabel="Quizzes"
         moduleTitle={module.title}
       />
 
       <div className="max-w-2xl mx-auto px-6 py-14">
         <motion.div
-          key={lessonId}
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease }}
@@ -115,7 +107,6 @@ export default function Lesson() {
 
         {lesson.concept && (
           <motion.div
-            key={`concept-${lessonId}`}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1, ease }}
@@ -131,7 +122,6 @@ export default function Lesson() {
         )}
 
         <motion.div
-          key={`example-${lessonId}`}
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2, ease }}
@@ -149,7 +139,6 @@ export default function Lesson() {
 
         {lesson.exercise?.debuggingTip && (
           <motion.div
-            key={`debug-${lessonId}`}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3, ease }}
@@ -167,63 +156,40 @@ export default function Lesson() {
           </motion.div>
         )}
 
-        <motion.div
-          key={`exercise-${lessonId}`}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4, ease }}
-          className="border border-zinc-200 rounded-2xl p-6 mb-8"
-        >
-          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">
-            Exercise
-          </p>
-          <p className="text-sm text-zinc-700 leading-relaxed">
-            {lesson.exercise?.prompt}
-          </p>
-        </motion.div>
-
         {/* CTAs — order depends on device */}
         <div className="flex flex-col gap-3">
           {isMobile ? (
             <>
               <button
-                onClick={() =>
-                  navigate(`/quiz/${language}/${lessonId}`)
-                }
+                onClick={() => navigate(`/quiz/${language}/${lessonId}/start`)}
                 className="w-full flex items-center justify-center gap-2 bg-zinc-900 text-white py-3.5 rounded-full text-sm font-semibold hover:bg-zinc-700 transition-all duration-200"
               >
                 <HelpCircle size={14} />
-                Take quiz
+                Start quiz
               </button>
               <button
-                onClick={() =>
-                  navigate(`/code/${language}/${lessonId}`)
-                }
+                onClick={() => navigate(`/lesson/${language}/${lessonId}`)}
                 className="w-full flex items-center justify-center gap-2 border border-zinc-200 text-zinc-700 py-3.5 rounded-full text-sm font-semibold hover:border-zinc-900 hover:text-zinc-900 transition-all duration-200"
               >
                 <Play size={14} />
-                Start exercise instead
+                Go to lesson instead
               </button>
             </>
           ) : (
             <>
               <button
-                onClick={() =>
-                  navigate(`/code/${language}/${lessonId}`)
-                }
+                onClick={() => navigate(`/quiz/${language}/${lessonId}/start`)}
                 className="w-full flex items-center justify-center gap-2 bg-zinc-900 text-white py-3.5 rounded-full text-sm font-semibold hover:bg-zinc-700 transition-all duration-200"
               >
-                <Play size={14} />
-                Start exercise
+                <HelpCircle size={14} />
+                Start quiz
               </button>
               <button
-                onClick={() =>
-                  navigate(`/quiz/${language}/${lessonId}`)
-                }
+                onClick={() => navigate(`/lesson/${language}/${lessonId}`)}
                 className="w-full flex items-center justify-center gap-2 border border-zinc-200 text-zinc-700 py-3.5 rounded-full text-sm font-semibold hover:border-zinc-900 hover:text-zinc-900 transition-all duration-200"
               >
-                <HelpCircle size={14} />
-                Take quiz instead
+                <Play size={14} />
+                Go to lesson instead
               </button>
             </>
           )}

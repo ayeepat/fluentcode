@@ -1,5 +1,5 @@
 // src/pages/Quiz.jsx
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
@@ -35,16 +35,29 @@ export default function Quiz() {
   const [savedProgress, setSavedProgress] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // Use a ref to track final score reliably without race conditions
-  const finalScoreRef = useRef(0);
-
-  useEffect(() => {
+  // Reset everything when lessonId or language changes (fixes "Next quiz" not working)
+  const initQuiz = useCallback(() => {
     const result = getLessonById(language, lessonId);
     if (!result) return;
     setLesson(result.lesson);
-    const qs = generateQuizQuestions(result.lesson, language);
-    setQuestions(qs.map((q) => shuffleOptions(q)));
+    setQuestions(
+      generateQuizQuestions(result.lesson, language).map((q) =>
+        shuffleOptions(q)
+      )
+    );
+    setCurrentQ(0);
+    setSelectedOption(null);
+    setConfirmed(false);
+    setShowHint(false);
+    setScore(0);
+    setFinished(false);
+    setSavedProgress(false);
+    setSaving(false);
   }, [language, lessonId]);
+
+  useEffect(() => {
+    initQuiz();
+  }, [initQuiz]);
 
   const shuffleOptions = (q) => {
     const indexed = q.options.map((opt, i) => ({
@@ -74,7 +87,6 @@ export default function Quiz() {
     setShowHint(false);
     if (selectedOption === questions[currentQ].correctIndex) {
       setScore((s) => s + 1);
-      finalScoreRef.current += 1;
     }
   };
 
@@ -85,50 +97,49 @@ export default function Quiz() {
       setConfirmed(false);
       setShowHint(false);
     } else {
-      // Use ref value — guaranteed to be accurate
-      handleFinish(finalScoreRef.current);
+      // Calculate final score directly instead of relying on state
+      let finalScore = 0;
+      // We already have score updated from handleConfirm, but it might not
+      // have flushed yet. So we recalculate: score was updated for all
+      // previous questions. For the current (last) question, check now.
+      finalScore = score; // score already includes current if correct (setState batches in event handler)
+      handleFinish(finalScore);
     }
   };
 
   const handleFinish = async (finalScore) => {
     setFinished(true);
 
-    if (!isSignedIn || !supabaseClient || saving) return;
+    if (!isSignedIn || !supabaseClient || !user) {
+      console.log("Not signed in or no supabase client");
+      return;
+    }
 
     const passed = finalScore >= Math.ceil(questions.length / 2);
-    if (!passed) return;
+    if (!passed) {
+      console.log("Did not pass:", finalScore, "/", questions.length);
+      return;
+    }
 
     setSaving(true);
     try {
+      console.log("Saving quiz progress for:", lessonId);
       const result = await progressDb.completeQuiz(
         supabaseClient,
         user.id,
         lessonId
       );
+      console.log("completeQuiz result:", result);
       if (result) {
         setSavedProgress(true);
       } else {
-        console.error("completeQuiz returned null — check Supabase column");
+        console.error("completeQuiz returned null");
       }
     } catch (err) {
       console.error("Failed to save quiz progress:", err);
     } finally {
       setSaving(false);
     }
-  };
-
-  const handleRetry = () => {
-    setCurrentQ(0);
-    setSelectedOption(null);
-    setConfirmed(false);
-    setShowHint(false);
-    setScore(0);
-    setFinished(false);
-    setSavedProgress(false);
-    setSaving(false);
-    finalScoreRef.current = 0;
-    const qs = generateQuizQuestions(lesson, language);
-    setQuestions(qs.map((q) => shuffleOptions(q)));
   };
 
   const allLessons = getAllLessons(language);
@@ -150,11 +161,11 @@ export default function Quiz() {
       <div className="min-h-screen bg-white flex flex-col">
         <nav className="flex items-center justify-between px-6 py-4 border-b border-zinc-100">
           <button
-            onClick={() => navigate("/courses")}
+            onClick={() => navigate("/quiz")}
             className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
           >
             <ArrowLeft size={14} />
-            Courses
+            Quizzes
           </button>
           <span className="text-sm font-semibold text-zinc-900">
             fluentcode
@@ -182,7 +193,6 @@ export default function Quiz() {
               You got {score} out of {questions.length} correct
             </p>
 
-            {/* Score bar */}
             <div className="h-2 bg-zinc-100 rounded-full overflow-hidden mb-10">
               <motion.div
                 initial={{ width: 0 }}
@@ -196,7 +206,6 @@ export default function Quiz() {
               />
             </div>
 
-            {/* Status badge */}
             {passed && (
               <motion.p
                 initial={{ opacity: 0, y: 4 }}
@@ -204,10 +213,14 @@ export default function Quiz() {
                 className="text-xs mb-6"
               >
                 {saving ? (
-                  <span className="text-zinc-400">Saving progress...</span>
+                  <span className="text-zinc-400">Saving progress…</span>
                 ) : savedProgress ? (
                   <span className="text-emerald-600">✓ Progress saved</span>
-                ) : null}
+                ) : (
+                  <span className="text-red-400">
+                    Could not save — try again
+                  </span>
+                )}
               </motion.p>
             )}
 
@@ -223,22 +236,24 @@ export default function Quiz() {
                 </button>
               )}
               <button
-                onClick={() => navigate(`/lesson/${language}/${lessonId}`)}
+                onClick={() =>
+                  navigate(`/lesson/${language}/${lessonId}`)
+                }
                 className="w-full flex items-center justify-center gap-2 border border-zinc-200 text-zinc-700 py-3.5 rounded-full text-sm font-semibold hover:border-zinc-900 transition-all"
               >
                 Go to lesson
               </button>
               <button
-                onClick={handleRetry}
+                onClick={initQuiz}
                 className="w-full flex items-center justify-center gap-2 border border-zinc-200 text-zinc-700 py-3.5 rounded-full text-sm font-semibold hover:border-zinc-400 transition-all"
               >
                 Try again
               </button>
               <button
-                onClick={() => navigate("/courses")}
+                onClick={() => navigate("/quiz")}
                 className="text-sm text-zinc-400 hover:text-zinc-900 transition-colors py-2"
               >
-                Back to courses
+                Back to quizzes
               </button>
             </div>
           </motion.div>
@@ -255,13 +270,13 @@ export default function Quiz() {
     <div className="min-h-screen bg-white flex flex-col">
       <nav className="flex items-center justify-between px-6 py-4 border-b border-zinc-100">
         <button
-          onClick={() => navigate("/courses")}
+          onClick={() => navigate("/quiz")}
           className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
         >
           <ArrowLeft size={14} />
-          Courses
+          Quizzes
         </button>
-        <span className="text-xs text-zinc-400 max-w-[180px] truncate">
+        <span className="text-xs text-zinc-400 max-w-[240px] text-center leading-tight">
           {lesson.title}
         </span>
         <span className="text-xs text-zinc-400 tabular-nums">
@@ -269,7 +284,6 @@ export default function Quiz() {
         </span>
       </nav>
 
-      {/* Progress bar */}
       <div className="h-1 bg-zinc-100">
         <motion.div
           animate={{
@@ -312,7 +326,6 @@ export default function Quiz() {
 
             {!q.question.includes("```") && <div className="mb-4" />}
 
-            {/* Hint */}
             <AnimatePresence>
               {showHint && !confirmed && q.hint && (
                 <motion.div
@@ -331,7 +344,6 @@ export default function Quiz() {
               )}
             </AnimatePresence>
 
-            {/* Options */}
             <div className="space-y-3 flex-1">
               {q.options.map((option, index) => {
                 let style =
@@ -379,7 +391,6 @@ export default function Quiz() {
               })}
             </div>
 
-            {/* Explanation */}
             <AnimatePresence>
               {confirmed && (
                 <motion.div
@@ -402,7 +413,6 @@ export default function Quiz() {
           </motion.div>
         </AnimatePresence>
 
-        {/* Bottom buttons */}
         <div className="mt-8 flex gap-3">
           {!confirmed ? (
             <>

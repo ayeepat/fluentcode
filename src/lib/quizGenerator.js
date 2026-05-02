@@ -49,7 +49,7 @@ function generateConceptQuestion(lesson, language) {
     question: `What is the main concept taught in "${lesson.title}"?`,
     hint: `Think about what the lesson title "${lesson.title}" is referring to.`,
     options: [
-      concept.length > 120 ? concept.slice(0, 120) + "..." : concept,
+      concept,
       getWrongConceptOption(lesson, language, 0),
       getWrongConceptOption(lesson, language, 1),
       getWrongConceptOption(lesson, language, 2),
@@ -60,12 +60,14 @@ function generateConceptQuestion(lesson, language) {
 }
 
 function generateExampleQuestion(lesson, language) {
-  const lines = lesson.example.split("\n").filter(l => l.trim());
-  const firstMeaningfulLine = lines.find(l =>
-    !l.trim().startsWith("#") &&
-    !l.trim().startsWith("//") &&
-    l.trim().length > 0
-  ) || lines[0];
+  const lines = lesson.example.split("\n").filter((l) => l.trim());
+  const firstMeaningfulLine =
+    lines.find(
+      (l) =>
+        !l.trim().startsWith("#") &&
+        !l.trim().startsWith("//") &&
+        l.trim().length > 0
+    ) || lines[0];
 
   return {
     question: `What does this code do?\n\`\`\`\n${firstMeaningfulLine}\n\`\`\``,
@@ -82,8 +84,9 @@ function generateExampleQuestion(lesson, language) {
 }
 
 function generateSolutionQuestion(lesson, language) {
+  const promptText = lesson.exercise.prompt;
   return {
-    question: `For this exercise: "${lesson.exercise.prompt.slice(0, 100)}..." — which approach is correct?`,
+    question: `For this exercise: "${promptText}" — which approach is correct?`,
     hint: `Re-read the exercise prompt carefully. What does it ask you to do?`,
     options: [
       summarizeSolution(lesson.exercise.solution, language),
@@ -102,7 +105,7 @@ function generateDebugQuestion(lesson, language) {
     question: `Which is the best debugging advice for "${lesson.title}"?`,
     hint: `Think about the most common mistake beginners make with this concept.`,
     options: [
-      tip.length > 120 ? tip.slice(0, 120) + "..." : tip,
+      tip,
       getWrongDebugOption(lesson, language, 0),
       getWrongDebugOption(lesson, language, 1),
       getWrongDebugOption(lesson, language, 2),
@@ -115,27 +118,55 @@ function generateDebugQuestion(lesson, language) {
 function generateFillBlankQuestion(lesson, language) {
   const lines = lesson.example
     .split("\n")
-    .filter(l => l.trim() && !l.trim().startsWith("#") && !l.trim().startsWith("//"));
+    .filter(
+      (l) =>
+        l.trim() &&
+        !l.trim().startsWith("#") &&
+        !l.trim().startsWith("//")
+    );
 
   if (lines.length === 0) return null;
 
-  // Pick a line with an interesting keyword
-  const targetLine = lines.find(l =>
-    l.includes("(") || l.includes("=") || l.includes("return")
-  ) || lines[0];
+  const targetLine =
+    lines.find(
+      (l) =>
+        l.includes("(") || l.includes("=") || l.includes("return")
+    ) || lines[0];
 
-  // Find a keyword to blank out
-  const keywords = language === "python"
-    ? ["print", "def", "return", "for", "if", "while", "import", "class", "append", "range"]
-    : ["System.out.println", "int", "String", "for", "if", "return", "class", "ArrayList", "static", "void"];
+  const keywords =
+    language === "python"
+      ? [
+          "print",
+          "def",
+          "return",
+          "for",
+          "if",
+          "while",
+          "import",
+          "class",
+          "append",
+          "range",
+        ]
+      : [
+          "System.out.println",
+          "int",
+          "String",
+          "for",
+          "if",
+          "return",
+          "class",
+          "ArrayList",
+          "static",
+          "void",
+        ];
 
-  const foundKeyword = keywords.find(k => targetLine.includes(k));
+  const foundKeyword = keywords.find((k) => targetLine.includes(k));
   if (!foundKeyword) return null;
 
   const blanked = targetLine.replace(foundKeyword, "______");
 
   const wrongKeywords = keywords
-    .filter(k => k !== foundKeyword)
+    .filter((k) => k !== foundKeyword)
     .slice(0, 3);
 
   if (wrongKeywords.length < 3) return null;
@@ -143,12 +174,7 @@ function generateFillBlankQuestion(lesson, language) {
   return {
     question: `Fill in the blank:\n\`\`\`\n${blanked}\n\`\`\``,
     hint: `This keyword is one of the core building blocks of ${lesson.title}. Check the example in the lesson.`,
-    options: [
-      foundKeyword,
-      wrongKeywords[0],
-      wrongKeywords[1],
-      wrongKeywords[2],
-    ],
+    options: [foundKeyword, wrongKeywords[0], wrongKeywords[1], wrongKeywords[2]],
     correctIndex: 0,
     explanation: `The correct keyword is \`${foundKeyword}\`. ${lesson.concept}`,
   };
@@ -156,20 +182,12 @@ function generateFillBlankQuestion(lesson, language) {
 
 function generateTrueOrFalseQuestion(lesson, language) {
   const concept = lesson.concept;
-
-  // Generate a TRUE statement from the concept
-  const trueStatement = concept.length > 100
-    ? concept.slice(0, 100) + "..."
-    : concept;
-
-  // Generate a FALSE statement
   const falseStatement = getFalseStatement(lesson, language);
-
   const isCorrectTrue = Math.random() > 0.5;
 
   if (isCorrectTrue) {
     return {
-      question: `True or False: "${trueStatement}"`,
+      question: `True or False: "${concept}"`,
       hint: `Read the key concept section of this lesson carefully.`,
       options: ["True", "False"],
       correctIndex: 0,
@@ -187,10 +205,11 @@ function generateTrueOrFalseQuestion(lesson, language) {
 }
 
 function generatePredictOutputQuestion(lesson, language) {
-  const lines = lesson.example.split("\n").filter(l => l.trim());
+  const lines = lesson.example.split("\n").filter((l) => l.trim());
 
-  const printLine = lines.find(l =>
-    l.includes("print(") || l.includes("System.out.println")
+  const printLine = lines.find(
+    (l) =>
+      l.includes("print(") || l.includes("System.out.println")
   );
 
   if (!printLine) return null;
@@ -228,27 +247,32 @@ function getPredictedOutput(printLine, lesson, language) {
 }
 
 function getFalseStatement(lesson, language) {
-  const falseStatements = language === "python" ? [
-    `Python requires you to declare variable types explicitly.`,
-    `The print() function in Python uses semicolons.`,
-    `Indentation in Python is optional and has no effect on the program.`,
-    `Python functions must always explicitly return a value.`,
-    `Lists in Python can only contain items of the same data type.`,
-    `Python requires a main() function to start execution.`,
-    `The def keyword in Python is used to declare variables.`,
-    `For loops in Python always require a numeric counter.`,
-  ] : [
-    `Java variables do not need a type declaration.`,
-    `In Java, code can be written outside of a class.`,
-    `Java does not require semicolons at the end of statements.`,
-    `The main method in Java can be named anything.`,
-    `Java is a dynamically typed language.`,
-    `ArrayList in Java has a fixed size.`,
-    `Java loops do not need curly braces.`,
-    `You can use print() directly in Java without a class.`,
-  ];
+  const falseStatements =
+    language === "python"
+      ? [
+          `Python requires you to declare variable types explicitly.`,
+          `The print() function in Python uses semicolons.`,
+          `Indentation in Python is optional and has no effect on the program.`,
+          `Python functions must always explicitly return a value.`,
+          `Lists in Python can only contain items of the same data type.`,
+          `Python requires a main() function to start execution.`,
+          `The def keyword in Python is used to declare variables.`,
+          `For loops in Python always require a numeric counter.`,
+        ]
+      : [
+          `Java variables do not need a type declaration.`,
+          `In Java, code can be written outside of a class.`,
+          `Java does not require semicolons at the end of statements.`,
+          `The main method in Java can be named anything.`,
+          `Java is a dynamically typed language.`,
+          `ArrayList in Java has a fixed size.`,
+          `Java loops do not need curly braces.`,
+          `You can use print() directly in Java without a class.`,
+        ];
 
-  return falseStatements[(lesson.title.length + lesson.id.length) % falseStatements.length];
+  return falseStatements[
+    (lesson.title.length + lesson.id.length) % falseStatements.length
+  ];
 }
 
 const pythonWrongConcepts = [
@@ -293,13 +317,16 @@ function getCorrectExampleAnswer(lesson, codeLine, language) {
     if (codeLine.includes("=")) return "Assigns a value to a variable";
     if (codeLine.includes("return")) return "Returns a value from a function";
   } else {
-    if (codeLine.includes("System.out.println")) return "Outputs text to the screen";
-    if (codeLine.includes("int ") || codeLine.includes("String ")) return "Declares a variable with a type";
+    if (codeLine.includes("System.out.println"))
+      return "Outputs text to the screen";
+    if (codeLine.includes("int ") || codeLine.includes("String "))
+      return "Declares a variable with a type";
     if (codeLine.includes("for ")) return "Iterates a fixed number of times";
     if (codeLine.includes("if ")) return "Checks a condition";
     if (codeLine.includes("class ")) return "Defines a new class";
     if (codeLine.includes("return")) return "Returns a value from a method";
-    if (codeLine.includes("new ArrayList")) return "Creates a new resizable list";
+    if (codeLine.includes("new ArrayList"))
+      return "Creates a new resizable list";
   }
   return `Demonstrates ${lesson.title}`;
 }
@@ -316,18 +343,23 @@ const wrongExampleOptions = [
 ];
 
 function getWrongExampleOption(lesson, language, index) {
-  return wrongExampleOptions[(index + lesson.id.length) % wrongExampleOptions.length];
+  return wrongExampleOptions[
+    (index + lesson.id.length) % wrongExampleOptions.length
+  ];
 }
 
 function summarizeSolution(solution, language) {
   if (!solution) return "Write the correct code as shown in the example";
   const lines = solution
     .split("\n")
-    .filter(l => l.trim() && !l.trim().startsWith("#") && !l.trim().startsWith("//"));
+    .filter(
+      (l) =>
+        l.trim() &&
+        !l.trim().startsWith("#") &&
+        !l.trim().startsWith("//")
+    );
   if (lines.length === 0) return "Follow the lesson concept";
-  const first = lines[0].trim();
-  if (first.length > 80) return first.slice(0, 80) + "...";
-  return first;
+  return lines[0].trim();
 }
 
 const wrongSolutionOptions = [
@@ -342,7 +374,9 @@ const wrongSolutionOptions = [
 ];
 
 function getWrongSolutionOption(lesson, language, index) {
-  return wrongSolutionOptions[(index + lesson.id.length) % wrongSolutionOptions.length];
+  return wrongSolutionOptions[
+    (index + lesson.id.length) % wrongSolutionOptions.length
+  ];
 }
 
 const wrongDebugOptions = [
@@ -357,7 +391,9 @@ const wrongDebugOptions = [
 ];
 
 function getWrongDebugOption(lesson, language, index) {
-  return wrongDebugOptions[(index + lesson.id.length) % wrongDebugOptions.length];
+  return wrongDebugOptions[
+    (index + lesson.id.length) % wrongDebugOptions.length
+  ];
 }
 
 const wrongOutputOptions = [
@@ -372,5 +408,7 @@ const wrongOutputOptions = [
 ];
 
 function getWrongOutputOption(lesson, language, index) {
-  return wrongOutputOptions[(index + lesson.id.length) % wrongOutputOptions.length];
+  return wrongOutputOptions[
+    (index + lesson.id.length) % wrongOutputOptions.length
+  ];
 }
