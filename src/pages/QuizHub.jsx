@@ -1,6 +1,6 @@
 // src/pages/QuizHub.jsx
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
 import { curriculum } from "@/lib/curriculum";
@@ -18,28 +18,32 @@ export default function QuizHub() {
   const [selectedLang, setSelectedLang] = useState("python");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
-  useEffect(() => {
-    if (!isLoaded || !isSignedIn || !supabaseClient) return;
-    const load = async () => {
-      try {
-        const data = await progressDb.getProgress(
-          supabaseClient,
-          user.id,
-          user.primaryEmailAddress?.emailAddress
-        );
-        if (data) {
-          setProgress(data);
-          setSelectedLang(data.language || "python");
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
+  const loadProgress = useCallback(async () => {
+    if (!isLoaded || !isSignedIn || !supabaseClient || !user) return;
+    setLoading(true);
+    try {
+      const data = await progressDb.getProgress(
+        supabaseClient,
+        user.id,
+        user.primaryEmailAddress?.emailAddress
+      );
+      if (data) {
+        setProgress(data);
+        setSelectedLang(data.language || "python");
       }
-    };
-    load();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   }, [isLoaded, isSignedIn, user, supabaseClient]);
+
+  // Refetch every time the page is navigated to (location.key changes)
+  useEffect(() => {
+    loadProgress();
+  }, [loadProgress, location.key]);
 
   if (loading) {
     return (
@@ -74,6 +78,7 @@ export default function QuizHub() {
           </p>
         </motion.div>
 
+        {/* Language selector */}
         <div className="flex gap-2 mb-10">
           {Object.entries(curriculum).map(([key, val]) => (
             <button
@@ -90,6 +95,7 @@ export default function QuizHub() {
           ))}
         </div>
 
+        {/* Modules and lessons */}
         <div className="space-y-10">
           {lang.modules.map((module, moduleIdx) => (
             <motion.div
