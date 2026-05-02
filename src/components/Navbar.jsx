@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { BookOpen, Heart, User, LogOut, Flame } from "lucide-react";
 import { useClerk } from "@clerk/clerk-react";
 
-export default function Navbar({ streak = 0, backTo = null, backLabel = null, moduleTitle = null }) {
+export default function Navbar({ streak = 0, backTo = null, backLabel = null, moduleTitle = null, hideProfile = false }) {
   const { signOut } = useClerk();
 
   if (backTo) {
@@ -60,9 +60,11 @@ export default function Navbar({ streak = 0, backTo = null, backLabel = null, mo
         <NavBtn to="/upgrade" icon={<Heart size={12} className="text-rose-500" />}>
           Support
         </NavBtn>
-        <NavBtn to="/profile" icon={<User size={12} />}>
-          Profile
-        </NavBtn>
+        {!hideProfile && (
+          <NavBtn to="/profile" icon={<User size={12} />}>
+            Profile
+          </NavBtn>
+        )}
         <button
           onClick={() => signOut()}
           className="flex items-center gap-1 text-sm text-zinc-500 hover:text-red-500 px-3 py-1.5 rounded-full hover:bg-zinc-100 transition-all duration-150 ml-1"

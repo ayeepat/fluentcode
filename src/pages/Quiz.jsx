@@ -2,8 +2,11 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useUser } from "@clerk/clerk-react";
 import { getLessonById, getAllLessons } from "@/lib/curriculum";
 import { generateQuizQuestions } from "@/lib/quizGenerator";
+import { progressDb } from "@/lib/progressDb";
+import { useAuth } from "@/lib/AuthContext";
 import {
   CheckCircle,
   XCircle,
@@ -18,6 +21,8 @@ const ease = [0.16, 1, 0.3, 1];
 export default function Quiz() {
   const { language, lessonId } = useParams();
   const navigate = useNavigate();
+  const { user, isSignedIn } = useUser();
+  const { supabaseClient } = useAuth();
 
   const [questions, setQuestions] = useState([]);
   const [currentQ, setCurrentQ] = useState(0);
@@ -27,6 +32,7 @@ export default function Quiz() {
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
   const [lesson, setLesson] = useState(null);
+  const [savedProgress, setSavedProgress] = useState(false);
 
   useEffect(() => {
     const result = getLessonById(language, lessonId);
@@ -35,6 +41,19 @@ export default function Quiz() {
     const qs = generateQuizQuestions(result.lesson, language);
     setQuestions(qs.map((q) => shuffleOptions(q)));
   }, [language, lessonId]);
+
+  // Save quiz completion when user finishes
+  useEffect(() => {
+    if (!finished || savedProgress || !isSignedIn || !supabaseClient) return;
+    const passed = score >= Math.ceil(questions.length / 2);
+    if (!passed) return; // Only save if they passed
+
+    const save = async () => {
+      await progressDb.completeQuiz(supabaseClient, user.id, lessonId);
+      setSavedProgress(true);
+    };
+    save();
+  }, [finished, savedProgress, isSignedIn, supabaseClient, score, questions.length, lessonId, user]);
 
   const shuffleOptions = (q) => {
     const indexed = q.options.map((opt, i) => ({
@@ -78,6 +97,18 @@ export default function Quiz() {
     }
   };
 
+  const handleRetry = () => {
+    setCurrentQ(0);
+    setSelectedOption(null);
+    setConfirmed(false);
+    setShowHint(false);
+    setScore(0);
+    setFinished(false);
+    setSavedProgress(false);
+    const qs = generateQuizQuestions(lesson, language);
+    setQuestions(qs.map((q) => shuffleOptions(q)));
+  };
+
   const allLessons = getAllLessons(language);
   const currentIdx = allLessons.findIndex((l) => l.id === lessonId);
   const nextLesson = allLessons[currentIdx + 1];
@@ -91,7 +122,7 @@ export default function Quiz() {
     );
   }
 
-  // ─── Results screen ──────────────────────────────────────────────────────
+  // ─── Results screen ───────────────────────────────────────────────────────
   if (finished) {
     return (
       <div className="min-h-screen bg-white flex flex-col">
@@ -128,16 +159,32 @@ export default function Quiz() {
             <p className="text-zinc-400 text-sm mb-8">
               You got {score} out of {questions.length} correct
             </p>
+
+            {/* Score bar */}
             <div className="h-2 bg-zinc-100 rounded-full overflow-hidden mb-10">
               <motion.div
                 initial={{ width: 0 }}
-                animate={{ width: `${(score / questions.length) * 100}%` }}
+                animate={{
+                  width: `${(score / questions.length) * 100}%`,
+                }}
                 transition={{ duration: 0.8, ease }}
                 className={`h-full rounded-full ${
                   passed ? "bg-emerald-500" : "bg-amber-400"
                 }`}
               />
             </div>
+
+            {/* Saved badge */}
+            {passed && savedProgress && (
+              <motion.p
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-xs text-emerald-600 mb-6"
+              >
+                ✓ Progress saved
+              </motion.p>
+            )}
+
             <div className="flex flex-col gap-3">
               {nextLesson && (
                 <button
@@ -156,16 +203,7 @@ export default function Quiz() {
                 Go to lesson
               </button>
               <button
-                onClick={() => {
-                  setCurrentQ(0);
-                  setSelectedOption(null);
-                  setConfirmed(false);
-                  setShowHint(false);
-                  setScore(0);
-                  setFinished(false);
-                  const qs = generateQuizQuestions(lesson, language);
-                  setQuestions(qs.map((q) => shuffleOptions(q)));
-                }}
+                onClick={handleRetry}
                 className="w-full flex items-center justify-center gap-2 border border-zinc-200 text-zinc-700 py-3.5 rounded-full text-sm font-semibold hover:border-zinc-400 transition-all"
               >
                 Try again
@@ -183,7 +221,7 @@ export default function Quiz() {
     );
   }
 
-  // ─── Quiz screen ─────────────────────────────────────────────────────────
+  // ─── Quiz screen ──────────────────────────────────────────────────────────
   const q = questions[currentQ];
   const isCorrect = confirmed && selectedOption === q.correctIndex;
 
@@ -273,7 +311,8 @@ export default function Quiz() {
                 let style =
                   "border border-zinc-200 text-zinc-700 hover:border-zinc-400";
                 if (selectedOption === index && !confirmed) {
-                  style = "border-2 border-zinc-900 text-zinc-900 bg-zinc-50";
+                  style =
+                    "border-2 border-zinc-900 text-zinc-900 bg-zinc-50";
                 }
                 if (confirmed) {
                   if (index === q.correctIndex) {
@@ -283,7 +322,8 @@ export default function Quiz() {
                     index === selectedOption &&
                     index !== q.correctIndex
                   ) {
-                    style = "border-2 border-red-400 bg-red-50 text-red-800";
+                    style =
+                      "border-2 border-red-400 bg-red-50 text-red-800";
                   } else {
                     style = "border border-zinc-100 text-zinc-400";
                   }

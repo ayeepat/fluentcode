@@ -134,12 +134,7 @@ export default function CodingPage() {
 
       if (!user) return;
 
-      const alreadyDone = progress?.completed_lessons?.includes(lessonId);
-      const updatedCompleted =
-        aiResponse.isCorrect && !alreadyDone
-          ? [...(progress?.completed_lessons || []), lessonId]
-          : progress?.completed_lessons || [];
-
+      // Build extra updates for exercise stats and mistake patterns
       const updatedMistakes =
         aiResponse.mistakePatterns && !aiResponse.isCorrect
           ? [
@@ -150,30 +145,31 @@ export default function CodingPage() {
             ].slice(-5)
           : progress?.mistake_patterns || [];
 
-      const today = new Date().toDateString();
-      const yesterday = new Date(Date.now() - 86400000).toDateString();
-      const last = progress?.last_active_date;
-
-      const newStreak =
-        last === yesterday
-          ? (progress?.streak_days || 0) + 1
-          : last === today
-          ? progress?.streak_days || 0
-          : 1;
-
-      const updated = await progressDb.updateProgress(supabaseClient, user.id, {
-        completed_lessons: updatedCompleted,
+      const extraUpdates = {
         total_exercises: (progress?.total_exercises || 0) + 1,
         correct_exercises: aiResponse.isCorrect
           ? (progress?.correct_exercises || 0) + 1
           : progress?.correct_exercises || 0,
         mistake_patterns: updatedMistakes,
-        last_active_date: today,
-        streak_days: newStreak,
-      });
+      };
 
-      if (updated) {
-        setProgress(updated);
+      if (aiResponse.isCorrect) {
+        // Use completeLesson — handles streak + completed_lessons + extra stats
+        const updated = await progressDb.completeLesson(
+          supabaseClient,
+          user.id,
+          lessonId,
+          extraUpdates
+        );
+        if (updated) setProgress(updated);
+      } else {
+        // Not correct — still save exercise stats but don't mark lesson complete
+        const updated = await progressDb.updateProgress(
+          supabaseClient,
+          user.id,
+          extraUpdates
+        );
+        if (updated) setProgress(updated);
       }
     } catch (err) {
       console.error("Submit error:", err);

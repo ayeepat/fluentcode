@@ -81,7 +81,7 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Navbar streak={streak} />
+      <Navbar streak={streak} hideProfile />
 
       <div className="max-w-xl mx-auto px-6 py-14">
         <motion.div

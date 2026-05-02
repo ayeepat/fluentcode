@@ -1,13 +1,13 @@
 // src/pages/QuizHub.jsx
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
 import { curriculum, getAllLessons } from "@/lib/curriculum";
 import { progressDb } from "@/lib/progressDb";
 import { useAuth } from "@/lib/AuthContext";
 import Navbar from "@/components/Navbar";
-import { HelpCircle, Check, Lock } from "lucide-react";
+import { HelpCircle, Check } from "lucide-react";
 
 const ease = [0.16, 1, 0.3, 1];
 
@@ -49,17 +49,10 @@ export default function QuizHub() {
     );
   }
 
-  const completed = progress?.completed_lessons || [];
+  // Quiz completion is tracked separately from lesson completion
+  const completedQuizzes = progress?.completed_quizzes || [];
   const streak = progress?.streak_days || 0;
   const lang = curriculum[selectedLang];
-  const allFlat = getAllLessons(selectedLang);
-
-  const isUnlocked = (lessonId) => {
-    const idx = allFlat.findIndex(l => l.id === lessonId);
-    if (idx === 0) return true;
-    if (idx === -1) return false;
-    return completed.includes(allFlat[idx - 1]?.id);
-  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -77,7 +70,8 @@ export default function QuizHub() {
             <h1 className="text-3xl font-bold tracking-tight">Quiz Mode</h1>
           </div>
           <p className="text-sm text-zinc-400">
-            Test your knowledge with multiple choice questions. Great for mobile or quick revision.
+            Test your knowledge with multiple choice questions. All quizzes are
+            available — no need to complete lessons first.
           </p>
         </motion.div>
 
@@ -100,30 +94,19 @@ export default function QuizHub() {
 
         {/* Modules and lessons */}
         <div className="space-y-10">
-          {lang.modules.map((module) => (
-            <div key={module.id}>
+          {lang.modules.map((module, moduleIdx) => (
+            <motion.div
+              key={module.id}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: moduleIdx * 0.05, ease }}
+            >
               <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">
                 {module.title}
               </p>
               <div className="space-y-1.5">
                 {module.lessons.map((lesson) => {
-                  const done = completed.includes(lesson.id);
-                  const unlocked = isUnlocked(lesson.id);
-
-                  if (!unlocked) {
-                    return (
-                      <div
-                        key={lesson.id}
-                        className="flex items-center gap-3 px-4 py-3.5 rounded-xl border border-zinc-100 opacity-40 cursor-not-allowed select-none"
-                      >
-                        <Lock size={13} className="text-zinc-300 shrink-0" />
-                        <span className="text-sm text-zinc-400 flex-1">
-                          {lesson.title}
-                        </span>
-                        <span className="text-xs text-zinc-300">Locked</span>
-                      </div>
-                    );
-                  }
+                  const done = completedQuizzes.includes(lesson.id);
 
                   return (
                     <button
@@ -167,7 +150,7 @@ export default function QuizHub() {
                   );
                 })}
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
