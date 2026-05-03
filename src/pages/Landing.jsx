@@ -1,8 +1,8 @@
 // src/pages/Landing.jsx
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Check, Heart, Menu, X, Mail } from "lucide-react";
+import { ArrowRight, Check, Heart, Menu, X, Mail, Code2, HelpCircle } from "lucide-react";
 import { curriculum } from "@/lib/curriculum";
 import { useUser, SignUpButton, SignInButton, useClerk } from "@clerk/clerk-react";
 
@@ -14,11 +14,24 @@ const fadeUp = (delay = 0) => ({
   transition: { duration: 0.6, delay, ease },
 });
 
+function useIsMobile() {
+  const [mobile, setMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return mobile;
+}
+
 export default function Landing() {
   const { user, isSignedIn } = useUser();
   const { signOut } = useClerk();
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -29,6 +42,20 @@ export default function Landing() {
   const handleSignOut = () => {
     signOut();
     setMobileMenuOpen(false);
+  };
+
+  const handleStartLearning = () => {
+    if (isSignedIn) {
+      navigate("/dashboard");
+      return;
+    }
+    // Send guests directly to first lesson — quiz on mobile, lesson on desktop
+    const firstLessonId = "python-phase0-m1-l1";
+    if (isMobile) {
+      navigate(`/quiz/python/${firstLessonId}`);
+    } else {
+      navigate(`/lesson/python/${firstLessonId}`);
+    }
   };
 
   return (
@@ -151,17 +178,17 @@ export default function Landing() {
       </nav>
 
       {/* Hero */}
-      <section className="flex-1 flex flex-col items-center justify-center text-center px-6 pt-28 pb-36">
+      <section className="flex-1 flex flex-col items-center justify-center text-center px-6 pt-24 pb-32">
         <motion.div {...fadeUp(0.05)}>
           <span className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 bg-zinc-100 px-3 py-1.5 rounded-full mb-8">
             <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-            100% free · 10 AI reviews/day · No credit card
+            No signup required · Start coding in 10 seconds
           </span>
         </motion.div>
 
         <motion.h1
           {...fadeUp(0.1)}
-          className="text-6xl md:text-7xl lg:text-8xl font-bold leading-[0.92] tracking-tight mb-6 max-w-4xl"
+          className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-[0.92] tracking-tight mb-6 max-w-4xl"
         >
           Learn to code.
           <br />
@@ -172,33 +199,31 @@ export default function Landing() {
           {...fadeUp(0.18)}
           className="text-base text-zinc-500 mb-10 max-w-md leading-relaxed"
         >
-          Real exercises, an AI tutor that helps you improve, and a curriculum
-          designed to actually stick. Completely free.
+          Write real code, get instant feedback, and build skills that stick.
+          No account needed to start — just jump in.
         </motion.p>
 
         <motion.div
           {...fadeUp(0.24)}
-          className="flex items-center justify-center gap-3"
+          className="flex flex-col sm:flex-row items-center justify-center gap-3"
         >
-          {isSignedIn ? (
-            <Link
-              to="/dashboard"
-              className="inline-flex items-center gap-2 bg-zinc-900 text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-zinc-700 transition-all duration-200"
-            >
-              Go to Dashboard <ArrowRight size={13} />
-            </Link>
-          ) : (
-            <SignUpButton mode="modal">
-              <button className="inline-flex items-center gap-2 bg-zinc-900 text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-zinc-700 transition-all duration-200">
-                Start learning free <ArrowRight size={13} />
-              </button>
-            </SignUpButton>
-          )}
+          <button
+            onClick={handleStartLearning}
+            className="inline-flex items-center gap-2 bg-zinc-900 text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-zinc-700 transition-all duration-200 shadow-lg shadow-zinc-900/10"
+          >
+            {isSignedIn ? (
+              <>Go to Dashboard <ArrowRight size={14} /></>
+            ) : isMobile ? (
+              <>Start first quiz <HelpCircle size={14} /></>
+            ) : (
+              <>Write your first code <Code2 size={14} /></>
+            )}
+          </button>
           <Link
             to="/courses"
-            className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors duration-200"
+            className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors duration-200 py-2"
           >
-            Browse courses →
+            Browse all courses →
           </Link>
         </motion.div>
 
@@ -207,9 +232,9 @@ export default function Landing() {
           {...fadeUp(0.32)}
           className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-14"
         >
-          {["100% free forever", "10 AI reviews per day", "No credit card needed"].map((item) => (
+          {["No signup needed", "10 AI reviews/day", "100% free"].map((item) => (
             <span key={item} className="flex items-center gap-1.5 text-xs text-zinc-400">
-              <Check size={12} className="text-zinc-300" />
+              <Check size={12} className="text-emerald-400" />
               {item}
             </span>
           ))}
@@ -235,8 +260,8 @@ export default function Landing() {
           {[
             {
               step: "01",
-              title: "Pick a lesson",
-              desc: "Structured curriculum for Python and Java, broken into focused, bite-sized lessons.",
+              title: "Jump straight in",
+              desc: "No signup, no setup. Click the button and start your first coding exercise in seconds.",
             },
             {
               step: "02",
@@ -246,7 +271,7 @@ export default function Landing() {
             {
               step: "03",
               title: "Get AI feedback",
-              desc: "Your AI tutor reviews every submission and gives targeted, encouraging guidance. 10 free reviews per day.",
+              desc: "Your AI tutor reviews your code and gives targeted guidance. Create a free account for 10 reviews per day.",
             },
           ].map(({ step, title, desc }, i) => (
             <motion.div
@@ -335,33 +360,38 @@ export default function Landing() {
       </section>
 
       {/* CTA */}
-      {!isSignedIn && (
-        <section className="px-6 py-24 max-w-2xl mx-auto w-full text-center border-t border-zinc-100">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.6, ease }}
-          >
-            <h2 className="text-5xl font-bold tracking-tight mb-4">Ready to start?</h2>
-            <p className="text-zinc-500 mb-8 text-sm">
-              No credit card. No commitments. Just code.
-            </p>
-            <div className="flex items-center justify-center gap-4">
-              <SignUpButton mode="modal">
-                <button className="inline-flex items-center gap-2 bg-zinc-900 text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-zinc-700 transition-all duration-200">
-                  Start learning free <ArrowRight size={13} />
-                </button>
-              </SignUpButton>
+      <section className="px-6 py-24 max-w-2xl mx-auto w-full text-center border-t border-zinc-100">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.6, ease }}
+        >
+          <h2 className="text-5xl font-bold tracking-tight mb-4">Ready to start?</h2>
+          <p className="text-zinc-500 mb-8 text-sm">
+            No account needed. No commitments. Just code.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button
+              onClick={handleStartLearning}
+              className="inline-flex items-center gap-2 bg-zinc-900 text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-zinc-700 transition-all duration-200"
+            >
+              {isSignedIn ? (
+                <>Go to Dashboard <ArrowRight size={14} /></>
+              ) : (
+                <>Start coding now <ArrowRight size={14} /></>
+              )}
+            </button>
+            {!isSignedIn && (
               <SignInButton mode="modal">
                 <button className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors duration-200">
-                  Already have an account →
+                  Already have an account? →
                 </button>
               </SignInButton>
-            </div>
-          </motion.div>
-        </section>
-      )}
+            )}
+          </div>
+        </motion.div>
+      </section>
 
       {/* Support banner */}
       <section className="px-6 py-16 border-t border-zinc-100">
@@ -379,7 +409,7 @@ export default function Landing() {
             Support the project
           </h3>
           <p className="text-sm text-zinc-400 mb-5 max-w-sm mx-auto leading-relaxed">
-            If the app helps you, consider supporting the project to keep the servers running.
+            FluentCode is free forever. If it helps you, consider supporting us to keep the servers running.
           </p>
           <a
             href="https://boosty.to/fluentcode/donate"
@@ -397,15 +427,13 @@ export default function Landing() {
       <footer className="border-t border-zinc-100 bg-zinc-50">
         <div className="max-w-4xl mx-auto px-6 py-16">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
-            {/* Brand */}
             <div>
               <p className="text-sm font-semibold text-zinc-900 mb-3">fluentcode</p>
               <p className="text-xs text-zinc-400 leading-relaxed">
-                Learn to code with real exercises and AI-powered feedback. 100% free, built for people who actually want to learn.
+                Learn to code with real exercises and AI-powered feedback. Free forever, built for people who actually want to learn.
               </p>
             </div>
 
-            {/* Links */}
             <div>
               <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">
                 Links
@@ -426,7 +454,6 @@ export default function Landing() {
               </div>
             </div>
 
-            {/* Contact + Social */}
             <div>
               <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">
                 Get in touch
@@ -457,7 +484,6 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* Bottom bar */}
           <div className="border-t border-zinc-200 pt-6 flex flex-col md:flex-row items-center justify-between gap-3">
             <p className="text-xs text-zinc-400">
               © {new Date().getFullYear()} fluentcode — learn to code, personally.
