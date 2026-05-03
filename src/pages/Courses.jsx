@@ -3,6 +3,8 @@ import { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { curriculum } from "@/lib/curriculum";
+import { isGuestAccessible } from "@/lib/guestAccess";
+import { localProgressDb } from "@/lib/localProgressDb";
 import { Check, Lock, Circle, ArrowRight, HelpCircle, Smartphone, Code2 } from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
 import { progressDb } from "@/lib/progressDb";
@@ -21,9 +23,29 @@ export default function Courses() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const isGuest = !isSignedIn;
+
   const loadProgress = useCallback(async () => {
-    if (!isLoaded || !isSignedIn || !supabaseClient || !user) return;
-    setLoading(true);
+    if (!isLoaded) return;
+
+    if (isGuest) {
+      const guestData = localProgressDb.getProgress();
+      setProgress({
+        completed_lessons: guestData.completed_lessons,
+        completed_quizzes: guestData.completed_quizzes,
+        streak_days: 0,
+        language: guestData.language,
+      });
+      setSelectedLang(guestData.language || "python");
+      setLoading(false);
+      return;
+    }
+
+    if (!supabaseClient || !user) {
+      setLoading(false);
+      return;
+    }
+
     try {
       const data = await progressDb.getProgress(
         supabaseClient,
@@ -39,9 +61,8 @@ export default function Courses() {
     } finally {
       setLoading(false);
     }
-  }, [isLoaded, isSignedIn, user, supabaseClient]);
+  }, [isLoaded, isGuest, supabaseClient, user]);
 
-  // Refetch every time this page is navigated to
   useEffect(() => {
     loadProgress();
   }, [loadProgress, location.key]);
@@ -77,6 +98,10 @@ export default function Courses() {
       : 0;
 
   const isUnlocked = (lessonId) => {
+    // Guests can access first 3 lessons without unlocking
+    if (isGuest) {
+      return isGuestAccessible(selectedLang, lessonId);
+    }
     const idx = allFlat.findIndex((l) => l.id === lessonId);
     if (idx === 0) return true;
     if (idx === -1) return false;
@@ -88,7 +113,6 @@ export default function Courses() {
       <Navbar streak={streak} />
 
       <div className="max-w-2xl mx-auto px-6 py-14">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -111,7 +135,6 @@ export default function Courses() {
           </div>
         </motion.div>
 
-        {/* Mode segmented control */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -125,7 +148,6 @@ export default function Courses() {
             animate={{ x: mode === "lessons" ? 0 : "calc(100% + 4px)" }}
             transition={{ type: "spring", stiffness: 400, damping: 35 }}
           />
-
           <button
             onClick={() => setMode("lessons")}
             className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-colors duration-200 ${
@@ -146,7 +168,6 @@ export default function Courses() {
           </button>
         </motion.div>
 
-        {/* Mobile tip — only shown in quiz mode */}
         <AnimatePresence>
           {mode === "quiz" && (
             <motion.div
@@ -167,7 +188,6 @@ export default function Courses() {
           )}
         </AnimatePresence>
 
-        {/* Language selector */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -189,7 +209,6 @@ export default function Courses() {
           ))}
         </motion.div>
 
-        {/* Content */}
         <AnimatePresence mode="wait">
           <motion.div
             key={`${selectedLang}-${mode}`}
@@ -244,6 +263,26 @@ export default function Courses() {
                     {modLessons.map((lesson) => {
                       if (mode === "quiz") {
                         const quizDone = completedQuizzes.includes(lesson.id);
+                        const quizAccessible = isGuest
+                          ? isGuestAccessible(selectedLang, lesson.id)
+                          : true;
+
+                        if (!quizAccessible) {
+                          return (
+                            <div
+                              key={lesson.id}
+                              className="flex items-center gap-3 px-4 py-3.5 rounded-xl border border-zinc-100 opacity-40 cursor-not-allowed select-none"
+                            >
+                              <Lock size={14} className="text-zinc-300 shrink-0" />
+                              <span className="text-sm text-zinc-400 flex-1">
+                                {lesson.title}
+                              </span>
+                              <span className="text-xs text-zinc-300">
+                                Sign up to unlock
+                              </span>
+                            </div>
+                          );
+                        }
 
                         return (
                           <button
@@ -303,6 +342,7 @@ export default function Courses() {
                           done={done}
                           unlocked={unlocked}
                           lang={selectedLang}
+                          isGuest={isGuest}
                         />
                       );
                     })}
@@ -317,13 +357,15 @@ export default function Courses() {
   );
 }
 
-function LessonRow({ lesson, done, unlocked, lang }) {
+function LessonRow({ lesson, done, unlocked, lang, isGuest }) {
   if (!unlocked) {
     return (
       <div className="flex items-center gap-3 px-4 py-3.5 rounded-xl border border-zinc-100 opacity-40 cursor-not-allowed select-none">
         <Lock size={14} className="text-zinc-300 shrink-0" />
         <span className="text-sm text-zinc-400 flex-1">{lesson.title}</span>
-        <span className="text-xs text-zinc-300">Locked</span>
+        <span className="text-xs text-zinc-300">
+          {isGuest ? "Sign up to unlock" : "Locked"}
+        </span>
       </div>
     );
   }

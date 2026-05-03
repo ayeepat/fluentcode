@@ -3,11 +3,14 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { getLessonById } from "@/lib/curriculum";
+import { isGuestAccessible, shouldPromptSignup } from "@/lib/guestAccess";
+import { localProgressDb } from "@/lib/localProgressDb";
 import { Play, Lightbulb, HelpCircle } from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
 import { progressDb } from "@/lib/progressDb";
 import { useAuth } from "@/lib/AuthContext";
 import Navbar from "@/components/Navbar";
+import SignupPrompt from "@/components/SignupPrompt";
 
 const ease = [0.16, 1, 0.3, 1];
 
@@ -30,9 +33,19 @@ export default function Lesson() {
   const [result, setResult] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [streak, setStreak] = useState(0);
+  const [showSignupPrompt, setShowSignupPrompt] = useState(false);
   const isMobile = useIsMobile();
 
-  // Reset when params change (fixes "Next lesson" not updating screen)
+  const isGuest = !isSignedIn;
+  const guestAllowed = isGuestAccessible(language, lessonId);
+
+  // Redirect guests trying to access non-guest lessons
+  useEffect(() => {
+    if (isLoaded && isGuest && !guestAllowed) {
+      navigate(`/lesson/${language}/${language}-phase0-m1-l1`);
+    }
+  }, [isLoaded, isGuest, guestAllowed, language, navigate]);
+
   useEffect(() => {
     setIsLoading(true);
     const data = getLessonById(language, lessonId);
@@ -40,6 +53,7 @@ export default function Lesson() {
     setIsLoading(false);
   }, [language, lessonId]);
 
+  // Load streak (for logged-in users)
   useEffect(() => {
     if (!isLoaded || !isSignedIn || !supabaseClient) return;
     const loadStreak = async () => {
@@ -57,7 +71,15 @@ export default function Lesson() {
     loadStreak();
   }, [isLoaded, isSignedIn, user, supabaseClient]);
 
-  // Scroll to top when lesson changes
+  // Check if guest should see signup prompt
+  useEffect(() => {
+    if (!isGuest) return;
+    const guestProgress = localProgressDb.getProgress();
+    if (shouldPromptSignup(language, guestProgress.completed_lessons)) {
+      setShowSignupPrompt(true);
+    }
+  }, [isGuest, language, lessonId]);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [lessonId]);
@@ -85,6 +107,18 @@ export default function Lesson() {
   }
 
   const { lesson, module } = result;
+
+  // If guest has completed all 3 free lessons, show signup
+  if (isGuest && showSignupPrompt && !guestAllowed) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navbar streak={0} backTo="/courses" backLabel="Courses" />
+        <div className="max-w-2xl mx-auto px-6 py-14">
+          <SignupPrompt />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -182,23 +216,19 @@ export default function Lesson() {
           </p>
         </motion.div>
 
-        {/* CTAs — order depends on device */}
+        {/* CTAs */}
         <div className="flex flex-col gap-3">
           {isMobile ? (
             <>
               <button
-                onClick={() =>
-                  navigate(`/quiz/${language}/${lessonId}`)
-                }
+                onClick={() => navigate(`/quiz/${language}/${lessonId}`)}
                 className="w-full flex items-center justify-center gap-2 bg-zinc-900 text-white py-3.5 rounded-full text-sm font-semibold hover:bg-zinc-700 transition-all duration-200"
               >
                 <HelpCircle size={14} />
                 Take quiz
               </button>
               <button
-                onClick={() =>
-                  navigate(`/code/${language}/${lessonId}`)
-                }
+                onClick={() => navigate(`/code/${language}/${lessonId}`)}
                 className="w-full flex items-center justify-center gap-2 border border-zinc-200 text-zinc-700 py-3.5 rounded-full text-sm font-semibold hover:border-zinc-900 hover:text-zinc-900 transition-all duration-200"
               >
                 <Play size={14} />
@@ -208,18 +238,14 @@ export default function Lesson() {
           ) : (
             <>
               <button
-                onClick={() =>
-                  navigate(`/code/${language}/${lessonId}`)
-                }
+                onClick={() => navigate(`/code/${language}/${lessonId}`)}
                 className="w-full flex items-center justify-center gap-2 bg-zinc-900 text-white py-3.5 rounded-full text-sm font-semibold hover:bg-zinc-700 transition-all duration-200"
               >
                 <Play size={14} />
                 Start exercise
               </button>
               <button
-                onClick={() =>
-                  navigate(`/quiz/${language}/${lessonId}`)
-                }
+                onClick={() => navigate(`/quiz/${language}/${lessonId}`)}
                 className="w-full flex items-center justify-center gap-2 border border-zinc-200 text-zinc-700 py-3.5 rounded-full text-sm font-semibold hover:border-zinc-900 hover:text-zinc-900 transition-all duration-200"
               >
                 <HelpCircle size={14} />
@@ -228,6 +254,9 @@ export default function Lesson() {
             </>
           )}
         </div>
+
+        {/* Signup prompt after 3 lessons */}
+        {isGuest && showSignupPrompt && guestAllowed && <SignupPrompt />}
       </div>
     </div>
   );

@@ -2,6 +2,8 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useUser, useAuth as useClerkAuth, useSession } from "@clerk/clerk-react";
 import { createClerkSupabaseClient, supabase } from "./supabaseClient";
+import { progressDb } from "./progressDb";
+import { localProgressDb } from "./localProgressDb";
 
 const AuthContext = createContext({
   user: null,
@@ -15,7 +17,9 @@ export function AuthProvider({ children }) {
   const { isLoaded: isAuthLoaded } = useClerkAuth();
   const { session } = useSession();
   const [supabaseClient, setSupabaseClient] = useState(null);
+  const [hasSynced, setHasSynced] = useState(false);
 
+  // Build/refresh authenticated Supabase client
   useEffect(() => {
     if (!session) {
       setSupabaseClient(supabase);
@@ -43,7 +47,6 @@ export function AuthProvider({ children }) {
     };
 
     buildClient();
-
     const interval = setInterval(buildClient, 50000);
 
     return () => {
@@ -51,6 +54,26 @@ export function AuthProvider({ children }) {
       clearInterval(interval);
     };
   }, [session]);
+
+  // Sync guest progress when user logs in
+  useEffect(() => {
+    if (!isSignedIn || !supabaseClient || !user || hasSynced) return;
+    if (supabaseClient === supabase) return; // Don't sync with anon client
+
+    const sync = async () => {
+      if (localProgressDb.hasProgress()) {
+        console.log("Syncing guest progress to account...");
+        await progressDb.syncGuestProgress(
+          supabaseClient,
+          user.id,
+          user.primaryEmailAddress?.emailAddress
+        );
+      }
+      setHasSynced(true);
+    };
+
+    sync();
+  }, [isSignedIn, supabaseClient, user, hasSynced]);
 
   const isLoading = !isUserLoaded || !isAuthLoaded;
 

@@ -48,12 +48,15 @@ function App() {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/subscription" element={<Subscription />} />
 
+            {/* These routes work for BOTH guests and logged-in users */}
+            <Route path="/lesson/:language/:lessonId" element={<Lesson />} />
+            <Route path="/code/:language/:lessonId" element={<CodingPage />} />
+            <Route path="/quiz/:language/:lessonId" element={<QuizIntro />} />
+            <Route path="/quiz/:language/:lessonId/start" element={<Quiz />} />
+
+            {/* Protected routes */}
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/lesson/:language/:lessonId" element={<ProtectedRoute><Lesson /></ProtectedRoute>} />
-            <Route path="/code/:language/:lessonId" element={<ProtectedRoute><CodingPage /></ProtectedRoute>} />
             <Route path="/quiz" element={<ProtectedRoute><QuizHub /></ProtectedRoute>} />
-            <Route path="/quiz/:language/:lessonId" element={<ProtectedRoute><QuizIntro /></ProtectedRoute>} />
-            <Route path="/quiz/:language/:lessonId/start" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
             <Route path="*" element={<PageNotFound />} />

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { getLessonById } from "@/lib/curriculum";
+import { isGuestAccessible } from "@/lib/guestAccess";
 import { HelpCircle, Play, Lightbulb } from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
 import { progressDb } from "@/lib/progressDb";
@@ -31,6 +32,16 @@ export default function QuizIntro() {
   const [isLoading, setIsLoading] = useState(true);
   const [streak, setStreak] = useState(0);
   const isMobile = useIsMobile();
+
+  const isGuest = !isSignedIn;
+  const guestAllowed = isGuestAccessible(language, lessonId);
+
+  // Redirect guests on non-guest lessons
+  useEffect(() => {
+    if (isLoaded && isGuest && !guestAllowed) {
+      navigate("/courses");
+    }
+  }, [isLoaded, isGuest, guestAllowed, navigate]);
 
   useEffect(() => {
     const data = getLessonById(language, lessonId);
@@ -83,8 +94,8 @@ export default function QuizIntro() {
     <div className="min-h-screen bg-white">
       <Navbar
         streak={streak}
-        backTo="/quiz"
-        backLabel="Quizzes"
+        backTo="/courses"
+        backLabel="Courses"
         moduleTitle={module.title}
       />
 
@@ -156,19 +167,23 @@ export default function QuizIntro() {
           </motion.div>
         )}
 
-        {/* CTAs — order depends on device */}
+        {/* CTAs */}
         <div className="flex flex-col gap-3">
           {isMobile ? (
             <>
               <button
-                onClick={() => navigate(`/quiz/${language}/${lessonId}/start`)}
+                onClick={() =>
+                  navigate(`/quiz/${language}/${lessonId}/start`)
+                }
                 className="w-full flex items-center justify-center gap-2 bg-zinc-900 text-white py-3.5 rounded-full text-sm font-semibold hover:bg-zinc-700 transition-all duration-200"
               >
                 <HelpCircle size={14} />
                 Start quiz
               </button>
               <button
-                onClick={() => navigate(`/lesson/${language}/${lessonId}`)}
+                onClick={() =>
+                  navigate(`/lesson/${language}/${lessonId}`)
+                }
                 className="w-full flex items-center justify-center gap-2 border border-zinc-200 text-zinc-700 py-3.5 rounded-full text-sm font-semibold hover:border-zinc-900 hover:text-zinc-900 transition-all duration-200"
               >
                 <Play size={14} />
@@ -178,14 +193,18 @@ export default function QuizIntro() {
           ) : (
             <>
               <button
-                onClick={() => navigate(`/quiz/${language}/${lessonId}/start`)}
+                onClick={() =>
+                  navigate(`/quiz/${language}/${lessonId}/start`)
+                }
                 className="w-full flex items-center justify-center gap-2 bg-zinc-900 text-white py-3.5 rounded-full text-sm font-semibold hover:bg-zinc-700 transition-all duration-200"
               >
                 <HelpCircle size={14} />
                 Start quiz
               </button>
               <button
-                onClick={() => navigate(`/lesson/${language}/${lessonId}`)}
+                onClick={() =>
+                  navigate(`/lesson/${language}/${lessonId}`)
+                }
                 className="w-full flex items-center justify-center gap-2 border border-zinc-200 text-zinc-700 py-3.5 rounded-full text-sm font-semibold hover:border-zinc-900 hover:text-zinc-900 transition-all duration-200"
               >
                 <Play size={14} />

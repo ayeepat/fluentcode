@@ -1,4 +1,6 @@
 // src/lib/progressDb.js
+import { localProgressDb } from "./localProgressDb";
+
 const FREE_DAILY_LIMIT = 10;
 
 // ─── Streak helpers ───────────────────────────────────────────────────────────
@@ -46,7 +48,7 @@ export const progressDb = {
       return null;
     }
 
-    // Fix stale streak on load: if last_study_date is older than yesterday, reset to 0
+    // Fix stale streak on load
     if (data && data.last_study_date) {
       const today = getTodayStr();
       const yesterday = getYesterdayStr();
@@ -110,7 +112,7 @@ export const progressDb = {
     return data;
   },
 
-  // ─── Lesson completion (updates streak) ──────────────────────────────────
+  // ─── Lesson completion ──────────────────────────────────────────────────
 
   async completeLesson(supabaseClient, clerkUserId, lessonId, extraUpdates = {}) {
     const { data, error } = await supabaseClient
@@ -157,7 +159,7 @@ export const progressDb = {
     return updated;
   },
 
-  // ─── Quiz completion (separate from lessons, also updates streak) ─────────
+  // ─── Quiz completion ────────────────────────────────────────────────────
 
   async completeQuiz(supabaseClient, clerkUserId, lessonId) {
     const { data, error } = await supabaseClient
@@ -201,6 +203,80 @@ export const progressDb = {
     }
 
     return updated;
+  },
+
+  // ─── Sync guest progress on login ─────────────────────────────────────
+
+  async syncGuestProgress(supabaseClient, clerkUserId, email) {
+    if (!localProgressDb.hasProgress()) return null;
+
+    const guestData = localProgressDb.getProgress();
+
+    // Get or create server progress
+    let serverProgress = await this.getProgress(supabaseClient, clerkUserId, email);
+    if (!serverProgress) return null;
+
+    // Merge: union of completed lessons and quizzes
+    const mergedLessons = [
+      ...new Set([
+        ...(serverProgress.completed_lessons || []),
+        ...(guestData.completed_lessons || []),
+      ]),
+    ];
+
+    const mergedQuizzes = [
+      ...new Set([
+        ...(serverProgress.completed_quizzes || []),
+        ...(guestData.completed_quizzes || []),
+      ]),
+    ];
+
+    const mergedMistakes = [
+      ...new Set([
+        ...(serverProgress.mistake_patterns || []),
+        ...(guestData.mistake_patterns || []),
+      ]),
+    ].slice(-5);
+
+    const updates = {
+      completed_lessons: mergedLessons,
+      completed_quizzes: mergedQuizzes,
+      total_exercises:
+        (serverProgress.total_exercises || 0) +
+        (guestData.total_exercises || 0),
+      correct_exercises:
+        (serverProgress.correct_exercises || 0) +
+        (guestData.correct_exercises || 0),
+      mistake_patterns: mergedMistakes,
+    };
+
+    const result = await this.updateProgress(supabaseClient, clerkUserId, updates);
+
+    if (result) {
+      // Clear localStorage after successful sync
+      localProgressDb.clearProgress();
+      console.log("Guest progress synced successfully");
+    }
+
+    return result;
+  },
+
+  // ─── Analytics ──────────────────────────────────────────────────────────
+
+  async trackEvent(supabaseClient, eventName, data = {}) {
+    try {
+      await supabaseClient.from("analytics_events").insert({
+        event_name: eventName,
+        lesson_id: data.lessonId || null,
+        language: data.language || null,
+        clerk_user_id: data.userId || null,
+        is_guest: data.isGuest || false,
+        metadata: data.metadata || {},
+      });
+    } catch (err) {
+      // Silent fail — analytics should never break the app
+      console.error("Analytics error:", err);
+    }
   },
 
   // ─── AI rate limiting ─────────────────────────────────────────────────────

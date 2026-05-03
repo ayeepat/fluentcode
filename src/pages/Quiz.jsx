@@ -5,8 +5,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
 import { getLessonById, getAllLessons } from "@/lib/curriculum";
 import { generateQuizQuestions } from "@/lib/quizGenerator";
+import { isGuestAccessible } from "@/lib/guestAccess";
+import { localProgressDb } from "@/lib/localProgressDb";
 import { progressDb } from "@/lib/progressDb";
 import { useAuth } from "@/lib/AuthContext";
+import SignupPrompt from "@/components/SignupPrompt";
 import {
   CheckCircle,
   XCircle,
@@ -21,8 +24,11 @@ const ease = [0.16, 1, 0.3, 1];
 export default function Quiz() {
   const { language, lessonId } = useParams();
   const navigate = useNavigate();
-  const { user, isSignedIn } = useUser();
+  const { user, isSignedIn, isLoaded } = useUser();
   const { supabaseClient } = useAuth();
+
+  const isGuest = !isSignedIn;
+  const guestAllowed = isGuestAccessible(language, lessonId);
 
   const [questions, setQuestions] = useState([]);
   const [currentQ, setCurrentQ] = useState(0);
@@ -35,7 +41,13 @@ export default function Quiz() {
   const [savedProgress, setSavedProgress] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // Reset everything when lessonId or language changes (fixes "Next quiz" not working)
+  // Redirect guests on non-guest lessons
+  useEffect(() => {
+    if (isLoaded && isGuest && !guestAllowed) {
+      navigate("/courses");
+    }
+  }, [isLoaded, isGuest, guestAllowed, navigate]);
+
   const initQuiz = useCallback(() => {
     const result = getLessonById(language, lessonId);
     if (!result) return;
@@ -97,43 +109,35 @@ export default function Quiz() {
       setConfirmed(false);
       setShowHint(false);
     } else {
-      // Calculate final score directly instead of relying on state
-      let finalScore = 0;
-      // We already have score updated from handleConfirm, but it might not
-      // have flushed yet. So we recalculate: score was updated for all
-      // previous questions. For the current (last) question, check now.
-      finalScore = score; // score already includes current if correct (setState batches in event handler)
-      handleFinish(finalScore);
+      handleFinish(score);
     }
   };
 
   const handleFinish = async (finalScore) => {
     setFinished(true);
 
-    if (!isSignedIn || !supabaseClient || !user) {
-      console.log("Not signed in or no supabase client");
+    const passed = finalScore >= Math.ceil(questions.length / 2);
+    if (!passed) return;
+
+    // Guest — save to localStorage
+    if (isGuest) {
+      localProgressDb.completeQuiz(lessonId);
+      setSavedProgress(true);
       return;
     }
 
-    const passed = finalScore >= Math.ceil(questions.length / 2);
-    if (!passed) {
-      console.log("Did not pass:", finalScore, "/", questions.length);
-      return;
-    }
+    // Logged in — save to Supabase
+    if (!supabaseClient || !user) return;
 
     setSaving(true);
     try {
-      console.log("Saving quiz progress for:", lessonId);
       const result = await progressDb.completeQuiz(
         supabaseClient,
         user.id,
         lessonId
       );
-      console.log("completeQuiz result:", result);
       if (result) {
         setSavedProgress(true);
-      } else {
-        console.error("completeQuiz returned null");
       }
     } catch (err) {
       console.error("Failed to save quiz progress:", err);
@@ -146,6 +150,9 @@ export default function Quiz() {
   const currentIdx = allLessons.findIndex((l) => l.id === lessonId);
   const nextLesson = allLessons[currentIdx + 1];
   const passed = score >= Math.ceil(questions.length / 2);
+
+  const nextRequiresLogin =
+    nextLesson && isGuest && !isGuestAccessible(language, nextLesson.id);
 
   if (!lesson || questions.length === 0) {
     return (
@@ -161,11 +168,11 @@ export default function Quiz() {
       <div className="min-h-screen bg-white flex flex-col">
         <nav className="flex items-center justify-between px-6 py-4 border-b border-zinc-100">
           <button
-            onClick={() => navigate("/quiz")}
+            onClick={() => navigate("/courses")}
             className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
           >
             <ArrowLeft size={14} />
-            Quizzes
+            Courses
           </button>
           <span className="text-sm font-semibold text-zinc-900">
             fluentcode
@@ -225,7 +232,7 @@ export default function Quiz() {
             )}
 
             <div className="flex flex-col gap-3">
-              {nextLesson && (
+              {nextLesson && !nextRequiresLogin && (
                 <button
                   onClick={() =>
                     navigate(`/quiz/${language}/${nextLesson.id}`)
@@ -250,12 +257,19 @@ export default function Quiz() {
                 Try again
               </button>
               <button
-                onClick={() => navigate("/quiz")}
+                onClick={() => navigate("/courses")}
                 className="text-sm text-zinc-400 hover:text-zinc-900 transition-colors py-2"
               >
-                Back to quizzes
+                Back to courses
               </button>
             </div>
+
+            {/* Signup prompt for guests who finished all free lessons */}
+            {isGuest && nextRequiresLogin && passed && (
+              <div className="mt-8">
+                <SignupPrompt />
+              </div>
+            )}
           </motion.div>
         </div>
       </div>
@@ -270,11 +284,11 @@ export default function Quiz() {
     <div className="min-h-screen bg-white flex flex-col">
       <nav className="flex items-center justify-between px-6 py-4 border-b border-zinc-100">
         <button
-          onClick={() => navigate("/quiz")}
+          onClick={() => navigate("/courses")}
           className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
         >
           <ArrowLeft size={14} />
-          Quizzes
+          Courses
         </button>
         <span className="text-xs text-zinc-400 max-w-[240px] text-center leading-tight">
           {lesson.title}
