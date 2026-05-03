@@ -4,7 +4,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
 import { getLessonById, getAllLessons } from "@/lib/curriculum";
-import { isGuestAccessible } from "@/lib/guestAccess";
+import { isGuestAccessible, shouldPromptSignup } from "@/lib/guestAccess";
 import { localProgressDb } from "@/lib/localProgressDb";
 import CodeEditor from "@/components/editor/CodeEditor";
 import AIFeedbackPanel from "@/components/editor/AIFeedbackPanel";
@@ -13,6 +13,16 @@ import { progressDb } from "@/lib/progressDb";
 import { evaluateCode } from "@/lib/groqClient";
 import { useAuth } from "@/lib/AuthContext";
 import SignupPrompt from "@/components/SignupPrompt";
+
+function runLocalTests(code, tests) {
+  if (!tests || tests.length === 0) return true;
+  for (const test of tests) {
+    if (test.type === "contains" && !code.includes(test.value)) {
+      return false;
+    }
+  }
+  return true;
+}
 
 export default function CodingPage() {
   const { language, lessonId } = useParams();
@@ -34,12 +44,12 @@ export default function CodingPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [aiRemaining, setAiRemaining] = useState(null);
   const [limitReached, setLimitReached] = useState(false);
+  const [showSignupModal, setShowSignupModal] = useState(false);
 
   const result = useMemo(() => {
     return getLessonById(language, lessonId);
   }, [language, lessonId]);
 
-  // Redirect guests on non-guest lessons
   useEffect(() => {
     if (isUserLoaded && isGuest && !guestAllowed) {
       navigate("/courses");
@@ -63,6 +73,7 @@ export default function CodingPage() {
     setShowSolution(false);
     setShowHint(false);
     setLimitReached(false);
+    setShowSignupModal(false);
   }, [result, isGuest, lessonId]);
 
   useEffect(() => {
@@ -142,92 +153,89 @@ export default function CodingPage() {
 
   const handleSubmit = async () => {
     if (submitting) return;
-
-    // Guest users — use AI evaluation for first 3 lessons (no limit shown)
-    if (isGuest) {
-      setSubmitting(true);
-      setFeedback(null);
-
-      try {
-        const aiResponse = await evaluateCode(code, language, lesson);
-        setFeedback(aiResponse);
-        setSubmitted(true);
-
-        // Only save progress if correct
-        if (aiResponse.isCorrect) {
-          localProgressDb.completeLesson(lessonId, {
-            total_exercises: (progress?.total_exercises || 0) + 1,
-            correct_exercises: (progress?.correct_exercises || 0) + 1,
-          });
-          setProgress(localProgressDb.getProgress());
-        }
-      } catch (err) {
-        console.error("Submit error:", err);
-        // Fallback to basic test checking if AI fails
-        const tests = lesson.exercise.tests || [];
-        let allPassed = true;
-        for (const test of tests) {
-          if (test.type === "contains" && !code.includes(test.value)) {
-            allPassed = false;
-            break;
-          }
-        }
-        setFeedback({
-          isCorrect: allPassed,
-          feedback: allPassed
-            ? "Your code looks correct! Well done."
-            : "Something isn't quite right. Check the exercise prompt and try again.",
-          mistakePatterns: [],
-          suggestions: allPassed ? [] : ["Compare your code with the example"],
-        });
-        setSubmitted(true);
-
-        if (allPassed) {
-          localProgressDb.completeLesson(lessonId, {
-            total_exercises: (progress?.total_exercises || 0) + 1,
-            correct_exercises: (progress?.correct_exercises || 0) + 1,
-          });
-          setProgress(localProgressDb.getProgress());
-        }
-      } finally {
-        setSubmitting(false);
-      }
-      return;
-    }
-
-    // Logged-in users — full AI evaluation with rate limiting
-    if (!supabaseClient) return;
-
-    const check = await progressDb.checkAndIncrementAiCount(
-      supabaseClient,
-      user.id,
-      progress?.is_pro
-    );
-
-    if (!check.allowed) {
-      setLimitReached(true);
-      setFeedback({
-        isCorrect: false,
-        feedback:
-          "You've used all 10 free AI reviews for today. Come back tomorrow, or support the project to unlock unlimited reviews!",
-        mistakePatterns: [],
-        suggestions: [],
-      });
-      setSubmitted(true);
-      return;
-    }
-
-    setAiRemaining(check.remaining);
     setSubmitting(true);
     setFeedback(null);
+
+    const tests = lesson.exercise.tests || [];
+    const passedLocally = runLocalTests(code, tests);
+
+    // ─── CORRECT: no API call needed ─────────────────────────────────────
+    if (passedLocally) {
+      const successFeedback = {
+        isCorrect: true,
+        feedback: "Your code matches the expected solution perfectly. Great work!",
+        mistakePatterns: [],
+        suggestions: [],
+      };
+      setFeedback(successFeedback);
+      setSubmitted(true);
+
+      if (isGuest) {
+        localProgressDb.completeLesson(lessonId, {
+          total_exercises: (progress?.total_exercises || 0) + 1,
+          correct_exercises: (progress?.correct_exercises || 0) + 1,
+        });
+        setProgress(localProgressDb.getProgress());
+
+        // Check if they should see signup prompt
+        const updatedProgress = localProgressDb.getProgress();
+        if (shouldPromptSignup(language, updatedProgress.completed_lessons)) {
+          setTimeout(() => setShowSignupModal(true), 1500);
+        }
+      } else if (supabaseClient && user) {
+        const extraUpdates = {
+          total_exercises: (progress?.total_exercises || 0) + 1,
+          correct_exercises: (progress?.correct_exercises || 0) + 1,
+          mistake_patterns: progress?.mistake_patterns || [],
+        };
+        const updated = await progressDb.completeLesson(
+          supabaseClient,
+          user.id,
+          lessonId,
+          extraUpdates
+        );
+        if (updated) setProgress(updated);
+      }
+
+      setSubmitting(false);
+      return;
+    }
+
+    // ─── INCORRECT: use API to explain what's wrong ──────────────────────
+
+    // For logged-in users, check rate limit
+    if (!isGuest && supabaseClient && user) {
+      const check = await progressDb.checkAndIncrementAiCount(
+        supabaseClient,
+        user.id,
+        progress?.is_pro
+      );
+
+      if (!check.allowed) {
+        setLimitReached(true);
+        setFeedback({
+          isCorrect: false,
+          feedback:
+            "You've used all 10 free AI reviews for today. Come back tomorrow, or support the project to unlock unlimited reviews!",
+          mistakePatterns: [],
+          suggestions: [],
+        });
+        setSubmitted(true);
+        setSubmitting(false);
+        return;
+      }
+
+      setAiRemaining(check.remaining);
+    }
 
     try {
       const aiResponse = await evaluateCode(code, language, lesson);
       setFeedback(aiResponse);
       setSubmitted(true);
 
-      const updatedMistakes =
-        aiResponse.mistakePatterns && !aiResponse.isCorrect
+      // Save exercise attempt (but NOT as completed since it's wrong)
+      if (!isGuest && supabaseClient && user) {
+        const updatedMistakes = aiResponse.mistakePatterns
           ? [
               ...new Set([
                 ...(progress?.mistake_patterns || []),
@@ -236,27 +244,13 @@ export default function CodingPage() {
             ].slice(-5)
           : progress?.mistake_patterns || [];
 
-      const extraUpdates = {
-        total_exercises: (progress?.total_exercises || 0) + 1,
-        correct_exercises: aiResponse.isCorrect
-          ? (progress?.correct_exercises || 0) + 1
-          : progress?.correct_exercises || 0,
-        mistake_patterns: updatedMistakes,
-      };
-
-      if (aiResponse.isCorrect) {
-        const updated = await progressDb.completeLesson(
-          supabaseClient,
-          user.id,
-          lessonId,
-          extraUpdates
-        );
-        if (updated) setProgress(updated);
-      } else {
         const updated = await progressDb.updateProgress(
           supabaseClient,
           user.id,
-          extraUpdates
+          {
+            total_exercises: (progress?.total_exercises || 0) + 1,
+            mistake_patterns: updatedMistakes,
+          }
         );
         if (updated) setProgress(updated);
       }
@@ -264,9 +258,9 @@ export default function CodingPage() {
       console.error("Submit error:", err);
       setFeedback({
         isCorrect: false,
-        feedback: "Connection error. Check your internet and try again.",
+        feedback: "Something doesn't look right. Check the exercise prompt and compare your code with the example.",
         mistakePatterns: [],
-        suggestions: ["Check your internet connection."],
+        suggestions: ["Review the example code", "Check for typos in function names"],
       });
       setSubmitted(true);
     } finally {
@@ -284,6 +278,14 @@ export default function CodingPage() {
 
   return (
     <div className="h-screen flex flex-col bg-white overflow-hidden">
+      {/* Signup modal */}
+      {showSignupModal && (
+        <SignupPrompt
+          show={true}
+          onClose={() => setShowSignupModal(false)}
+        />
+      )}
+
       {/* Top bar */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-100 shrink-0">
         <button
@@ -331,7 +333,12 @@ export default function CodingPage() {
             Next <ArrowRight size={13} />
           </button>
         ) : nextRequiresLogin && canProceed ? (
-          <span className="text-xs text-zinc-400">Sign up to continue →</span>
+          <button
+            onClick={() => setShowSignupModal(true)}
+            className="flex items-center gap-1.5 text-sm font-medium px-4 py-1.5 rounded-full bg-zinc-900 text-white hover:bg-zinc-700 transition-all duration-200"
+          >
+            Sign up to continue <ArrowRight size={13} />
+          </button>
         ) : (
           <div className="w-20" />
         )}
@@ -374,7 +381,7 @@ export default function CodingPage() {
                 >
                   {feedback.isCorrect
                     ? "🎉 Great job! Your code is correct!"
-                    : "Not quite right — keep trying!"}
+                    : "Not quite right — here's what to check:"}
                 </p>
                 <p
                   className={`text-xs leading-relaxed ${
@@ -383,6 +390,16 @@ export default function CodingPage() {
                 >
                   {feedback.feedback}
                 </p>
+                {!feedback.isCorrect && feedback.suggestions?.length > 0 && (
+                  <div className="mt-2 flex flex-col gap-1">
+                    {feedback.suggestions.map((s, i) => (
+                      <div key={i} className="flex items-start gap-1.5 text-xs text-red-500">
+                        <Lightbulb size={11} className="shrink-0 mt-0.5" />
+                        <span>{s}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
                 {feedback.isCorrect && isGuest && (
                   <p className="text-xs text-emerald-500 mt-2">
                     <Sparkles size={11} className="inline mr-1" />
@@ -454,7 +471,6 @@ export default function CodingPage() {
                 : "Submit"}
             </button>
 
-            {/* Hint button */}
             {lesson.exercise?.debuggingTip && (
               <button
                 onClick={() => setShowHint((h) => !h)}
@@ -524,21 +540,13 @@ export default function CodingPage() {
               </motion.div>
             )}
           </AnimatePresence>
-
-          {/* Signup prompt after completing exercise as guest */}
-          {isGuest && canProceed && nextRequiresLogin && (
-            <div className="border-t border-zinc-100 px-4 py-6 shrink-0">
-              <SignupPrompt />
-            </div>
-          )}
         </div>
 
-        {/* AI panel — always shown, guest-aware */}
+        {/* AI panel — always visible, guest-aware */}
         <div className="w-72 shrink-0 overflow-hidden border-l border-zinc-100 hidden md:block">
           <AIFeedbackPanel
             lesson={lesson}
             userCode={code}
-            feedback={feedback}
             language={language}
             userId={user?.id}
             isPro={progress?.is_pro}

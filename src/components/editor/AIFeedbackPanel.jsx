@@ -1,7 +1,7 @@
 // src/components/editor/AIFeedbackPanel.jsx
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle, XCircle, Lightbulb, Sparkles, ArrowUp, Heart, Lock } from "lucide-react";
+import { Lightbulb, Sparkles, ArrowUp, Heart, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { SignUpButton } from "@clerk/clerk-react";
 import { progressDb } from "@/lib/progressDb";
@@ -11,7 +11,7 @@ const QUICK_PROMPTS = ["Give me a hint", "Why is this wrong?", "Explain the conc
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export default function AIFeedbackPanel({ lesson, userCode, feedback, language, userId, isPro, isGuest = false }) {
+export default function AIFeedbackPanel({ lesson, userCode, language, userId, isPro, isGuest = false }) {
   const { supabaseClient } = useAuth();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -107,7 +107,7 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
     }
   };
 
-  // Guest state — show sign-in prompt
+  // Guest state — show sign-in prompt only, no feedback cards
   if (isGuest) {
     return (
       <div className="flex flex-col h-full bg-white">
@@ -137,40 +137,11 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
             </button>
           </SignUpButton>
         </div>
-
-        {/* Still show feedback card if available */}
-        <AnimatePresence>
-          {feedback && (
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25 }}
-              className="mx-4 mb-4 rounded-2xl border border-zinc-100 overflow-hidden shrink-0"
-            >
-              <div
-                className={`px-4 py-3 text-xs font-medium tracking-wide flex items-center gap-2 ${
-                  feedback.isCorrect
-                    ? "bg-emerald-50 text-emerald-700"
-                    : "bg-amber-50 text-amber-700"
-                }`}
-              >
-                {feedback.isCorrect ? (
-                  <CheckCircle size={13} />
-                ) : (
-                  <XCircle size={13} />
-                )}
-                {feedback.isCorrect ? "Correct!" : "Not quite yet"}
-              </div>
-              <div className="px-4 py-3 bg-zinc-50">
-                <p className="text-sm text-zinc-700 leading-relaxed">{feedback.feedback}</p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
     );
   }
 
+  // Logged-in state
   const EmptyState = () => (
     <>
       <div className="flex-1 flex flex-col items-center justify-center text-center gap-3 p-6">
@@ -233,44 +204,7 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
         </div>
       )}
 
-      <AnimatePresence>
-        {feedback && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25 }}
-            className="mx-4 mt-4 rounded-2xl border border-zinc-100 overflow-hidden shrink-0"
-          >
-            <div
-              className={`px-4 py-3 text-xs font-medium tracking-wide flex items-center gap-2 ${
-                feedback.isCorrect
-                  ? "bg-emerald-50 text-emerald-700"
-                  : "bg-amber-50 text-amber-700"
-              }`}
-            >
-              {feedback.isCorrect ? (
-                <CheckCircle size={13} />
-              ) : (
-                <XCircle size={13} />
-              )}
-              {feedback.isCorrect ? "Looks good" : "Not quite yet"}
-            </div>
-            <div className="px-4 py-3 bg-zinc-50">
-              <p className="text-sm text-zinc-700 leading-relaxed">{feedback.feedback}</p>
-              {feedback.suggestions?.[0] && !feedback.isLimit && (
-                <div className="flex items-start gap-2 mt-3 pt-2 border-t border-zinc-200">
-                  <Lightbulb size={12} className="text-amber-500 mt-0.5 shrink-0" />
-                  <p className="text-xs text-zinc-500 leading-relaxed">
-                    {feedback.suggestions[0]}
-                  </p>
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {!feedback && messages.length === 0 && !loading ? (
+      {messages.length === 0 && !loading ? (
         <EmptyState />
       ) : (
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
@@ -334,7 +268,7 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
         </div>
       )}
 
-      {feedback && messages.length === 0 && (
+      {messages.length > 0 && (
         <div className="px-4 pb-3 flex flex-col gap-1.5 shrink-0">
           {QUICK_PROMPTS.map((p) => (
             <button
