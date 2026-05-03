@@ -1,16 +1,29 @@
 // supabase/functions/ai-chat/index.ts
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const ALLOWED_ORIGIN = "https://fluent-code.xyz";
+const ALLOWED_ORIGINS = [
+  "https://fluent-code.xyz",
+  "https://www.fluent-code.xyz",
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "http://localhost:8000",
+];
 const MODEL = "llama-3.3-70b-versatile";
 const TIMEOUT_MS = 10000;
 const MAX_CONTENT_LENGTH = 50000;
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+function getCorsHeaders(origin: string | null): Record<string, string> {
+  const allowedOrigin =
+    origin && (ALLOWED_ORIGINS.includes(origin) || origin.endsWith(".vercel.app"))
+      ? origin
+      : "https://fluent-code.xyz";
+
+  return {
+    "Access-Control-Allow-Origin": allowedOrigin,
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+  };
+}
 
 // Simple in-memory rate limiter (resets on cold start — acceptable at this scale)
 const ipRequestCounts = new Map<string, { count: number; resetAt: number }>();
@@ -41,6 +54,8 @@ function sanitizePromptInput(input: string, maxLength: number): string {
 }
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req.headers.get("origin"));
+
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
