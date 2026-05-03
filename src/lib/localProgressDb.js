@@ -1,5 +1,6 @@
 // src/lib/localProgressDb.js
 const STORAGE_KEY = "fluentcode_guest_progress";
+const SIGNUP_PROMPT_KEY = "fluentcode_signup_prompted";
 
 function getStoredProgress() {
   try {
@@ -86,5 +87,14 @@ export const localProgressDb = {
       data.completed_quizzes.length > 0 ||
       Object.keys(data.saved_code || {}).length > 0
     );
+  },
+
+  // Signup prompt — only show once ever
+  hasSeenSignupPrompt() {
+    return localStorage.getItem(SIGNUP_PROMPT_KEY) === "true";
+  },
+
+  markSignupPromptSeen() {
+    localStorage.setItem(SIGNUP_PROMPT_KEY, "true");
   },
 };

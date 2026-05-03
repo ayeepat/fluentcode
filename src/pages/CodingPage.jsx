@@ -8,7 +8,10 @@ import { isGuestAccessible, shouldPromptSignup } from "@/lib/guestAccess";
 import { localProgressDb } from "@/lib/localProgressDb";
 import CodeEditor from "@/components/editor/CodeEditor";
 import AIFeedbackPanel from "@/components/editor/AIFeedbackPanel";
-import { Play, Send, ArrowLeft, ArrowRight, Eye, EyeOff, Heart, Lightbulb, CheckCircle, XCircle, Sparkles } from "lucide-react";
+import {
+  Play, Send, ArrowLeft, ArrowRight, Eye, EyeOff,
+  Heart, Lightbulb, CheckCircle, XCircle, Sparkles,
+} from "lucide-react";
 import { progressDb } from "@/lib/progressDb";
 import { evaluateCode } from "@/lib/groqClient";
 import { useAuth } from "@/lib/AuthContext";
@@ -46,16 +49,16 @@ export default function CodingPage() {
   const [limitReached, setLimitReached] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
 
-  const result = useMemo(() => {
-    return getLessonById(language, lessonId);
-  }, [language, lessonId]);
+  const result = useMemo(() => getLessonById(language, lessonId), [language, lessonId]);
 
+  // Redirect guests trying to access non-free lessons
   useEffect(() => {
     if (isUserLoaded && isGuest && !guestAllowed) {
       navigate("/courses");
     }
   }, [isUserLoaded, isGuest, guestAllowed, navigate]);
 
+  // Reset state on lesson change
   useEffect(() => {
     if (!result) {
       setIsLoading(false);
@@ -76,6 +79,7 @@ export default function CodingPage() {
     setShowSignupModal(false);
   }, [result, isGuest, lessonId]);
 
+  // Load progress
   useEffect(() => {
     if (!result || !isUserLoaded) {
       if (isUserLoaded) setIsLoading(false);
@@ -120,7 +124,7 @@ export default function CodingPage() {
     load();
   }, [result, isUserLoaded, isSignedIn, user, supabaseClient, isGuest]);
 
-  // Auto-save code for guests
+  // Auto-save code for guests every second
   useEffect(() => {
     if (!isGuest || !lessonId) return;
     const timer = setTimeout(() => {
@@ -159,7 +163,7 @@ export default function CodingPage() {
     const tests = lesson.exercise.tests || [];
     const passedLocally = runLocalTests(code, tests);
 
-    // ─── CORRECT: no API call needed ─────────────────────────────────────
+    // ─── CORRECT: no API call needed ────────────────────────────────────
     if (passedLocally) {
       const successFeedback = {
         isCorrect: true,
@@ -177,9 +181,12 @@ export default function CodingPage() {
         });
         setProgress(localProgressDb.getProgress());
 
-        // Check if they should see signup prompt
+        // Show signup modal only once
         const updatedProgress = localProgressDb.getProgress();
-        if (shouldPromptSignup(language, updatedProgress.completed_lessons)) {
+        if (
+          shouldPromptSignup(language, updatedProgress.completed_lessons) &&
+          !localProgressDb.hasSeenSignupPrompt()
+        ) {
           setTimeout(() => setShowSignupModal(true), 1500);
         }
       } else if (supabaseClient && user) {
@@ -201,9 +208,9 @@ export default function CodingPage() {
       return;
     }
 
-    // ─── INCORRECT: use API to explain what's wrong ──────────────────────
+    // ─── INCORRECT: use API to explain what went wrong ───────────────────
 
-    // For logged-in users, check rate limit
+    // Check rate limit for logged-in users
     if (!isGuest && supabaseClient && user) {
       const check = await progressDb.checkAndIncrementAiCount(
         supabaseClient,
@@ -233,7 +240,7 @@ export default function CodingPage() {
       setFeedback(aiResponse);
       setSubmitted(true);
 
-      // Save exercise attempt (but NOT as completed since it's wrong)
+      // Save incorrect attempt stats (NOT as completed)
       if (!isGuest && supabaseClient && user) {
         const updatedMistakes = aiResponse.mistakePatterns
           ? [
@@ -258,9 +265,10 @@ export default function CodingPage() {
       console.error("Submit error:", err);
       setFeedback({
         isCorrect: false,
-        feedback: "Something doesn't look right. Check the exercise prompt and compare your code with the example.",
+        feedback:
+          "Something doesn't look right. Check the exercise prompt and compare your code with the example.",
         mistakePatterns: [],
-        suggestions: ["Review the example code", "Check for typos in function names"],
+        suggestions: ["Review the example code", "Check for typos"],
       });
       setSubmitted(true);
     } finally {
@@ -272,17 +280,19 @@ export default function CodingPage() {
   const currentIdx = allLessons.findIndex((l) => l.id === lessonId);
   const nextLesson = allLessons[currentIdx + 1];
   const canProceed = submitted && feedback?.isCorrect;
-
   const nextRequiresLogin =
     nextLesson && isGuest && !isGuestAccessible(language, nextLesson.id);
 
   return (
     <div className="h-screen flex flex-col bg-white overflow-hidden">
-      {/* Signup modal */}
+      {/* Signup modal — only shown once */}
       {showSignupModal && (
         <SignupPrompt
           show={true}
-          onClose={() => setShowSignupModal(false)}
+          onClose={() => {
+            setShowSignupModal(false);
+            localProgressDb.markSignupPromptSeen();
+          }}
         />
       )}
 
@@ -334,7 +344,12 @@ export default function CodingPage() {
           </button>
         ) : nextRequiresLogin && canProceed ? (
           <button
-            onClick={() => setShowSignupModal(true)}
+            onClick={() => {
+              if (!localProgressDb.hasSeenSignupPrompt()) {
+                localProgressDb.markSignupPromptSeen();
+              }
+              setShowSignupModal(true);
+            }}
             className="flex items-center gap-1.5 text-sm font-medium px-4 py-1.5 rounded-full bg-zinc-900 text-white hover:bg-zinc-700 transition-all duration-200"
           >
             Sign up to continue <ArrowRight size={13} />
@@ -373,7 +388,7 @@ export default function CodingPage() {
               ) : (
                 <XCircle size={16} className="text-red-400 shrink-0 mt-0.5" />
               )}
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 <p
                   className={`text-sm font-semibold mb-1 ${
                     feedback.isCorrect ? "text-emerald-700" : "text-red-700"
@@ -393,7 +408,10 @@ export default function CodingPage() {
                 {!feedback.isCorrect && feedback.suggestions?.length > 0 && (
                   <div className="mt-2 flex flex-col gap-1">
                     {feedback.suggestions.map((s, i) => (
-                      <div key={i} className="flex items-start gap-1.5 text-xs text-red-500">
+                      <div
+                        key={i}
+                        className="flex items-start gap-1.5 text-xs text-red-500"
+                      >
                         <Lightbulb size={11} className="shrink-0 mt-0.5" />
                         <span>{s}</span>
                       </div>
@@ -403,7 +421,7 @@ export default function CodingPage() {
                 {feedback.isCorrect && isGuest && (
                   <p className="text-xs text-emerald-500 mt-2">
                     <Sparkles size={11} className="inline mr-1" />
-                    Create a free account to get detailed AI feedback on every exercise!
+                    Create a free account to unlock AI feedback on every exercise!
                   </p>
                 )}
               </div>
@@ -412,6 +430,7 @@ export default function CodingPage() {
         )}
       </AnimatePresence>
 
+      {/* AI limit banner for logged-in users */}
       {limitReached && !isGuest && (
         <div className="px-4 py-3 bg-amber-50 border-b border-amber-100 shrink-0">
           <div className="flex items-center justify-between">
@@ -429,8 +448,10 @@ export default function CodingPage() {
         </div>
       )}
 
+      {/* Main content */}
       <div className="flex-1 flex overflow-hidden">
         <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Code editor */}
           <div className="flex-1 overflow-hidden p-2">
             <CodeEditor
               value={code}
@@ -439,6 +460,7 @@ export default function CodingPage() {
             />
           </div>
 
+          {/* Output panel */}
           <div className="h-36 border-t border-zinc-100 bg-zinc-950 overflow-y-auto shrink-0">
             <div className="flex items-center gap-2 px-4 py-2 border-b border-zinc-800">
               <div className="w-2 h-2 rounded-full bg-zinc-700" />
@@ -449,6 +471,7 @@ export default function CodingPage() {
             </pre>
           </div>
 
+          {/* Action bar */}
           <div className="flex items-center gap-2 px-3 py-2.5 border-t border-zinc-100 shrink-0">
             <button
               onClick={handleRun}
@@ -487,10 +510,10 @@ export default function CodingPage() {
 
             <button
               onClick={() => setShowSolution((p) => !p)}
-              className="flex items-center gap-2 px-5 py-2.5 text-sm text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 rounded-xl transition-all duration-200 ml-auto"
+              className="flex items-center gap-2 px-3 py-1.5 text-sm text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 rounded-lg transition-all duration-200 ml-auto"
             >
-              {showSolution ? <EyeOff size={14} /> : <Eye size={14} />}
-              {showSolution ? "Hide Solution" : "Show Solution"}
+              {showSolution ? <EyeOff size={13} /> : <Eye size={13} />}
+              {showSolution ? "Hide" : "Solution"}
             </button>
           </div>
 
@@ -542,7 +565,7 @@ export default function CodingPage() {
           </AnimatePresence>
         </div>
 
-        {/* AI panel — always visible, guest-aware */}
+        {/* AI panel — always visible on desktop, guest-aware */}
         <div className="w-72 shrink-0 overflow-hidden border-l border-zinc-100 hidden md:block">
           <AIFeedbackPanel
             lesson={lesson}
