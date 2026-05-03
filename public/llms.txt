@@ -1,0 +1,78 @@
+# FluentCode
+> Learn to code by actually coding — write real exercises, get AI feedback, build lasting skills.
+
+FluentCode is a free, interactive platform designed to teach you how to code through hands-on practice. Unlike traditional coding tutorials with passive videos or multiple-choice quizzes, FluentCode puts you in control immediately: you write real, working code in a browser-based editor, run it instantly, and receive personalized AI feedback from your tutor. Whether you're a complete beginner or brushing up on fundamentals, FluentCode makes coding accessible, practical, and engaging — no signup required to start.
+
+## How It Works
+
+1. Jump Straight In — No signup, no setup. Click a button and start your first coding exercise in seconds.
+2. Write Real Code — Every lesson ends with an exercise. You write and run actual, working code.
+3. Get AI Feedback — Your AI tutor reviews your code and gives targeted guidance to help you learn and improve.
+
+## Courses Available
+
+Python (2 Languages. Zero Fluff.)
+- Phase 0: Welcome (5 minutes) — Your First Step, introduction to print()
+- Phase 1: Fundamentals (2 hours) — print(), input(), variables, strings, string methods, f-strings, numbers, arithmetic, booleans, type conversion
+- Phase 2: Control Flow (2.5 hours) — Comparisons, if/elif/else, while loops, for loops, break and continue, capstone guessing game
+- Phase 3: Functions and Data (3 hours) — Defining functions, parameters, return values, defaults, lists, list methods, dictionaries
+
+Java (Java Fundamentals)
+- Coming soon
+
+JavaScript (JavaScript Fundamentals)
+- Coming soon
+
+## Key Features
+
+- No Signup Required — Start learning immediately with guest access to the first 3 lessons.
+- Interactive Code Editor — Write code, run it, see output in real-time. Supports Python, Java, JavaScript.
+- AI-Powered Feedback — Get up to 10 AI code reviews per day (free). Unlimited reviews with premium support.
+- Hands-On Lessons — Theory + practice. Every lesson has an interactive exercise, not just reading.
+- Progress Tracking — Sign in to track your progress, build streaks, and see your improvement.
+- Hints and Debugging Tips — Stuck? Get hints and debugging strategies for each exercise.
+- Solution Viewing — See the expected solution anytime and compare with your code.
+- Quiz System — Test your knowledge with automatically generated quizzes based on lesson content.
+- AI Chat Assistant — Ask your AI tutor questions about the current lesson or your code. Context-aware guidance.
+- Mobile Friendly — Learn on any device. Quiz mode optimized for mobile.
+
+## Pricing
+
+Completely Free. Forever.
+
+- No subscriptions
+- No paywalls  
+- No hidden fees
+- All features available to all users
+- Optional donations to support development (100% goes to server costs and maintenance)
+
+## Support
+
+FluentCode is built and maintained by a solo developer. If you find it useful and want to help keep the servers running, you can donate at https://boosty.to/fluentcode/donate
+
+## Who Should Use FluentCode
+
+- Complete beginners wanting to learn programming from scratch
+- People who learn best by doing (hands-on practice)
+- Students needing immediate feedback on their code
+- Anyone tired of video tutorials and multiple-choice quizzes
+- Those wanting to learn multiple programming languages in one place
+- Learners who want real-world skills, not just theory
+
+## What Makes FluentCode Different
+
+- No Theory-Only Lessons — Every lesson combines explanation with immediately executable exercises
+- AI Tutor, Not Just Code Checker — The AI doesn't just say right/wrong; it explains WHY and gives specific guidance
+- Guest Access — Start learning without an account; no friction
+- No Paywall — All features free; you're not locked behind premium walls
+- Built for Real Learning — Focuses on concept understanding, not just syntax memorization
+- Personalized Pacing — Learn at your speed; no time limits on lessons
+
+## Links
+
+- Website: https://www.fluent-code.xyz
+- Sign Up: https://www.fluent-code.xyz/sign-up
+- Courses: https://www.fluent-code.xyz/courses
+- Dashboard: https://www.fluent-code.xyz/dashboard
+- Support: https://www.fluent-code.xyz/upgrade
+- Donate: https://boosty.to/fluentcode/donate

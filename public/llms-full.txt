@@ -1,0 +1,441 @@
+# FluentCode: Complete Platform Overview
+
+## Mission
+
+FluentCode teaches people to code by actually coding. Instead of passive videos or multiple-choice quizzes, learners write real, executable code, see immediate output, and receive AI-powered feedback. The platform removes friction (no signup to start), eliminates cost barriers (completely free), and focuses on deep, practical learning.
+
+## Platform Overview
+
+FluentCode is a web-based coding education platform built with React, Vite, and Supabase. It features an interactive Monaco code editor, Groq-powered AI feedback, quiz generation, progress tracking, and a supportive community-first approach.
+
+Website: https://www.fluent-code.xyz
+Created by: Solo developer
+Model: Free forever with optional donations
+
+## Technology Stack
+
+Frontend: React, Vite, Tailwind CSS, Framer Motion (animations)
+Editor: Monaco Editor (VS Code engine)
+Authentication: Clerk
+Backend/Database: Supabase
+AI API: Groq API (LLM: Llama 3.3 70B Versatile)
+Deployment: Vercel
+Analytics: Vercel Analytics
+UI Components: Radix UI, shadcn/ui
+
+## How The Platform Works
+
+1. User lands on landing page
+2. Can start coding immediately as guest (first 3 lessons free)
+3. Or sign up with Clerk for full features
+4. Writes code in Monaco editor
+5. Submits for evaluation
+6. Local tests check basic correctness
+7. AI evaluates code and provides feedback
+8. User can ask AI questions with context-aware assistance
+9. Tracks progress in Supabase (when logged in)
+10. Can generate quizzes for any lesson
+11. Builds learning streaks
+12. Can support project via donations
+
+## Complete Python Curriculum
+
+### Phase 0: Welcome (5 minutes) — 1 Lesson
+
+LESSON: Your First Step
+- Title: Your First Step
+- Concept: The print() function displays messages on the screen — this is your first way to communicate with the computer.
+- Explanation: Welcome to FluentCode! This platform teaches you to code by actually coding — just like learning a language by speaking it. Every lesson gives you a tiny, focused challenge. In Python, the most basic thing you can do is make the computer talk using print(). Let's write your first line of Python.
+- Example Code: print('Hello, world!')\nprint('I am learning Python!')
+- Exercise Prompt: Use print() to make the computer say exactly: 'I am ready to code!' (Don't forget the quotes!)
+- Starter Code: # Write your first print statement below:\n# Make it say: I am ready to code!\n
+- Solution: print('I am ready to code!')
+- Debugging Tip: Did you put quotes around your message? Python needs quotes to know it's text. Check that your parentheses are balanced.
+- Tests: Code must contain print('I am ready to code!')
+
+### Phase 1: Fundamentals (2 hours) — 10 Lessons
+
+LESSON 1: Talking with print()
+- Concept: print() outputs text to the console — each call creates a new line.
+- Explanation: The print() function is how Python talks to you. Put whatever you want to display inside parentheses, wrapped in quotes. You can use multiple print() statements for multiple lines. This is your primary tool for seeing what your code is doing.
+- Example: print('Hello')\nprint('Goodbye')\nprint('Python is fun!')
+- Exercise: Print three lines exactly: 'Ready', 'Set', 'Go!' (one per statement)
+- Solution: print('Ready')\nprint('Set')\nprint('Go!')
+- Debugging Tip: Each print() goes on its own line. Make sure you have three separate statements. Check quote matching.
+
+LESSON 2: Listening with input()
+- Concept: input() lets your program receive text from the user — it always returns a string.
+- Explanation: The input() function pauses your program and waits for the user to type something. Whatever the user types comes back as text. Usually you'll want to save it in a variable. Let's ask a question and respond.
+- Example: name = input('What is your name? ')\nprint('Nice to meet you, ' + name)
+- Exercise: Ask user for favorite color with exact prompt 'What is your favorite color? ' and print 'That is a great color!' (don't include the color in output)
+- Solution: color = input('What is your favorite color? ')\nprint('That is a great color!')
+- Debugging Tip: The prompt text must be exact, including the space after the question mark. Store the input even if you don't use it directly.
+
+LESSON 3: Storing Things in Variables
+- Concept: A variable stores a value so you can reuse it — create one with the = sign and a descriptive name.
+- Explanation: Variables are like labeled boxes. Create one by giving it a name and using = to put something inside. Names can have letters, numbers, and underscores, but can't start with a number. Once stored, use the variable anywhere you'd use the original value.
+- Example: my_name = 'Alex'\nmy_age = 25\nprint(my_name)\nprint(my_age)
+- Exercise: Create 'favorite_food', print it, change it to something else, print again
+- Solution: favorite_food = 'pizza'\nprint(favorite_food)\nfavorite_food = 'sushi'\nprint(favorite_food)
+- Debugging Tip: print(favorite_food) prints the value. print('favorite_food') prints the literal word — big difference!
+
+LESSON 4: Working with Strings
+- Concept: Strings are text wrapped in quotes — you can join them with + and repeat them with *.
+- Explanation: A string is any text — letters, numbers, symbols. Strings are wrapped in single or double quotes. Join strings with + (concatenation). Repeat strings with * and a number. Strings are fundamental in programming.
+- Example: first = 'Hello'\nlast = 'World'\nfull = first + ' ' + last\nprint(full)\nprint('Ha' * 3)
+- Exercise: Create 'greeting' = 'Hi' and 'name' = 'Sam'. Combine them with a space in 'message'. Print message. Print greeting repeated 4 times.
+- Solution: greeting = 'Hi'\nname = 'Sam'\nmessage = greeting + ' ' + name\nprint(message)\nprint(greeting * 4)
+- Debugging Tip: Don't forget the space! greeting + name gives 'HiSam'. You need ' ' in the middle. It's just a string with a single space character.
+
+LESSON 5: String Superpowers: .upper() and .lower()
+- Concept: .upper() and .lower() are string methods that change text case — use them with a dot and parentheses.
+- Explanation: Strings come with built-in methods. .upper() converts to ALL CAPS, .lower() converts to all lowercase. Call methods with a dot after the string (or variable), then the method name and parentheses. These are handy for standardizing user input.
+- Example: text = 'Hello World'\nprint(text.upper())\nprint(text.lower())\nprint('python'.upper())
+- Exercise: Create 'name' in mixed case like 'aLiCe'. Create 'upper_name' using .upper() and 'lower_name' using .lower(). Print both.
+- Solution: name = 'aLiCe'\nupper_name = name.upper()\nlower_name = name.lower()\nprint(upper_name)\nprint(lower_name)
+- Debugging Tip: Must include parentheses! It's .upper() not .upper. Without them, Python won't call the method.
+
+LESSON 6: F-Strings: String Formatting Magic
+- Concept: F-strings embed variables directly in strings using f before the quote and {variable} inside — clean, modern string formatting.
+- Explanation: F-strings let you put variables directly in your text without messy + signs. Use f before the opening quote, then wrap any variable or expression in curly braces {}. Python replaces the braces with actual values.
+- Example: name = 'Alex'\nage = 25\nprint(f'My name is {name} and I am {age} years old.')\nprint(f'Next year I will be {age + 1}')
+- Exercise: Create 'item' = 'book' and 'price' = 15. Use f-string to print: 'The book costs 15 dollars.' (use variables, don't hardcode)
+- Solution: item = 'book'\nprice = 15\nprint(f'The {item} costs {price} dollars.')
+- Debugging Tip: Don't forget the f! print('The {item}...') won't work — you'll see literal {item}. The f is what makes the replacement happen.
+
+LESSON 7: Numbers: Integers and Floats
+- Concept: Integers are whole numbers, floats have decimals — Python chooses the type based on whether you include a decimal point.
+- Explanation: Python has two main number types: integers (5, -3, 42) and floats (3.14, -0.5, 2.0). Python automatically figures out which type based on the decimal point. You can do math with both, and they mostly work as expected.
+- Example: age = 25\nprice = 19.99\nprint(type(age))\nprint(type(price))\nprint(age + price)
+- Exercise: Create 'students' = 30 (integer) and 'average_grade' = 87.5 (float). Print both variables and their types using type()
+- Solution: students = 30\naverage_grade = 87.5\nprint(students)\nprint(average_grade)\nprint(type(students))\nprint(type(average_grade))
+- Debugging Tip: If you write 30.0 instead of 30, that's a float. The decimal point is what tells Python it's a float, even if the decimal part is zero.
+
+LESSON 8: Basic Arithmetic
+- Concept: Python uses +, -, *, /, //, %, ** for arithmetic — it follows standard order of operations (PEMDAS).
+- Explanation: Python can do all your math — addition (+), subtraction (-), multiplication (*), division (/), integer division (//), modulo/remainder (%), and exponents (**). It follows the same order of operations you learned in school.
+- Example: result = 10 + 5 * 2\nprint(result)\nprint(17 // 5)\nprint(17 % 5)\nprint(2 ** 3)
+- Exercise: Calculate area of rectangle (width 7, height 12) and perimeter. Store results in 'area' and 'perimeter' variables.
+- Solution: width = 7\nheight = 12\narea = width * height\nperimeter = 2 * width + 2 * height\nprint(area)\nprint(perimeter)
+- Debugging Tip: Check order of operations. 2 * width + 2 * height works because multiplication happens first. If unsure, use parentheses: (2 * width) + (2 * height).
+
+LESSON 9: True or False: Booleans
+- Concept: Booleans are True or False values — they're the foundation of all logic and decision-making in code.
+- Explanation: A boolean can only be True or False (capital T and F, always!). Booleans power all decision-making in programs. You can create them directly or get them from comparisons like checking if something is greater than something else.
+- Example: is_sunny = True\nis_raining = False\nprint(is_sunny)\nprint(type(is_raining))\nprint(5 > 3)
+- Exercise: Create 'is_logged_in' = True and 'has_permission' = False. Print both. Then print the result of checking if 10 > 20 (should be False).
+- Solution: is_logged_in = True\nhas_permission = False\nprint(is_logged_in)\nprint(has_permission)\nprint(10 > 20)
+- Debugging Tip: Capitalization matters! It's True and False with capital letters, not 'true' or 'false'. Lowercase versions will cause undefined variable errors.
+
+LESSON 10: Type Conversion
+- Concept: int(), float(), and str() convert values between types — crucial when you get string input but need numbers.
+- Explanation: Sometimes you have a number as a string (like from input()) and need to do math with it. Python gives you conversion functions: int() makes integers, float() makes floats, and str() makes strings. Just wrap what you want to convert.
+- Example: text = '123'\nnum = int(text)\nprint(num + 10)\nprint(str(45) + ' is a number')\nprint(float('3.14'))
+- Exercise: Create 'age_str' = '25'. Convert to integer and store in 'age_int'. Print result of adding 5. Convert 100 to string and concatenate with ' percent'.
+- Solution: age_str = '25'\nage_int = int(age_str)\nprint(age_int + 5)\nprint(str(100) + ' percent')
+- Debugging Tip: You can't convert 'twenty-five' to an integer — int() only works on strings that look like numbers. If ValueError, check your string contains only digits.
+
+### Phase 2: Control Flow (2.5 hours) — 8 Lessons
+
+LESSON 1: Comparing Things
+- Concept: Comparison operators (==, !=, <, >, <=, >=) compare values and return True or False.
+- Explanation: Before your program can make decisions, it compares values. Python gives you comparison operators: == checks equality, != checks inequality, < and > check less/greater than, <= and >= include equality. These always return boolean (True/False).
+- Example: a = 10\nb = 20\nprint(a == b)\nprint(a != b)\nprint(a < b)\nprint(a >= 10)
+- Exercise: Create x = 50, y = 30. Print three comparisons: x > y, x == y, x != y
+
+LESSON 2: Making Decisions with if
+- Concept: An if statement runs its indented code block only when its condition is True — the colon and indentation are mandatory.
+- Explanation: The if statement makes choices. Write 'if', then a condition (True/False), then a colon, then indented code. That code only runs if True. If False, Python skips it. Incredibly powerful!
+- Example: temperature = 30\nif temperature > 25:\n    print('Hot day!')\n    print('Stay hydrated!')
+- Exercise: Create score = 85. Write if statement checking score >= 60, print 'You passed!' and 'Congratulations!' (both indented)
+
+LESSON 3: Handling Multiple Paths: elif and else
+- Concept: elif checks additional conditions after an if, and else catches everything else — only one block runs in an if/elif/else chain.
+- Explanation: Real decisions have multiple outcomes. After if, add elif to check another condition, and else to catch everything else. Python checks if first, then each elif, then else. Only ONE block executes.
+- Example: score = 75\nif score >= 90:\n    print('A')\nelif score >= 80:\n    print('B')\nelif score >= 70:\n    print('C')\nelse:\n    print('F')
+- Exercise: Grade a score 73: 90+ = A, 80+ = B, 70+ = C, else = Needs work
+
+LESSON 4: Repeating with While Loops
+- Concept: A while loop repeats code as long as its condition is True — always make sure the condition can eventually become False.
+- Explanation: While loops repeat a code block as long as a condition is True. They check the condition before each repetition. If it starts False, the loop never runs. Be careful — if the condition never becomes False, you get an infinite loop!
+- Example: count = 0\nwhile count < 5:\n    print(count)\n    count = count + 1\nprint('Done!')
+- Exercise: Create num = 1. Loop while num <= 5, printing num each time, incrementing num
+
+LESSON 5: For Loops with range()
+- Concept: for loops with range() iterate a specific number of times — range(n) counts from 0 to n-1.
+- Explanation: For loops are perfect when you know exactly how many times to repeat. range(5) gives 0, 1, 2, 3, 4. range(1, 6) gives 1, 2, 3, 4, 5. For loops are cleaner than while when counting.
+- Example: for i in range(5):\n    print('Hello!')\nfor num in range(1, 4):\n    print(num)
+- Exercise: Write for loop printing 0-7. Write second for loop printing 10-15 using range(10, 16)
+
+LESSON 6: For Loops with Lists
+- Concept: A for loop can iterate directly over a list — the loop variable gets each item one by one.
+- Explanation: For loops shine when iterating through lists. Instead of range(), put the list after 'in'. The loop variable gets each value, one at a time. This is how you process collections.
+- Example: fruits = ['apple', 'banana', 'orange']\nfor fruit in fruits:\n    print(f'I like {fruit}')
+- Exercise: Create 'colors' list with 3 colors. Loop through, printing 'Color: ' + each color
+
+LESSON 7: Break and Continue
+- Concept: break exits a loop immediately; continue skips to the next iteration — use them for special cases.
+- Explanation: Sometimes you need to control loops from inside. break immediately exits the loop entirely. continue skips the rest of the current iteration and jumps to the next one.
+- Example: for i in range(10):\n    if i == 3:\n        continue\n    if i == 7:\n        break\n    print(i)
+- Exercise: Loop 0-9, skip 4 with continue, stop at 8 with break
+
+LESSON 8: Capstone: Number Guessing Game
+- Concept: Combine variables, while loops, input, and if/else to build an interactive guessing game.
+- Explanation: Let's apply everything! Build a guessing game where the computer has a secret number and the user keeps guessing. Give hints like 'too high' or 'too low'.
+- Example: secret = 7\nguess = 0\nwhile guess != secret:\n    guess = int(input('Guess: '))\n    if guess < secret:\n        print('Too low!')\n    elif guess > secret:\n        print('Too high!')\nprint('Correct!')
+- Exercise: Secret = 5. Loop until correct guess. If too low, print 'Higher!'. If too high, 'Lower!'. When correct, 'You got it!'
+
+### Phase 3: Functions and Data (3 hours) — 8 Lessons
+
+LESSON 1: Defining Functions
+- Concept: Functions package reusable code under a name — define with def, call by using the name with parentheses.
+- Explanation: A function is a reusable code block with a name. Define it once with 'def', call it by name whenever needed. Functions keep code organized and prevent repetition. When called, Python runs the function, then returns.
+- Example: def greet():\n    print('Hello!')\n    print('How are you?')\ngreet()\ngreet()
+- Exercise: Define say_motto() printing 'Keep coding!' and 'Never give up!'. Call twice.
+
+LESSON 2: Functions with Parameters
+- Concept: Parameters let functions accept input — define them in the parentheses, pass arguments when calling.
+- Explanation: Parameters make functions flexible. Instead of doing the same thing every time, functions accept input values and behave differently. Define parameters in parentheses when defining; provide arguments when calling.
+- Example: def greet(name):\n    print(f'Hello, {name}!')\ngreet('Alice')\ngreet('Bob')
+- Exercise: Define double(number) that prints number * 2. Call with 5, 10, 3
+
+LESSON 3: Return Values
+- Concept: The return keyword sends a value back from a function — capture it in a variable to use it later.
+- Explanation: Functions can send values back using return. That value can be stored or used directly. Once return is hit, the function stops and hands the value back to the caller.
+- Example: def add(a, b):\n    return a + b\nresult = add(5, 3)\nprint(result)
+- Exercise: Define multiply(a, b) returning a * b. Call with 4, 7; store and print result (should be 28)
+
+LESSON 4: Default Parameters
+- Concept: Default parameter values let callers omit arguments — the function falls back to the default.
+- Explanation: You can give parameters defaults. If the caller doesn't provide an argument, the default is used. Define defaults with = in the parameter list. Parameters with defaults must come after those without.
+- Example: def greet(name='friend'):\n    print(f'Hello, {name}!')\ngreet('Alice')\ngreet()
+- Exercise: Define power(base, exponent=2) returning base ** exponent. Call as power(5) and power(3, 4); print both (25 and 81)
+
+LESSON 5: Lists: Creating and Indexing
+- Concept: Lists are ordered, mutable collections — access items with zero-based indexing using brackets.
+- Explanation: A list is an ordered collection created with square brackets. Each item has a position (index), starting from 0. Access items with bracket notation: my_list[0] gets the first. Lists can hold any type, even mixed, and are changeable.
+- Example: scores = [95, 87, 72, 91]\nprint(scores[0])\nprint(scores[2])\nscores[1] = 90\nprint(scores)
+- Exercise: Create planets = ['Mercury', 'Venus', 'Earth', 'Mars']. Print index 0, index 2. Change index 1 to 'Jupiter'. Print list.
+
+LESSON 6: List Methods: append, remove, pop
+- Concept: append() adds to end, remove() deletes by value, pop() removes by index and returns — all modify the list.
+- Explanation: Lists have powerful methods. append() adds an item to the end. remove() deletes the first occurrence of a value. pop() removes an item at an index (or last if no index) and returns it.
+- Example: fruits = ['apple', 'banana']\nfruits.append('orange')\nfruits.remove('apple')\npopped = fruits.pop(0)\nprint(popped)
+- Exercise: Start with empty tasks list. Append 'Study', 'Exercise'. Remove 'Study'. Append 'Sleep'. Pop last item into last_task. Print it and the list.
+
+LESSON 7: Dictionaries: Creating and Accessing
+- Concept: Dictionaries map keys to values — use curly braces and access with dict[key] notation.
+- Explanation: A dictionary stores key-value pairs. Instead of numeric indexes, use descriptive keys. Create with curly braces, access with square brackets containing the key. Perfect for labeled data.
+- Example: person = {'name': 'Alex', 'age': 25, 'city': 'Paris'}\nprint(person['name'])\nperson['job'] = 'developer'
+- Exercise: Create book dictionary with title='1984', author='Orwell', year=1949. Access title. Add rating=5. Print dict.
+
+LESSON 8: Dictionary Methods and Iteration
+- Concept: Use .keys(), .values(), .items() to iterate dictionaries; .get() provides safe access with defaults.
+- Explanation: Dictionaries have methods: .keys() gives all keys, .values() gives all values, .items() gives key-value pairs. Loop through with for. .get() safely accesses keys, returning a default if missing instead of crashing.
+- Example: person = {'name': 'Alex', 'age': 25}\nfor key in person.keys():\n    print(key)\nfor value in person.values():\n    print(value)
+- Exercise: Create student dict with name, grade, and school. Loop through with .items(). Print each key-value pair. Use .get() to safely access missing key with default value.
+
+## Interactive Learning Features
+
+### Code Editor
+- Monaco Editor (same engine as VS Code)
+- Syntax highlighting for Python, Java, JavaScript
+- Real-time code execution
+- Built-in output display
+- Starter code templates for each exercise
+- Solution visibility (can view reference solution)
+- Hint system (debugging tips for each exercise)
+
+### AI Feedback System
+- Groq API (Llama 3.3 70B Versatile model)
+- Evaluates submitted code against exercise requirements
+- Provides personalized feedback on code correctness
+- Identifies common mistake patterns
+- Offers specific suggestions for improvement
+- 10 free evaluations per day (free users)
+- Unlimited evaluations (supporters)
+
+### AI Chat Assistant
+- Context-aware help within the code lesson
+- Can ask questions about current lesson or code
+- Receives guidance without full solutions
+- Rate-limited to prevent abuse
+- IP-based rate limiting (20 requests/minute per IP)
+- Timeout protection (10-second response window)
+- Sanitized inputs to prevent prompt injection
+
+### Quiz System
+- Auto-generated quizzes based on lesson content
+- 7 question types: concept, example, solution, debug, fill-blank, true/false, predict-output
+- Multiple choice format
+- Hints for each question
+- Explanations for all answers
+- Progress tracking across all quizzes
+
+### Progress Tracking (Signed-In Users)
+- Tracks completed lessons and quizzes
+- Displays learning streaks (consecutive days coding)
+- Shows statistics: total exercises, correct exercises, accuracy
+- Identifies mistake patterns over time
+- Calculates next recommended lesson
+- Persists all progress in Supabase database
+
+### Guest Access
+- Can access first 3 lessons of Python without signup
+- Limited AI feedback (no feedback, only basic testing)
+- No progress tracking
+- No streak counting
+- Optional prompt to sign up after completing free lessons
+- Smooth transition to full features upon signup
+
+## Authentication & User Management
+
+- **Provider**: Clerk (industry-standard identity provider)
+- **Flow**: OAuth-based sign-in/sign-up
+- **Email Verification**: Built into Clerk
+- **Passwordless Options**: Magic links, OAuth providers
+- **Session Management**: Secure JWT tokens
+- **User Context**: Available throughout app
+- **Guest Mode**: Full access without authentication (first 3 lessons)
+- **Signed-In**: Full platform access, progress tracking, AI feedback
+
+## Data & Privacy
+
+- **Database**: Supabase (PostgreSQL)
+- **Encryption**: HTTPS/TLS in transit
+- **Row-Level Security**: Database-level access control
+- **User Data**: Email, name, learning progress
+- **Code Submissions**: Stored for feedback, not used for training
+- **No Ads**: No tracking, no advertisements
+- **No Paywalls**: All features free
+- **GDPR Compliant**: Privacy policy included, data deletion on request
+- **Minimal Cookies**: Only essential authentication cookies
+
+## Security Measures
+
+- **CORS Locked**: API endpoints accept only from https://fluent-code.xyz and allowed localhost domains
+- **Input Validation**: All inputs validated for type, length, and content
+- **Rate Limiting**: 20-30 requests/minute per IP on AI endpoints
+- **Payload Limits**: 50KB maximum request size
+- **Sanitization**: User input sanitized before LLM prompts to prevent injection
+- **Timeouts**: 10-second timeout on all AI API calls
+- **Error Handling**: Safe error messages that don't leak system info
+- **Environment Variables**: All secrets (GROQ_API_KEY) stored securely in Vercel
+- **No Hardcoded Secrets**: Zero credentials in source code
+
+## Supported Languages
+
+### Python (Complete Curriculum — 26 Lessons, 7.5 Hours)
+- Phase 0-3 as detailed above
+- Fundamentals through functions and data structures
+- Covers: print, variables, strings, numbers, arithmetic, conditionals, loops, functions, lists, dictionaries
+
+### Java (Fundamentals — Coming Soon)
+- Basic syntax
+- Variables and types
+- Control flow
+- Object-oriented basics
+
+### JavaScript (Fundamentals — Coming Soon)
+- ES6+ syntax
+- Variables and scope
+- DOM manipulation
+- Asynchronous basics
+
+## Pricing Model
+
+- **Base Model**: Completely free forever
+  - All lessons accessible
+  - AI feedback: 10 requests per day
+  - Quizzes unlimited
+  - Progress tracking
+  - Code editor with real-time execution
+  - All features available
+
+- **Optional Support**: Donations via Boosty
+  - 100% goes to server costs and development
+  - No pressure, no obligation
+  - Unlock "unlimited AI requests" status
+  - Support continued development
+
+- **No Subscriptions**: No tiered plans, no paywalls, no premium-only features
+- **Target Audience**: Everyone wanting to learn coding, particularly beginners and self-learners
+
+## Who It's For
+
+- Complete beginners with zero programming experience
+- Self-taught learners who prefer hands-on practice
+- Students bored by traditional tutorials and videos
+- Anyone wanting to learn multiple languages in one place
+- People who learn best by doing, not watching
+- Career changers looking to upskill quickly
+- Students preparing for coding interviews
+- Teachers looking for student resources
+
+## What Makes FluentCode Unique
+
+1. **No Setup Barrier**: Start coding in 10 seconds without signup
+2. **No Cost Barrier**: Completely free forever with optional donations
+3. **Hands-On Learning**: Every lesson has a code exercise, not just reading
+4. **Real AI Tutor**: Groq-powered AI gives personalized feedback, not just right/wrong
+5. **Immediate Output**: Code editor shows results instantly
+6. **Built by a Developer**: Solo developer prioritizing learning quality over profit
+7. **Focus on Understanding**: Emphasis on deep learning of concepts, not syntax memorization
+8. **Progress Rewards**: Streaks, completion badges, mistake tracking
+9. **Multiple Modalities**: Learn theory, then immediately code, then quiz, then get feedback
+10. **Privacy-First**: No tracking, no ads, no data selling
+
+## Future Development
+
+- More languages: JavaScript, Java, Go, Rust
+- Advanced topics: OOP, algorithms, data structures
+- Code challenges and competitions
+- Community features: code sharing, peer reviews
+- Mobile app (current is web-responsive)
+- Video explanations (supplementary)
+- Interactive debugging tutorials
+- Certification upon completion
+
+## Support & Community
+
+- Email: fluentcodesupport@gmail.com
+- Donation: https://boosty.to/fluentcode/donate
+- TikTok: @fluentcodeweb
+- GitHub: (open source, if applicable)
+- Discord: (community, if planned)
+
+## Technical Details
+
+- **Frontend Framework**: React 18
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS
+- **Animations**: Framer Motion
+- **Code Editor**: Monaco Editor (VS Code engine)
+- **UI Components**: Radix UI + shadcn/ui
+- **Form Handling**: React Hook Form
+- **State Management**: React Query
+- **Backend**: Supabase (PostgreSQL)
+- **Authentication**: Clerk
+- **LLM API**: Groq (Llama 3.3 70B)
+- **Deployment**: Vercel
+- **Analytics**: Vercel Analytics
+- **Hosting**: Vercel, Supabase, Groq Cloud
+
+## Key Stats
+
+- 26+ lessons in Python (complete beginner to functions/data)
+- 3+ languages supported (Python, Java, JavaScript)
+- 10 free AI feedback requests per day
+- Unlimited quizzes
+- 0 cost forever
+- Solo developer maintaining
+- Fast load times (Vite + Vercel)
+- 99.9% uptime SLA (Vercel, Supabase)
+- Real-time code execution with output
+- AI-powered feedback within seconds
+
+## Conclusion
+
+FluentCode reimagines coding education for the modern learner. By removing signup friction, eliminating cost barriers, and focusing on hands-on practice with AI mentorship, it makes learning to code accessible to anyone. The platform's emphasis on actually writing code — not watching videos or selecting multiple choice — builds real skills that stick. Whether you're a complete beginner or brushing up on fundamentals, FluentCode provides a supportive, judgment-free environment to learn, practice, fail, get feedback, and improve.
+
+Start at https://www.fluent-code.xyz
