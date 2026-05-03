@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { getLessonById } from "@/lib/curriculum";
-import { isGuestAccessible, shouldPromptSignup } from "@/lib/guestAccess";
+import { isGuestAccessible, shouldPromptSignup, isExerciseFirst } from "@/lib/guestAccess";
 import { localProgressDb } from "@/lib/localProgressDb";
 import { Play, Lightbulb, HelpCircle } from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
@@ -38,6 +38,7 @@ export default function Lesson() {
 
   const isGuest = !isSignedIn;
   const guestAllowed = isGuestAccessible(language, lessonId);
+  const exerciseFirst = isExerciseFirst(language, lessonId);
 
   // Redirect guests trying to access non-guest lessons
   useEffect(() => {
@@ -46,6 +47,13 @@ export default function Lesson() {
     }
   }, [isLoaded, isGuest, guestAllowed, language, navigate]);
 
+  // For exercise-first lessons, redirect straight to coding page
+  useEffect(() => {
+    if (!isLoading && result && exerciseFirst) {
+      navigate(`/code/${language}/${lessonId}`, { replace: true });
+    }
+  }, [isLoading, result, exerciseFirst, language, lessonId, navigate]);
+
   useEffect(() => {
     setIsLoading(true);
     const data = getLessonById(language, lessonId);
@@ -53,7 +61,6 @@ export default function Lesson() {
     setIsLoading(false);
   }, [language, lessonId]);
 
-  // Load streak (for logged-in users)
   useEffect(() => {
     if (!isLoaded || !isSignedIn || !supabaseClient) return;
     const loadStreak = async () => {
@@ -71,7 +78,6 @@ export default function Lesson() {
     loadStreak();
   }, [isLoaded, isSignedIn, user, supabaseClient]);
 
-  // Check if guest should see signup prompt
   useEffect(() => {
     if (!isGuest) return;
     const guestProgress = localProgressDb.getProgress();
@@ -106,9 +112,17 @@ export default function Lesson() {
     );
   }
 
+  // Exercise-first lessons redirect — show spinner while redirecting
+  if (exerciseFirst) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="w-5 h-5 border-2 border-zinc-200 border-t-zinc-900 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   const { lesson, module } = result;
 
-  // If guest has completed all 3 free lessons, show signup
   if (isGuest && showSignupPrompt && !guestAllowed) {
     return (
       <div className="min-h-screen bg-white">
@@ -255,7 +269,6 @@ export default function Lesson() {
           )}
         </div>
 
-        {/* Signup prompt after 3 lessons */}
         {isGuest && showSignupPrompt && guestAllowed && <SignupPrompt />}
       </div>
     </div>

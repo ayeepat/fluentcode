@@ -4,13 +4,14 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
 import { getLessonById, getAllLessons } from "@/lib/curriculum";
-import { isGuestAccessible, shouldPromptSignup } from "@/lib/guestAccess";
+import { isGuestAccessible, shouldPromptSignup, isExerciseFirst } from "@/lib/guestAccess";
 import { localProgressDb } from "@/lib/localProgressDb";
 import CodeEditor from "@/components/editor/CodeEditor";
 import AIFeedbackPanel from "@/components/editor/AIFeedbackPanel";
+import TheoryModal from "@/components/TheoryModal";
 import {
   Play, Send, ArrowLeft, ArrowRight, Eye, EyeOff,
-  Heart, Lightbulb, CheckCircle, XCircle, Sparkles,
+  Heart, Lightbulb, CheckCircle, XCircle, Sparkles, BookOpen,
 } from "lucide-react";
 import { progressDb } from "@/lib/progressDb";
 import { evaluateCode } from "@/lib/groqClient";
@@ -35,6 +36,7 @@ export default function CodingPage() {
 
   const isGuest = !isSignedIn;
   const guestAllowed = isGuestAccessible(language, lessonId);
+  const exerciseFirst = isExerciseFirst(language, lessonId);
 
   const [code, setCode] = useState("");
   const [output, setOutput] = useState("");
@@ -48,17 +50,17 @@ export default function CodingPage() {
   const [aiRemaining, setAiRemaining] = useState(null);
   const [limitReached, setLimitReached] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
+  const [showTheoryModal, setShowTheoryModal] = useState(false);
+  const [failCount, setFailCount] = useState(0);
 
   const result = useMemo(() => getLessonById(language, lessonId), [language, lessonId]);
 
-  // Redirect guests trying to access non-free lessons
   useEffect(() => {
     if (isUserLoaded && isGuest && !guestAllowed) {
       navigate("/courses");
     }
   }, [isUserLoaded, isGuest, guestAllowed, navigate]);
 
-  // Reset state on lesson change
   useEffect(() => {
     if (!result) {
       setIsLoading(false);
@@ -77,9 +79,10 @@ export default function CodingPage() {
     setShowHint(false);
     setLimitReached(false);
     setShowSignupModal(false);
+    setShowTheoryModal(false);
+    setFailCount(0);
   }, [result, isGuest, lessonId]);
 
-  // Load progress
   useEffect(() => {
     if (!result || !isUserLoaded) {
       if (isUserLoaded) setIsLoading(false);
@@ -107,7 +110,6 @@ export default function CodingPage() {
           user.primaryEmailAddress?.emailAddress
         );
         setProgress(data);
-
         const remaining = await progressDb.getAiRequestsRemaining(
           supabaseClient,
           user.id,
@@ -124,7 +126,7 @@ export default function CodingPage() {
     load();
   }, [result, isUserLoaded, isSignedIn, user, supabaseClient, isGuest]);
 
-  // Auto-save code for guests every second
+  // Auto-save code for guests
   useEffect(() => {
     if (!isGuest || !lessonId) return;
     const timer = setTimeout(() => {
@@ -151,8 +153,25 @@ export default function CodingPage() {
 
   const { lesson } = result;
 
+  const allLessons = getAllLessons(language);
+  const currentIdx = allLessons.findIndex((l) => l.id === lessonId);
+  const nextLesson = allLessons[currentIdx + 1];
+  const canProceed = submitted && feedback?.isCorrect;
+  const nextRequiresLogin =
+    nextLesson && isGuest && !isGuestAccessible(language, nextLesson.id);
+
   const handleRun = () => {
     setOutput(`$ running code...\n\n${code}`);
+  };
+
+  const handleNext = () => {
+    if (nextRequiresLogin) {
+      setShowSignupModal(true);
+      return;
+    }
+    if (nextLesson) {
+      navigate(`/lesson/${language}/${nextLesson.id}`);
+    }
   };
 
   const handleSubmit = async () => {
@@ -163,7 +182,7 @@ export default function CodingPage() {
     const tests = lesson.exercise.tests || [];
     const passedLocally = runLocalTests(code, tests);
 
-    // ─── CORRECT: no API call needed ────────────────────────────────────
+    // ─── CORRECT ────────────────────────────────────────────────────────
     if (passedLocally) {
       const successFeedback = {
         isCorrect: true,
@@ -181,13 +200,19 @@ export default function CodingPage() {
         });
         setProgress(localProgressDb.getProgress());
 
-        // Show signup modal only once
         const updatedProgress = localProgressDb.getProgress();
         if (
           shouldPromptSignup(language, updatedProgress.completed_lessons) &&
           !localProgressDb.hasSeenSignupPrompt()
         ) {
-          setTimeout(() => setShowSignupModal(true), 1500);
+          // Show theory first for exercise-first lessons, then signup
+          if (exerciseFirst) {
+            setTimeout(() => setShowTheoryModal(true), 600);
+          } else {
+            setTimeout(() => setShowSignupModal(true), 1500);
+          }
+        } else if (exerciseFirst) {
+          setTimeout(() => setShowTheoryModal(true), 600);
         }
       } else if (supabaseClient && user) {
         const extraUpdates = {
@@ -202,13 +227,21 @@ export default function CodingPage() {
           extraUpdates
         );
         if (updated) setProgress(updated);
+
+        // Show theory modal for exercise-first lessons
+        if (exerciseFirst) {
+          setTimeout(() => setShowTheoryModal(true), 600);
+        }
       }
 
       setSubmitting(false);
       return;
     }
 
-    // ─── INCORRECT: use API to explain what went wrong ───────────────────
+    // ─── INCORRECT ───────────────────────────────────────────────────────
+
+    const newFailCount = failCount + 1;
+    setFailCount(newFailCount);
 
     // Check rate limit for logged-in users
     if (!isGuest && supabaseClient && user) {
@@ -240,7 +273,11 @@ export default function CodingPage() {
       setFeedback(aiResponse);
       setSubmitted(true);
 
-      // Save incorrect attempt stats (NOT as completed)
+      // After 3 failures on exercise-first lessons, show theory
+      if (!aiResponse.isCorrect && exerciseFirst && newFailCount >= 3) {
+        setTimeout(() => setShowTheoryModal(true), 800);
+      }
+
       if (!isGuest && supabaseClient && user) {
         const updatedMistakes = aiResponse.mistakePatterns
           ? [
@@ -271,21 +308,18 @@ export default function CodingPage() {
         suggestions: ["Review the example code", "Check for typos"],
       });
       setSubmitted(true);
+
+      if (exerciseFirst && newFailCount >= 3) {
+        setTimeout(() => setShowTheoryModal(true), 800);
+      }
     } finally {
       setSubmitting(false);
     }
   };
 
-  const allLessons = getAllLessons(language);
-  const currentIdx = allLessons.findIndex((l) => l.id === lessonId);
-  const nextLesson = allLessons[currentIdx + 1];
-  const canProceed = submitted && feedback?.isCorrect;
-  const nextRequiresLogin =
-    nextLesson && isGuest && !isGuestAccessible(language, nextLesson.id);
-
   return (
     <div className="h-screen flex flex-col bg-white overflow-hidden">
-      {/* Signup modal — only shown once */}
+      {/* Signup modal */}
       {showSignupModal && (
         <SignupPrompt
           show={true}
@@ -296,14 +330,42 @@ export default function CodingPage() {
         />
       )}
 
+      {/* Theory modal — for exercise-first lessons */}
+      <TheoryModal
+        lesson={lesson}
+        show={showTheoryModal}
+        isCorrect={feedback?.isCorrect ?? false}
+        nextLesson={nextLesson}
+        onClose={() => {
+          setShowTheoryModal(false);
+          // If they closed after seeing theory on success + need signup
+          if (
+            feedback?.isCorrect &&
+            isGuest &&
+            shouldPromptSignup(language, localProgressDb.getProgress().completed_lessons) &&
+            !localProgressDb.hasSeenSignupPrompt()
+          ) {
+            setTimeout(() => setShowSignupModal(true), 300);
+          }
+        }}
+        onNext={() => {
+          setShowTheoryModal(false);
+          handleNext();
+        }}
+      />
+
       {/* Top bar */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-100 shrink-0">
         <button
-          onClick={() => navigate(`/lesson/${language}/${lessonId}`)}
+          onClick={() =>
+            exerciseFirst
+              ? navigate("/courses")
+              : navigate(`/lesson/${language}/${lessonId}`)
+          }
           className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-900 transition-colors"
         >
           <ArrowLeft size={13} />
-          Lesson
+          {exerciseFirst ? "Courses" : "Lesson"}
         </button>
 
         <div className="flex items-center gap-3">
@@ -326,33 +388,41 @@ export default function CodingPage() {
               Guest mode
             </span>
           )}
+          {/* Fail counter for exercise-first */}
+          {exerciseFirst && failCount > 0 && !feedback?.isCorrect && (
+            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-50 text-red-500">
+              {failCount}/3 attempts
+            </span>
+          )}
         </div>
 
-        {nextLesson && !nextRequiresLogin ? (
+        {/* Right side nav */}
+        {canProceed ? (
+          nextLesson && !nextRequiresLogin ? (
+            <button
+              onClick={handleNext}
+              className="flex items-center gap-1.5 text-sm font-medium px-4 py-1.5 rounded-full bg-zinc-900 text-white hover:bg-zinc-700 transition-all duration-200"
+            >
+              Next <ArrowRight size={13} />
+            </button>
+          ) : nextRequiresLogin ? (
+            <button
+              onClick={() => setShowSignupModal(true)}
+              className="flex items-center gap-1.5 text-sm font-medium px-4 py-1.5 rounded-full bg-zinc-900 text-white hover:bg-zinc-700 transition-all duration-200"
+            >
+              Sign up <ArrowRight size={13} />
+            </button>
+          ) : (
+            <div className="w-20" />
+          )
+        ) : exerciseFirst && !canProceed ? (
+          // Show theory button for exercise-first lessons
           <button
-            onClick={() =>
-              canProceed && navigate(`/lesson/${language}/${nextLesson.id}`)
-            }
-            disabled={!canProceed}
-            className={`flex items-center gap-1.5 text-sm font-medium px-4 py-1.5 rounded-full transition-all duration-200 ${
-              canProceed
-                ? "bg-zinc-900 text-white hover:bg-zinc-700"
-                : "bg-zinc-100 text-zinc-400 cursor-not-allowed"
-            }`}
+            onClick={() => setShowTheoryModal(true)}
+            className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-900 transition-colors"
           >
-            Next <ArrowRight size={13} />
-          </button>
-        ) : nextRequiresLogin && canProceed ? (
-          <button
-            onClick={() => {
-              if (!localProgressDb.hasSeenSignupPrompt()) {
-                localProgressDb.markSignupPromptSeen();
-              }
-              setShowSignupModal(true);
-            }}
-            className="flex items-center gap-1.5 text-sm font-medium px-4 py-1.5 rounded-full bg-zinc-900 text-white hover:bg-zinc-700 transition-all duration-200"
-          >
-            Sign up to continue <ArrowRight size={13} />
+            <BookOpen size={13} />
+            Theory
           </button>
         ) : (
           <div className="w-20" />
@@ -396,6 +466,8 @@ export default function CodingPage() {
                 >
                   {feedback.isCorrect
                     ? "🎉 Great job! Your code is correct!"
+                    : failCount >= 3 && exerciseFirst
+                    ? "Not quite — the theory below might help!"
                     : "Not quite right — here's what to check:"}
                 </p>
                 <p
@@ -424,19 +496,26 @@ export default function CodingPage() {
                     Create a free account to unlock AI feedback on every exercise!
                   </p>
                 )}
+                {feedback.isCorrect && exerciseFirst && (
+                  <button
+                    onClick={() => setShowTheoryModal(true)}
+                    className="mt-2 text-xs text-emerald-600 underline underline-offset-2 hover:text-emerald-800 transition-colors"
+                  >
+                    See why this works →
+                  </button>
+                )}
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* AI limit banner for logged-in users */}
+      {/* AI limit banner */}
       {limitReached && !isGuest && (
         <div className="px-4 py-3 bg-amber-50 border-b border-amber-100 shrink-0">
           <div className="flex items-center justify-between">
             <p className="text-sm text-amber-700">
-              Daily AI limit reached. Come back tomorrow or support the project
-              for unlimited access.
+              Daily AI limit reached. Come back tomorrow or support the project.
             </p>
             <Link
               to="/upgrade"
@@ -565,7 +644,7 @@ export default function CodingPage() {
           </AnimatePresence>
         </div>
 
-        {/* AI panel — always visible on desktop, guest-aware */}
+        {/* AI panel */}
         <div className="w-72 shrink-0 overflow-hidden border-l border-zinc-100 hidden md:block">
           <AIFeedbackPanel
             lesson={lesson}
