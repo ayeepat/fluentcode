@@ -8,7 +8,7 @@ import { isGuestAccessible } from "@/lib/guestAccess";
 import { localProgressDb } from "@/lib/localProgressDb";
 import CodeEditor from "@/components/editor/CodeEditor";
 import AIFeedbackPanel from "@/components/editor/AIFeedbackPanel";
-import { Play, Send, ArrowLeft, ArrowRight, Eye, EyeOff, Heart } from "lucide-react";
+import { Play, Send, ArrowLeft, ArrowRight, Eye, EyeOff, Heart, Lightbulb, CheckCircle, XCircle, Sparkles } from "lucide-react";
 import { progressDb } from "@/lib/progressDb";
 import { evaluateCode } from "@/lib/groqClient";
 import { useAuth } from "@/lib/AuthContext";
@@ -28,6 +28,7 @@ export default function CodingPage() {
   const [feedback, setFeedback] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
+  const [showHint, setShowHint] = useState(false);
   const [progress, setProgress] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -50,7 +51,6 @@ export default function CodingPage() {
       setIsLoading(false);
       return;
     }
-    // Try to restore saved code for guests
     if (isGuest) {
       const savedCode = localProgressDb.getCode(lessonId);
       setCode(savedCode || result.lesson.exercise.starterCode || "");
@@ -61,6 +61,7 @@ export default function CodingPage() {
     setFeedback(null);
     setSubmitted(false);
     setShowSolution(false);
+    setShowHint(false);
     setLimitReached(false);
   }, [result, isGuest, lessonId]);
 
@@ -71,10 +72,9 @@ export default function CodingPage() {
     }
 
     if (isGuest) {
-      // Load guest progress from localStorage
       const guestData = localProgressDb.getProgress();
       setProgress(guestData);
-      setAiRemaining(null); // Guests don't get AI reviews
+      setAiRemaining(null);
       setIsLoading(false);
       return;
     }
@@ -143,52 +143,59 @@ export default function CodingPage() {
   const handleSubmit = async () => {
     if (submitting) return;
 
-    // Guest users — simple test-based checking, no AI
+    // Guest users — use AI evaluation for first 3 lessons (no limit shown)
     if (isGuest) {
       setSubmitting(true);
       setFeedback(null);
 
-      // Run basic tests from curriculum
-      const tests = lesson.exercise.tests || [];
-      let allPassed = true;
+      try {
+        const aiResponse = await evaluateCode(code, language, lesson);
+        setFeedback(aiResponse);
+        setSubmitted(true);
 
-      for (const test of tests) {
-        if (test.type === "contains" && !code.includes(test.value)) {
-          allPassed = false;
-          break;
+        // Only save progress if correct
+        if (aiResponse.isCorrect) {
+          localProgressDb.completeLesson(lessonId, {
+            total_exercises: (progress?.total_exercises || 0) + 1,
+            correct_exercises: (progress?.correct_exercises || 0) + 1,
+          });
+          setProgress(localProgressDb.getProgress());
         }
-      }
-
-      if (allPassed) {
+      } catch (err) {
+        console.error("Submit error:", err);
+        // Fallback to basic test checking if AI fails
+        const tests = lesson.exercise.tests || [];
+        let allPassed = true;
+        for (const test of tests) {
+          if (test.type === "contains" && !code.includes(test.value)) {
+            allPassed = false;
+            break;
+          }
+        }
         setFeedback({
-          isCorrect: true,
-          feedback: "Great job! Your code looks correct. Create a free account to get detailed AI feedback on your code!",
+          isCorrect: allPassed,
+          feedback: allPassed
+            ? "Your code looks correct! Well done."
+            : "Something isn't quite right. Check the exercise prompt and try again.",
           mistakePatterns: [],
-          suggestions: [],
+          suggestions: allPassed ? [] : ["Compare your code with the example"],
         });
-        localProgressDb.completeLesson(lessonId, {
-          total_exercises: (progress?.total_exercises || 0) + 1,
-          correct_exercises: (progress?.correct_exercises || 0) + 1,
-        });
-        setProgress(localProgressDb.getProgress());
-      } else {
-        setFeedback({
-          isCorrect: false,
-          feedback: "Not quite right. Check the exercise prompt again and compare your code with the example. You can click 'Show Solution' to see the answer.",
-          mistakePatterns: [],
-          suggestions: ["Review the example code", "Check for typos"],
-        });
-        localProgressDb.completeLesson(lessonId, {
-          total_exercises: (progress?.total_exercises || 0) + 1,
-        });
-      }
+        setSubmitted(true);
 
-      setSubmitted(true);
-      setSubmitting(false);
+        if (allPassed) {
+          localProgressDb.completeLesson(lessonId, {
+            total_exercises: (progress?.total_exercises || 0) + 1,
+            correct_exercises: (progress?.correct_exercises || 0) + 1,
+          });
+          setProgress(localProgressDb.getProgress());
+        }
+      } finally {
+        setSubmitting(false);
+      }
       return;
     }
 
-    // Logged-in users — full AI evaluation
+    // Logged-in users — full AI evaluation with rate limiting
     if (!supabaseClient) return;
 
     const check = await progressDb.checkAndIncrementAiCount(
@@ -272,12 +279,12 @@ export default function CodingPage() {
   const nextLesson = allLessons[currentIdx + 1];
   const canProceed = submitted && feedback?.isCorrect;
 
-  // Check if next lesson requires login
   const nextRequiresLogin =
     nextLesson && isGuest && !isGuestAccessible(language, nextLesson.id);
 
   return (
     <div className="h-screen flex flex-col bg-white overflow-hidden">
+      {/* Top bar */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-100 shrink-0">
         <button
           onClick={() => navigate(`/lesson/${language}/${lessonId}`)}
@@ -330,11 +337,63 @@ export default function CodingPage() {
         )}
       </div>
 
+      {/* Exercise prompt */}
       <div className="px-4 py-3 border-b border-zinc-100 bg-zinc-50 shrink-0">
         <p className="text-sm text-zinc-600 leading-relaxed">
           {lesson.exercise.prompt}
         </p>
       </div>
+
+      {/* Result banner */}
+      <AnimatePresence>
+        {submitted && feedback && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden shrink-0"
+          >
+            <div
+              className={`px-4 py-3 flex items-start gap-3 ${
+                feedback.isCorrect
+                  ? "bg-emerald-50 border-b border-emerald-100"
+                  : "bg-red-50 border-b border-red-100"
+              }`}
+            >
+              {feedback.isCorrect ? (
+                <CheckCircle size={16} className="text-emerald-500 shrink-0 mt-0.5" />
+              ) : (
+                <XCircle size={16} className="text-red-400 shrink-0 mt-0.5" />
+              )}
+              <div className="flex-1">
+                <p
+                  className={`text-sm font-semibold mb-1 ${
+                    feedback.isCorrect ? "text-emerald-700" : "text-red-700"
+                  }`}
+                >
+                  {feedback.isCorrect
+                    ? "🎉 Great job! Your code is correct!"
+                    : "Not quite right — keep trying!"}
+                </p>
+                <p
+                  className={`text-xs leading-relaxed ${
+                    feedback.isCorrect ? "text-emerald-600" : "text-red-600"
+                  }`}
+                >
+                  {feedback.feedback}
+                </p>
+                {feedback.isCorrect && isGuest && (
+                  <p className="text-xs text-emerald-500 mt-2">
+                    <Sparkles size={11} className="inline mr-1" />
+                    Create a free account to get detailed AI feedback on every exercise!
+                  </p>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {limitReached && !isGuest && (
         <div className="px-4 py-3 bg-amber-50 border-b border-amber-100 shrink-0">
@@ -384,16 +443,31 @@ export default function CodingPage() {
 
             <button
               onClick={handleSubmit}
-              disabled={submitting || limitReached}
+              disabled={submitting || (limitReached && !isGuest)}
               className="flex items-center gap-1.5 px-4 py-1.5 bg-zinc-900 text-white rounded-lg text-sm font-medium hover:bg-zinc-700 disabled:opacity-40 transition-all duration-200"
             >
               <Send size={12} />
               {submitting
                 ? "Checking…"
-                : limitReached
+                : limitReached && !isGuest
                 ? "Limit reached"
                 : "Submit"}
             </button>
+
+            {/* Hint button */}
+            {lesson.exercise?.debuggingTip && (
+              <button
+                onClick={() => setShowHint((h) => !h)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-all duration-200 ${
+                  showHint
+                    ? "bg-amber-50 text-amber-600 border border-amber-200"
+                    : "border border-zinc-200 text-zinc-500 hover:border-amber-300 hover:text-amber-600"
+                }`}
+              >
+                <Lightbulb size={12} />
+                {showHint ? "Hide hint" : "Hint"}
+              </button>
+            )}
 
             <button
               onClick={() => setShowSolution((p) => !p)}
@@ -404,6 +478,32 @@ export default function CodingPage() {
             </button>
           </div>
 
+          {/* Hint panel */}
+          <AnimatePresence>
+            {showHint && lesson.exercise?.debuggingTip && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                className="overflow-hidden border-t border-zinc-100 shrink-0"
+              >
+                <div className="bg-amber-50 px-4 py-4 flex gap-3">
+                  <Lightbulb size={14} className="text-amber-500 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-widest text-amber-600 mb-1">
+                      Hint
+                    </p>
+                    <p className="text-sm text-amber-800 leading-relaxed">
+                      {lesson.exercise.debuggingTip}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Solution panel */}
           <AnimatePresence>
             {showSolution && (
               <motion.div
@@ -433,18 +533,18 @@ export default function CodingPage() {
           )}
         </div>
 
-        {!isGuest && (
-          <div className="w-72 shrink-0 overflow-hidden border-l border-zinc-100">
-            <AIFeedbackPanel
-              lesson={lesson}
-              userCode={code}
-              feedback={feedback}
-              language={language}
-              userId={user?.id}
-              isPro={progress?.is_pro}
-            />
-          </div>
-        )}
+        {/* AI panel — always shown, guest-aware */}
+        <div className="w-72 shrink-0 overflow-hidden border-l border-zinc-100 hidden md:block">
+          <AIFeedbackPanel
+            lesson={lesson}
+            userCode={code}
+            feedback={feedback}
+            language={language}
+            userId={user?.id}
+            isPro={progress?.is_pro}
+            isGuest={isGuest}
+          />
+        </div>
       </div>
     </div>
   );

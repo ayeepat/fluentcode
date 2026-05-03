@@ -1,10 +1,11 @@
 // src/components/Navbar.jsx
 import { Link } from "react-router-dom";
 import { BookOpen, Heart, User, LogOut, Flame } from "lucide-react";
-import { useClerk } from "@clerk/clerk-react";
+import { useClerk, useUser, SignInButton, SignUpButton } from "@clerk/clerk-react";
 
 export default function Navbar({ streak = 0, backTo = null, backLabel = null, moduleTitle = null, hideProfile = false }) {
   const { signOut } = useClerk();
+  const { isSignedIn } = useUser();
 
   if (backTo) {
     return (
@@ -27,12 +28,27 @@ export default function Navbar({ streak = 0, backTo = null, backLabel = null, mo
               </span>
             </div>
           )}
-          <Link
-            to="/dashboard"
-            className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
-          >
-            Dashboard
-          </Link>
+          {isSignedIn ? (
+            <Link
+              to="/dashboard"
+              className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
+            >
+              Dashboard
+            </Link>
+          ) : (
+            <div className="flex items-center gap-2">
+              <SignInButton mode="modal">
+                <button className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors">
+                  Log in
+                </button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <button className="text-sm font-medium bg-zinc-900 text-white px-3.5 py-1.5 rounded-full hover:bg-zinc-700 transition-all">
+                  Sign up
+                </button>
+              </SignUpButton>
+            </div>
+          )}
         </div>
       </nav>
     );
@@ -57,21 +73,39 @@ export default function Navbar({ streak = 0, backTo = null, backLabel = null, mo
         <NavBtn to="/courses" icon={<BookOpen size={12} />}>
           Courses
         </NavBtn>
-        <NavBtn to="/upgrade" icon={<Heart size={12} className="text-rose-500" />}>
-          Support
-        </NavBtn>
-        {!hideProfile && (
-          <NavBtn to="/profile" icon={<User size={12} />}>
-            Profile
-          </NavBtn>
+        {isSignedIn ? (
+          <>
+            <NavBtn to="/upgrade" icon={<Heart size={12} className="text-rose-500" />}>
+              Support
+            </NavBtn>
+            {!hideProfile && (
+              <NavBtn to="/profile" icon={<User size={12} />}>
+                Profile
+              </NavBtn>
+            )}
+            <button
+              onClick={() => signOut()}
+              className="flex items-center gap-1 text-sm text-zinc-500 hover:text-red-500 px-3 py-1.5 rounded-full hover:bg-zinc-100 transition-all duration-150 ml-1"
+            >
+              <LogOut size={12} />
+              Log out
+            </button>
+          </>
+        ) : (
+          <>
+            <div className="w-px h-4 bg-zinc-200 mx-2" />
+            <SignInButton mode="modal">
+              <button className="text-sm text-zinc-500 hover:text-zinc-900 px-3 py-1.5 rounded-full hover:bg-zinc-100 transition-all duration-150">
+                Log in
+              </button>
+            </SignInButton>
+            <SignUpButton mode="modal">
+              <button className="text-sm font-medium bg-zinc-900 text-white px-4 py-1.5 rounded-full hover:bg-zinc-700 transition-all duration-200 ml-1">
+                Sign up
+              </button>
+            </SignUpButton>
+          </>
         )}
-        <button
-          onClick={() => signOut()}
-          className="flex items-center gap-1 text-sm text-zinc-500 hover:text-red-500 px-3 py-1.5 rounded-full hover:bg-zinc-100 transition-all duration-150 ml-1"
-        >
-          <LogOut size={12} />
-          Log out
-        </button>
       </div>
     </nav>
   );

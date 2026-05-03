@@ -1,10 +1,10 @@
 // src/pages/Profile.jsx
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useUser, useClerk } from "@clerk/clerk-react";
 import { getAllLessons } from "@/lib/curriculum";
-import { ArrowLeft, Flame, Target, BookOpen, TrendingUp, LogOut, Heart } from "lucide-react";
+import { Flame, Target, BookOpen, TrendingUp } from "lucide-react";
 import { progressDb } from "@/lib/progressDb";
 import { useAuth } from "@/lib/AuthContext";
 import Navbar from "@/components/Navbar";
@@ -17,6 +17,14 @@ export default function Profile() {
   const { supabaseClient } = useAuth();
   const [progress, setProgress] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  // Redirect guests to courses
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      navigate("/courses");
+    }
+  }, [isLoaded, isSignedIn, navigate]);
 
   useEffect(() => {
     if (!isLoaded) return;

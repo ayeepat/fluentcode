@@ -1,15 +1,18 @@
 // src/components/editor/AIFeedbackPanel.jsx
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle, XCircle, Lightbulb, Sparkles, ArrowUp, Heart } from "lucide-react";
+import { CheckCircle, XCircle, Lightbulb, Sparkles, ArrowUp, Heart, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
+import { SignUpButton } from "@clerk/clerk-react";
 import { progressDb } from "@/lib/progressDb";
+import { useAuth } from "@/lib/AuthContext";
 
 const QUICK_PROMPTS = ["Give me a hint", "Why is this wrong?", "Explain the concept"];
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export default function AIFeedbackPanel({ lesson, userCode, feedback, language, userId, isPro }) {
+export default function AIFeedbackPanel({ lesson, userCode, feedback, language, userId, isPro, isGuest = false }) {
+  const { supabaseClient } = useAuth();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,22 +25,23 @@ export default function AIFeedbackPanel({ lesson, userCode, feedback, language, 
   }, [messages, loading]);
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId || !supabaseClient || isGuest) return;
     const checkRemaining = async () => {
-      const r = await progressDb.getAiRequestsRemaining(userId, isPro);
+      const r = await progressDb.getAiRequestsRemaining(supabaseClient, userId, isPro);
       setRemaining(r);
       setLimitReached(r === 0);
     };
     checkRemaining();
-  }, [userId, isPro]);
+  }, [userId, isPro, supabaseClient, isGuest]);
 
   const sendMessage = async (text) => {
+    if (isGuest) return;
+
     const q = text || input;
     if (!q.trim()) return;
 
-    // Check limit before sending
-    if (userId) {
-      const check = await progressDb.checkAndIncrementAiCount(userId, isPro);
+    if (userId && supabaseClient) {
+      const check = await progressDb.checkAndIncrementAiCount(supabaseClient, userId, isPro);
       if (!check.allowed) {
         setLimitReached(true);
         setRemaining(0);
@@ -103,6 +107,70 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
     }
   };
 
+  // Guest state — show sign-in prompt
+  if (isGuest) {
+    return (
+      <div className="flex flex-col h-full bg-white">
+        <div className="px-5 py-4 border-b border-zinc-100 flex items-center gap-2.5 shrink-0">
+          <Sparkles size={13} className="text-zinc-400" />
+          <span className="text-sm font-semibold tracking-tight text-zinc-900">
+            AI Assistant
+          </span>
+        </div>
+
+        <div className="flex-1 flex flex-col items-center justify-center text-center gap-4 p-6">
+          <div className="w-12 h-12 rounded-full bg-zinc-50 border border-zinc-100 flex items-center justify-center">
+            <Lock size={18} className="text-zinc-300" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-zinc-700 mb-1">
+              AI tutor available with a free account
+            </p>
+            <p className="text-xs text-zinc-400 max-w-[200px] mx-auto leading-relaxed">
+              Get personalized feedback, hints, and explanations for your code
+            </p>
+          </div>
+          <SignUpButton mode="modal">
+            <button className="inline-flex items-center gap-2 bg-zinc-900 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-zinc-700 transition-all duration-200">
+              <Sparkles size={12} />
+              Sign up free
+            </button>
+          </SignUpButton>
+        </div>
+
+        {/* Still show feedback card if available */}
+        <AnimatePresence>
+          {feedback && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25 }}
+              className="mx-4 mb-4 rounded-2xl border border-zinc-100 overflow-hidden shrink-0"
+            >
+              <div
+                className={`px-4 py-3 text-xs font-medium tracking-wide flex items-center gap-2 ${
+                  feedback.isCorrect
+                    ? "bg-emerald-50 text-emerald-700"
+                    : "bg-amber-50 text-amber-700"
+                }`}
+              >
+                {feedback.isCorrect ? (
+                  <CheckCircle size={13} />
+                ) : (
+                  <XCircle size={13} />
+                )}
+                {feedback.isCorrect ? "Correct!" : "Not quite yet"}
+              </div>
+              <div className="px-4 py-3 bg-zinc-50">
+                <p className="text-sm text-zinc-700 leading-relaxed">{feedback.feedback}</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  }
+
   const EmptyState = () => (
     <>
       <div className="flex-1 flex flex-col items-center justify-center text-center gap-3 p-6">
@@ -134,8 +202,7 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
   );
 
   return (
-    <div className="flex flex-col h-full bg-white border-l border-zinc-100">
-      {/* Header */}
+    <div className="flex flex-col h-full bg-white">
       <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2.5">
           <Sparkles size={13} className="text-zinc-400" />
@@ -152,7 +219,6 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
         )}
       </div>
 
-      {/* Limit reached banner */}
       {limitReached && (
         <div className="mx-4 mt-4 bg-amber-50 border border-amber-200 rounded-2xl p-4 shrink-0">
           <p className="text-xs text-amber-700 mb-2 leading-relaxed">
@@ -167,7 +233,6 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
         </div>
       )}
 
-      {/* Feedback card */}
       <AnimatePresence>
         {feedback && (
           <motion.div
@@ -205,7 +270,6 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
         )}
       </AnimatePresence>
 
-      {/* Messages or empty state */}
       {!feedback && messages.length === 0 && !loading ? (
         <EmptyState />
       ) : (
@@ -270,7 +334,6 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
         </div>
       )}
 
-      {/* Quick prompts */}
       {feedback && messages.length === 0 && (
         <div className="px-4 pb-3 flex flex-col gap-1.5 shrink-0">
           {QUICK_PROMPTS.map((p) => (
@@ -286,7 +349,6 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
         </div>
       )}
 
-      {/* Input */}
       <div className="px-4 pb-4 pt-2 shrink-0">
         {limitReached ? (
           <div className="text-center text-xs text-zinc-400 py-2">
