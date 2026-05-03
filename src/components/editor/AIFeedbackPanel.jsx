@@ -1,8 +1,7 @@
 // src/components/editor/AIFeedbackPanel.jsx
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lightbulb, Sparkles, ArrowUp, Heart, Lock } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Sparkles, ArrowUp, Lock } from "lucide-react";
 import { SignUpButton } from "@clerk/clerk-react";
 import { progressDb } from "@/lib/progressDb";
 import { useAuth } from "@/lib/AuthContext";
@@ -50,7 +49,7 @@ export default function AIFeedbackPanel({ lesson, userCode, language, userId, is
           { role: "user", content: q },
           {
             role: "assistant",
-            content: "You've used all 10 free AI requests for today. Come back tomorrow or support the project for unlimited access!",
+            content: "You've used all your AI requests for today. Come back tomorrow to ask more questions.",
             isLimit: true,
           },
         ]);
@@ -192,15 +191,9 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
 
       {limitReached && (
         <div className="mx-4 mt-4 bg-amber-50 border border-amber-200 rounded-2xl p-4 shrink-0">
-          <p className="text-xs text-amber-700 mb-2 leading-relaxed">
-            You've used all 10 free AI requests for today. Support the project for unlimited access.
+          <p className="text-xs text-amber-700 leading-relaxed">
+            You've reached your daily AI request limit. Come back tomorrow to continue asking questions.
           </p>
-          <Link
-            to="/upgrade"
-            className="inline-flex items-center gap-1.5 text-xs font-medium bg-zinc-900 text-white px-3 py-1.5 rounded-full hover:bg-zinc-700 transition-all"
-          >
-            <Heart size={11} /> Support us
-          </Link>
         </div>
       )}
 
@@ -224,14 +217,6 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
                     </div>
                     <div>
                       <p className="text-sm text-zinc-700 leading-relaxed">{msg.content}</p>
-                      {msg.isLimit && (
-                        <Link
-                          to="/upgrade"
-                          className="inline-flex items-center gap-1.5 text-xs font-medium bg-zinc-900 text-white px-3 py-1.5 rounded-full hover:bg-zinc-700 transition-all mt-2"
-                        >
-                          <Heart size={11} /> Support us
-                        </Link>
-                      )}
                     </div>
                   </div>
                 )}
