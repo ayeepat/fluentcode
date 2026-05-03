@@ -28,6 +28,135 @@ function runLocalTests(code, tests) {
   return true;
 }
 
+// Simple output predictor for Python print statements
+function predictOutput(code, language) {
+  if (!code || !code.trim()) return "No code to run.";
+
+  const lines = code.split("\n");
+  const outputs = [];
+
+  if (language === "python") {
+    for (const line of lines) {
+      const trimmed = line.trim();
+      // Skip comments and empty lines
+      if (!trimmed || trimmed.startsWith("#")) continue;
+
+      // Match print('...') or print("...")
+      const singleQuote = trimmed.match(/^print\(\s*'([^']*)'\s*\)$/);
+      if (singleQuote) {
+        outputs.push(singleQuote[1]);
+        continue;
+      }
+      const doubleQuote = trimmed.match(/^print\(\s*"([^"]*)"\s*\)$/);
+      if (doubleQuote) {
+        outputs.push(doubleQuote[1]);
+        continue;
+      }
+
+      // Match print(variable) — we can't resolve variables, show placeholder
+      const printVar = trimmed.match(/^print\(\s*(\w+)\s*\)$/);
+      if (printVar) {
+        // Try to find the variable assignment
+        const varName = printVar[1];
+        for (const prevLine of lines) {
+          const assignment = prevLine.trim().match(new RegExp(`^${varName}\\s*=\\s*(.+)$`));
+          if (assignment) {
+            const val = assignment[1].trim();
+            // Remove quotes if it's a string
+            if ((val.startsWith("'") && val.endsWith("'")) || (val.startsWith('"') && val.endsWith('"'))) {
+              outputs.push(val.slice(1, -1));
+            } else {
+              outputs.push(val);
+            }
+            break;
+          }
+        }
+        continue;
+      }
+
+      // Match print(f'...{var}...')
+      const fstring = trimmed.match(/^print\(\s*f['"](.*)['"]\s*\)$/);
+      if (fstring) {
+        let result = fstring[1];
+        // Replace {var} with values from code
+        const vars = result.match(/\{(\w+)\}/g);
+        if (vars) {
+          for (const v of vars) {
+            const varName = v.slice(1, -1);
+            for (const prevLine of lines) {
+              const assignment = prevLine.trim().match(new RegExp(`^${varName}\\s*=\\s*(.+)$`));
+              if (assignment) {
+                let val = assignment[1].trim();
+                if ((val.startsWith("'") && val.endsWith("'")) || (val.startsWith('"') && val.endsWith('"'))) {
+                  val = val.slice(1, -1);
+                }
+                result = result.replace(v, val);
+                break;
+              }
+            }
+          }
+        }
+        outputs.push(result);
+        continue;
+      }
+
+      // Match simple print with concatenation: print('Hi' + ' ' + name)
+      const concatMatch = trimmed.match(/^print\((.+)\)$/);
+      if (concatMatch) {
+        const inner = concatMatch[1];
+        // If it's just strings and + operators
+        if (inner.includes("+")) {
+          const parts = inner.split("+").map((p) => {
+            const t = p.trim();
+            if ((t.startsWith("'") && t.endsWith("'")) || (t.startsWith('"') && t.endsWith('"'))) {
+              return t.slice(1, -1);
+            }
+            // Try to resolve variable
+            for (const prevLine of lines) {
+              const assignment = prevLine.trim().match(new RegExp(`^${t}\\s*=\\s*(.+)$`));
+              if (assignment) {
+                let val = assignment[1].trim();
+                if ((val.startsWith("'") && val.endsWith("'")) || (val.startsWith('"') && val.endsWith('"'))) {
+                  return val.slice(1, -1);
+                }
+                return val;
+              }
+            }
+            return t;
+          });
+          outputs.push(parts.join(""));
+          continue;
+        }
+      }
+    }
+  } else if (language === "java") {
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith("//")) continue;
+
+      // Match System.out.println("...")
+      const println = trimmed.match(/System\.out\.println\(\s*"([^"]*)"\s*\)/);
+      if (println) {
+        outputs.push(println[1]);
+        continue;
+      }
+
+      // Match System.out.print("...")
+      const print = trimmed.match(/System\.out\.print\(\s*"([^"]*)"\s*\)/);
+      if (print) {
+        outputs.push(print[1]);
+        continue;
+      }
+    }
+  }
+
+  if (outputs.length === 0) {
+    return "$ Code parsed — no print output detected.\n\nTip: Use print() to see output here.";
+  }
+
+  return "$ Output:\n\n" + outputs.join("\n");
+}
+
 export default function CodingPage() {
   const { language, lessonId } = useParams();
   const navigate = useNavigate();
@@ -126,7 +255,6 @@ export default function CodingPage() {
     load();
   }, [result, isUserLoaded, isSignedIn, user, supabaseClient, isGuest]);
 
-  // Auto-save code for guests
   useEffect(() => {
     if (!isGuest || !lessonId) return;
     const timer = setTimeout(() => {
@@ -161,7 +289,8 @@ export default function CodingPage() {
     nextLesson && isGuest && !isGuestAccessible(language, nextLesson.id);
 
   const handleRun = () => {
-    setOutput(`$ running code...\n\n${code}`);
+    const predicted = predictOutput(code, language);
+    setOutput(predicted);
   };
 
   const handleNext = () => {
@@ -182,7 +311,6 @@ export default function CodingPage() {
     const tests = lesson.exercise.tests || [];
     const passedLocally = runLocalTests(code, tests);
 
-    // ─── CORRECT ────────────────────────────────────────────────────────
     if (passedLocally) {
       const successFeedback = {
         isCorrect: true,
@@ -192,6 +320,10 @@ export default function CodingPage() {
       };
       setFeedback(successFeedback);
       setSubmitted(true);
+
+      // Also show the output
+      const predicted = predictOutput(code, language);
+      setOutput(predicted);
 
       if (isGuest) {
         localProgressDb.completeLesson(lessonId, {
@@ -205,7 +337,6 @@ export default function CodingPage() {
           shouldPromptSignup(language, updatedProgress.completed_lessons) &&
           !localProgressDb.hasSeenSignupPrompt()
         ) {
-          // Show theory first for exercise-first lessons, then signup
           if (exerciseFirst) {
             setTimeout(() => setShowTheoryModal(true), 600);
           } else {
@@ -228,7 +359,6 @@ export default function CodingPage() {
         );
         if (updated) setProgress(updated);
 
-        // Show theory modal for exercise-first lessons
         if (exerciseFirst) {
           setTimeout(() => setShowTheoryModal(true), 600);
         }
@@ -238,12 +368,10 @@ export default function CodingPage() {
       return;
     }
 
-    // ─── INCORRECT ───────────────────────────────────────────────────────
-
+    // INCORRECT
     const newFailCount = failCount + 1;
     setFailCount(newFailCount);
 
-    // Check rate limit for logged-in users
     if (!isGuest && supabaseClient && user) {
       const check = await progressDb.checkAndIncrementAiCount(
         supabaseClient,
@@ -273,7 +401,6 @@ export default function CodingPage() {
       setFeedback(aiResponse);
       setSubmitted(true);
 
-      // After 3 failures on exercise-first lessons, show theory
       if (!aiResponse.isCorrect && exerciseFirst && newFailCount >= 3) {
         setTimeout(() => setShowTheoryModal(true), 800);
       }
@@ -319,7 +446,6 @@ export default function CodingPage() {
 
   return (
     <div className="h-screen flex flex-col bg-white overflow-hidden">
-      {/* Signup modal */}
       {showSignupModal && (
         <SignupPrompt
           show={true}
@@ -330,7 +456,6 @@ export default function CodingPage() {
         />
       )}
 
-      {/* Theory modal — for exercise-first lessons */}
       <TheoryModal
         lesson={lesson}
         show={showTheoryModal}
@@ -338,7 +463,6 @@ export default function CodingPage() {
         nextLesson={nextLesson}
         onClose={() => {
           setShowTheoryModal(false);
-          // If they closed after seeing theory on success + need signup
           if (
             feedback?.isCorrect &&
             isGuest &&
@@ -388,7 +512,6 @@ export default function CodingPage() {
               Guest mode
             </span>
           )}
-          {/* Fail counter for exercise-first */}
           {exerciseFirst && failCount > 0 && !feedback?.isCorrect && (
             <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-50 text-red-500">
               {failCount}/3 attempts
@@ -396,7 +519,6 @@ export default function CodingPage() {
           )}
         </div>
 
-        {/* Right side nav */}
         {canProceed ? (
           nextLesson && !nextRequiresLogin ? (
             <button
@@ -416,7 +538,6 @@ export default function CodingPage() {
             <div className="w-20" />
           )
         ) : exerciseFirst && !canProceed ? (
-          // Show theory button for exercise-first lessons
           <button
             onClick={() => setShowTheoryModal(true)}
             className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-900 transition-colors"
@@ -510,7 +631,6 @@ export default function CodingPage() {
         )}
       </AnimatePresence>
 
-      {/* AI limit banner */}
       {limitReached && !isGuest && (
         <div className="px-4 py-3 bg-amber-50 border-b border-amber-100 shrink-0">
           <div className="flex items-center justify-between">
@@ -530,7 +650,6 @@ export default function CodingPage() {
       {/* Main content */}
       <div className="flex-1 flex overflow-hidden">
         <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Code editor */}
           <div className="flex-1 overflow-hidden p-2">
             <CodeEditor
               value={code}
@@ -542,7 +661,7 @@ export default function CodingPage() {
           {/* Output panel */}
           <div className="h-36 border-t border-zinc-100 bg-zinc-950 overflow-y-auto shrink-0">
             <div className="flex items-center gap-2 px-4 py-2 border-b border-zinc-800">
-              <div className="w-2 h-2 rounded-full bg-zinc-700" />
+              <div className={`w-2 h-2 rounded-full ${output ? "bg-green-500" : "bg-zinc-700"}`} />
               <span className="text-xs text-zinc-500 font-mono">output</span>
             </div>
             <pre className="text-xs text-zinc-400 font-mono px-4 py-3 leading-relaxed whitespace-pre-wrap">
@@ -554,7 +673,7 @@ export default function CodingPage() {
           <div className="flex items-center gap-2 px-3 py-2.5 border-t border-zinc-100 shrink-0">
             <button
               onClick={handleRun}
-              className="flex items-center gap-1.5 px-3 py-1.5 border border-zinc-200 rounded-lg text-sm text-zinc-600 hover:border-zinc-400 hover:text-zinc-900 transition-all duration-200"
+              className="flex items-center gap-1.5 px-4 py-2 border border-zinc-200 rounded-lg text-sm text-zinc-600 hover:border-zinc-400 hover:text-zinc-900 transition-all duration-200"
             >
               <Play size={12} />
               Run
@@ -563,7 +682,7 @@ export default function CodingPage() {
             <button
               onClick={handleSubmit}
               disabled={submitting || (limitReached && !isGuest)}
-              className="flex items-center gap-1.5 px-4 py-1.5 bg-zinc-900 text-white rounded-lg text-sm font-medium hover:bg-zinc-700 disabled:opacity-40 transition-all duration-200"
+              className="flex items-center gap-1.5 px-5 py-2 bg-zinc-900 text-white rounded-lg text-sm font-medium hover:bg-zinc-700 disabled:opacity-40 transition-all duration-200"
             >
               <Send size={12} />
               {submitting
@@ -576,7 +695,7 @@ export default function CodingPage() {
             {lesson.exercise?.debuggingTip && (
               <button
                 onClick={() => setShowHint((h) => !h)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-all duration-200 ${
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm transition-all duration-200 ${
                   showHint
                     ? "bg-amber-50 text-amber-600 border border-amber-200"
                     : "border border-zinc-200 text-zinc-500 hover:border-amber-300 hover:text-amber-600"
@@ -589,10 +708,14 @@ export default function CodingPage() {
 
             <button
               onClick={() => setShowSolution((p) => !p)}
-              className="flex items-center gap-2 px-3 py-1.5 text-sm text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 rounded-lg transition-all duration-200 ml-auto"
+              className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-all duration-200 ml-auto ${
+                showSolution
+                  ? "bg-zinc-100 text-zinc-900 border border-zinc-200"
+                  : "text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 border border-transparent"
+              }`}
             >
               {showSolution ? <EyeOff size={13} /> : <Eye size={13} />}
-              {showSolution ? "Hide" : "Solution"}
+              {showSolution ? "Hide solution" : "Show solution"}
             </button>
           </div>
 
