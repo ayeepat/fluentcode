@@ -310,7 +310,7 @@ export default function Landing() {
           <h2 className="text-4xl font-bold tracking-tight">
             Two languages.
             <br />
-            Zero fluff.
+            Optimised for learning.
           </h2>
         </motion.div>
 
