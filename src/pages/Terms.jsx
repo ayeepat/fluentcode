@@ -1,11 +1,16 @@
 // src/pages/Terms.jsx
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { ArrowLeft } from "lucide-react";
 
 export default function Terms() {
   return (
-    <div className="min-h-screen bg-white">
-      <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-4 bg-white/90 backdrop-blur-md border-b border-zinc-100">
+    <div className="min-h-screen bg-white">      <Helmet>
+        <title>Terms of Service | FluentCode</title>
+        <meta name="description" content="Read our Terms of Service to understand the rules and conditions for using FluentCode." />
+        <meta property="og:title" content="Terms of Service - FluentCode" />
+        <meta property="og:description" content="Legal terms and conditions for FluentCode users." />
+      </Helmet>      <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-4 bg-white/90 backdrop-blur-md border-b border-zinc-100">
         <Link
           to="/"
           className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-900 transition-colors"

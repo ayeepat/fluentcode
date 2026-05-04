@@ -1,6 +1,7 @@
 // src/pages/Quiz.jsx
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
 import { getLessonById, getAllLessons } from "@/lib/curriculum";
@@ -282,6 +283,12 @@ export default function Quiz() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
+      <Helmet>
+        <title>Take a Quiz | Test Your Python Knowledge</title>
+        <meta name="description" content="Test your Python coding knowledge with interactive quizzes. Multiple choice questions to reinforce your learning." />
+        <meta property="og:title" content="Quiz - FluentCode" />
+        <meta property="og:description" content="Interactive programming quizzes to test and reinforce your learning." />
+      </Helmet>
       <nav className="flex items-center justify-between px-6 py-4 border-b border-zinc-100">
         <button
           onClick={() => navigate("/courses")}

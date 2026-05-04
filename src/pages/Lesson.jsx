@@ -1,6 +1,7 @@
 // src/pages/Lesson.jsx
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { getLessonById } from "@/lib/curriculum";
 import { isGuestAccessible, shouldPromptSignup, isExerciseFirst } from "@/lib/guestAccess";
@@ -136,6 +137,12 @@ export default function Lesson() {
 
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>{lesson.title} | Learn Python with FluentCode</title>
+        <meta name="description" content={`${lesson.title}: ${lesson.explanation.substring(0, 150)}... Learn Python concepts with interactive coding lessons.`} />
+        <meta property="og:title" content={`${lesson.title} | FluentCode`} />
+        <meta property="og:description" content={`Learn ${lesson.title} with interactive coding and AI-powered feedback.`} />
+      </Helmet>
       <Navbar
         streak={streak}
         backTo="/courses"

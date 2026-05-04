@@ -5,6 +5,7 @@ import App from "./App.jsx";
 import "./index.css";
 import { inject } from "@vercel/analytics";
 import { ClerkProvider } from "@clerk/clerk-react";
+import { HelmetProvider } from "react-helmet-async";
 
 inject();
 
@@ -22,19 +23,21 @@ const LoadingFallback = () => (
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <Suspense fallback={<LoadingFallback />}>
-      <ClerkProvider
-        publishableKey={PUBLISHABLE_KEY}
-        afterSignOutUrl="/"
-        appearance={{
-          layout: {
-            termsPageUrl: "/terms",
-            privacyPageUrl: "/privacy",
-          },
-        }}
-      >
-        <App />
-      </ClerkProvider>
-    </Suspense>
+    <HelmetProvider>
+      <Suspense fallback={<LoadingFallback />}>
+        <ClerkProvider
+          publishableKey={PUBLISHABLE_KEY}
+          afterSignOutUrl="/"
+          appearance={{
+            layout: {
+              termsPageUrl: "/terms",
+              privacyPageUrl: "/privacy",
+            },
+          }}
+        >
+          <App />
+        </ClerkProvider>
+      </Suspense>
+    </HelmetProvider>
   </React.StrictMode>
 );

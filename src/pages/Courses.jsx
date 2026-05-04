@@ -1,6 +1,7 @@
 // src/pages/Courses.jsx
 import { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
 import { curriculum } from "@/lib/curriculum";
 import { isGuestAccessible } from "@/lib/guestAccess";
@@ -110,6 +111,12 @@ export default function Courses() {
 
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>Courses & Lessons | Learn Python Coding</title>
+        <meta name="description" content="Browse Python courses with interactive lessons, quizzes, and AI-powered code feedback. Progress tracking and structured learning paths." />
+        <meta property="og:title" content="Courses & Lessons | FluentCode" />
+        <meta property="og:description" content="Interactive Python curriculum with hands-on coding lessons and instant feedback." />
+      </Helmet>
       <Navbar streak={streak} />
 
       <div className="max-w-2xl mx-auto px-6 py-14">

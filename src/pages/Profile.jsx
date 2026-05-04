@@ -1,6 +1,7 @@
 // src/pages/Profile.jsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { useUser, useClerk } from "@clerk/clerk-react";
 import { getAllLessons } from "@/lib/curriculum";
@@ -89,6 +90,12 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>Your Profile | Learning Stats & Progress</title>
+        <meta name="description" content="View your learning profile. Track statistics, progress, and manage your FluentCode account." />
+        <meta property="og:title" content="Profile - FluentCode" />
+        <meta property="og:description" content="Your personalized learning profile and statistics." />
+      </Helmet>
       <Navbar streak={streak} hideProfile />
 
       <div className="max-w-xl mx-auto px-6 py-14">

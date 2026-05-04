@@ -1,6 +1,7 @@
 // src/pages/Landing.jsx
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { ArrowRight, Check, Heart, Menu, X, Mail, Code2, HelpCircle } from "lucide-react";
 import { curriculum } from "@/lib/curriculum";
@@ -60,6 +61,12 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
+      <Helmet>
+        <title>FluentCode | Learn to Code with AI-Powered Interactive Lessons</title>
+        <meta name="description" content="Learn to code with FluentCode: interactive Python lessons, AI-powered feedback, quizzes, and instant code evaluation. Free and no signup required." />
+        <meta property="og:title" content="FluentCode | Learn to Code with AI-Powered Feedback" />
+        <meta property="og:description" content="Interactive Python lessons with instant AI feedback. Start coding in seconds. No signup required. Completely free." />
+      </Helmet>
       {/* Navigation */}
       <nav
         className={`sticky top-0 z-40 flex items-center justify-between px-6 py-4 transition-all duration-300 ${

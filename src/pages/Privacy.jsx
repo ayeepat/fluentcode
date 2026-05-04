@@ -1,11 +1,16 @@
 // src/pages/Privacy.jsx
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { ArrowLeft } from "lucide-react";
 
 export default function Privacy() {
   return (
-    <div className="min-h-screen bg-white">
-      <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-4 bg-white/90 backdrop-blur-md border-b border-zinc-100">
+    <div className="min-h-screen bg-white">      <Helmet>
+        <title>Privacy Policy | FluentCode</title>
+        <meta name="description" content="Read our Privacy Policy to understand how we collect, use, and protect your data on FluentCode." />
+        <meta property="og:title" content="Privacy Policy - FluentCode" />
+        <meta property="og:description" content="Our privacy policy and data protection practices." />
+      </Helmet>      <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-4 bg-white/90 backdrop-blur-md border-b border-zinc-100">
         <Link
           to="/"
           className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-900 transition-colors"

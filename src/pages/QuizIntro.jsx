@@ -1,6 +1,7 @@
 // src/pages/QuizIntro.jsx
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { getLessonById } from "@/lib/curriculum";
 import { isGuestAccessible } from "@/lib/guestAccess";
@@ -92,6 +93,12 @@ export default function QuizIntro() {
 
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>Quiz Intro | {lesson.title} - FluentCode</title>
+        <meta name="description" content={`Test your knowledge about ${lesson.title}. Interactive quiz with instant feedback.`} />
+        <meta property="og:title" content={`Quiz: ${lesson.title}`} />
+        <meta property="og:description" content="Challenge yourself with an interactive coding quiz." />
+      </Helmet>
       <Navbar
         streak={streak}
         backTo="/courses"

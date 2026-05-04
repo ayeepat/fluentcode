@@ -1,6 +1,7 @@
 // src/pages/CodingPage.jsx
 import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
 import { getLessonById, getAllLessons } from "@/lib/curriculum";
@@ -446,6 +447,12 @@ export default function CodingPage() {
 
   return (
     <div className="h-screen flex flex-col bg-white overflow-hidden">
+      <Helmet>
+        <title>AI-Powered Code Editor | {lesson.title} - FluentCode</title>
+        <meta name="description" content="Write code and get instant AI-powered feedback. Practice Python with interactive exercises and AI guidance from FluentCode." />
+        <meta property="og:title" content="Practice Coding with AI Feedback | FluentCode" />
+        <meta property="og:description" content="Interactive code editor with instant AI feedback to help you learn faster." />
+      </Helmet>
       {showSignupModal && (
         <SignupPrompt
           show={true}

@@ -1,6 +1,7 @@
 // src/pages/Dashboard.jsx
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
 import { curriculum, getAllLessons } from "@/lib/curriculum";
@@ -126,6 +127,12 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>Dashboard | Your Learning Progress</title>
+        <meta name="description" content="Track your learning progress. View your streak, completed exercises, and continue your coding journey with FluentCode." />
+        <meta property="og:title" content="Dashboard - FluentCode" />
+        <meta property="og:description" content="Monitor your learning progress and continue practicing." />
+      </Helmet>
       <Navbar streak={streak} />
 
       <div className="max-w-2xl mx-auto px-6 py-14">

@@ -1,6 +1,7 @@
 // src/pages/QuizHub.jsx
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
 import { curriculum } from "@/lib/curriculum";
@@ -59,6 +60,12 @@ export default function QuizHub() {
 
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>Quiz Hub | Practice Python Quizzes</title>
+        <meta name="description" content="Access all Python quizzes. Test your knowledge with interactive questions after each lesson. No prerequisites needed." />
+        <meta property="og:title" content="Quiz Hub - FluentCode" />
+        <meta property="og:description" content="Interactive quizzes covering all Python lessons." />
+      </Helmet>
       <Navbar streak={streak} />
 
       <div className="max-w-2xl mx-auto px-6 py-14">

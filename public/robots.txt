@@ -1,0 +1,23 @@
+# Allow all crawlers to access most content
+User-agent: *
+Allow: /
+Allow: /courses
+Allow: /lesson/
+Allow: /code/
+Allow: /quiz/
+Allow: /quiz-hub
+Allow: /upgrade
+Allow: /terms
+Allow: /privacy
+
+# Disallow crawlers from accessing protected user pages
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /api
+
+# Disallow crawlers from accessing authentication pages
+Disallow: /sign-in
+Disallow: /sign-up
+
+# Point to sitemap
+Sitemap: https://fluent-code.xyz/sitemap.xml

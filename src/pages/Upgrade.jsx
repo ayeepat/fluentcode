@@ -1,5 +1,6 @@
 // src/pages/Upgrade.jsx
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { ArrowLeft, Heart, ExternalLink } from "lucide-react";
 
@@ -8,6 +9,12 @@ const ease = [0.16, 1, 0.3, 1];
 export default function Upgrade() {
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>Support FluentCode | Free Learning, Donations Welcome</title>
+        <meta name="description" content="FluentCode is 100% free with no paywalls. Support our mission by donating. Every contribution helps us expand our curriculum." />
+        <meta property="og:title" content="Support FluentCode" />
+        <meta property="og:description" content="Help us grow. FluentCode is free and always will be." />
+      </Helmet>
       <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-4 bg-white/90 backdrop-blur-md border-b border-zinc-100">
         <Link
           to="/dashboard"
