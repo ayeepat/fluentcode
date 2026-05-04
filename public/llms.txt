@@ -70,9 +70,9 @@ FluentCode is built and maintained by a solo developer. If you find it useful an
 
 ## Links
 
-- Website: https://www.fluent-code.xyz
-- Sign Up: https://www.fluent-code.xyz/sign-up
-- Courses: https://www.fluent-code.xyz/courses
-- Dashboard: https://www.fluent-code.xyz/dashboard
-- Support: https://www.fluent-code.xyz/upgrade
+- Website: https://fluent-code.xyz
+- Sign Up: https://fluent-code.xyz/sign-up
+- Courses: https://fluent-code.xyz/courses
+- Dashboard: https://fluent-code.xyz/dashboard
+- Support: https://fluent-code.xyz/upgrade
 - Donate: https://boosty.to/fluentcode/donate
