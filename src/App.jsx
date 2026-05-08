@@ -6,6 +6,8 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
 import PageNotFound from "./lib/PageNotFound";
 import { AuthProvider } from "@/lib/AuthContext";
+import { FeedbackProvider } from "@/lib/FeedbackContext";
+import FeedbackWidget from "@/components/FeedbackWidget";
 import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import Courses from "./pages/Courses";
@@ -36,34 +38,37 @@ const ProtectedRoute = ({ children }) => {
 function App() {
   return (
     <AuthProvider>
-      <QueryClientProvider client={queryClientInstance}>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/sign-in/*" element={<SignInPage />} />
-            <Route path="/sign-up/*" element={<SignUpPage />} />
-            <Route path="/upgrade" element={<Upgrade />} />
-            <Route path="/courses" element={<Courses />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/subscription" element={<Subscription />} />
+      <FeedbackProvider>
+        <QueryClientProvider client={queryClientInstance}>
+          <Router>
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route path="/sign-in/*" element={<SignInPage />} />
+              <Route path="/sign-up/*" element={<SignUpPage />} />
+              <Route path="/upgrade" element={<Upgrade />} />
+              <Route path="/courses" element={<Courses />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/subscription" element={<Subscription />} />
 
-            {/* These routes work for BOTH guests and logged-in users */}
-            <Route path="/lesson/:language/:lessonId" element={<Lesson />} />
-            <Route path="/code/:language/:lessonId" element={<CodingPage />} />
-            <Route path="/quiz/:language/:lessonId" element={<QuizIntro />} />
-            <Route path="/quiz/:language/:lessonId/start" element={<Quiz />} />
+              {/* These routes work for BOTH guests and logged-in users */}
+              <Route path="/lesson/:language/:lessonId" element={<Lesson />} />
+              <Route path="/code/:language/:lessonId" element={<CodingPage />} />
+              <Route path="/quiz/:language/:lessonId" element={<QuizIntro />} />
+              <Route path="/quiz/:language/:lessonId/start" element={<Quiz />} />
 
-            {/* Protected routes */}
-            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/quiz" element={<ProtectedRoute><QuizHub /></ProtectedRoute>} />
-            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              {/* Protected routes */}
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/quiz" element={<ProtectedRoute><QuizHub /></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
-            <Route path="*" element={<PageNotFound />} />
-          </Routes>
-        </Router>
-        <Toaster />
-      </QueryClientProvider>
+              <Route path="*" element={<PageNotFound />} />
+            </Routes>
+            <FeedbackWidget />
+          </Router>
+          <Toaster />
+        </QueryClientProvider>
+      </FeedbackProvider>
     </AuthProvider>
   );
 }

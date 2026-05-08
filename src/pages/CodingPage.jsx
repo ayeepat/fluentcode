@@ -17,6 +17,7 @@ import {
 import { progressDb } from "@/lib/progressDb";
 import { evaluateCode } from "@/lib/groqClient";
 import { useAuth } from "@/lib/AuthContext";
+import { useFeedbackWidget } from "@/lib/FeedbackContext";
 import SignupPrompt from "@/components/SignupPrompt";
 
 function runLocalTests(code, tests) {
@@ -163,6 +164,7 @@ export default function CodingPage() {
   const navigate = useNavigate();
   const { user, isLoaded: isUserLoaded, isSignedIn } = useUser();
   const { supabaseClient } = useAuth();
+  const { openFeedbackWidget } = useFeedbackWidget();
 
   const isGuest = !isSignedIn;
   const guestAllowed = isGuestAccessible(language, lessonId);
@@ -325,6 +327,9 @@ export default function CodingPage() {
       // Also show the output
       const predicted = predictOutput(code, language);
       setOutput(predicted);
+
+      // Trigger feedback widget after a short delay
+      setTimeout(() => openFeedbackWidget(true), 1200);
 
       if (isGuest) {
         localProgressDb.completeLesson(lessonId, {
