@@ -1,4 +1,3 @@
-// src/lib/progressDb.js
 import { localProgressDb } from "./localProgressDb";
 
 const FREE_DAILY_LIMIT = 10;
@@ -253,7 +252,6 @@ export const progressDb = {
     const result = await this.updateProgress(supabaseClient, clerkUserId, updates);
 
     if (result) {
-      // Clear localStorage after successful sync
       localProgressDb.clearProgress();
       console.log("Guest progress synced successfully");
     }
@@ -274,7 +272,6 @@ export const progressDb = {
         metadata: data.metadata || {},
       });
     } catch (err) {
-      // Silent fail — analytics should never break the app
       console.error("Analytics error:", err);
     }
   },
@@ -295,7 +292,7 @@ export const progressDb = {
       return { allowed: true, remaining: null };
     }
 
-    const today = new Date().toDateString();
+    const today = getTodayStr();
     const lastDate = data?.last_ai_date;
     const currentCount =
       lastDate === today ? data?.daily_ai_count || 0 : 0;
@@ -331,7 +328,7 @@ export const progressDb = {
 
     if (error) return FREE_DAILY_LIMIT;
 
-    const today = new Date().toDateString();
+    const today = getTodayStr();
     const lastDate = data?.last_ai_date;
     const currentCount =
       lastDate === today ? data?.daily_ai_count || 0 : 0;
