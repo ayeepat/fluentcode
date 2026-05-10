@@ -87,11 +87,7 @@ export default function FeedbackWidget() {
           if (isOpen) {
             handleCancel();
           } else {
-            // Allow manual opening even if dismissed - reset dismissal and open
-            localStorage.removeItem("feedbackWidget_dismissed");
-            setSubmitted(false);
-            setError(null);
-            reset();
+            // Respect dismissal - don't bypass it
             openFeedbackWidget(false);
           }
         }}
