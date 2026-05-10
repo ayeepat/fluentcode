@@ -5,7 +5,6 @@ const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const MODEL = "llama-3.3-70b-versatile";
 const TIMEOUT_MS = 10000;
 const MAX_CONTENT_LENGTH = 50000;
-
 const ALLOWED_ORIGINS = [
   "https://fluent-code.xyz",
   "https://www.fluent-code.xyz",
@@ -15,11 +14,8 @@ const ALLOWED_ORIGINS = [
 ];
 
 function getCorsHeaders(origin: string | null): Record<string, string> {
-  const allowedOrigin =
-    origin && (ALLOWED_ORIGINS.includes(origin) || origin.endsWith(".vercel.app"))
-      ? origin
-      : "https://fluent-code.xyz";
-
+  // Only allow explicitly whitelisted origins - no wildcards for security
+  const allowedOrigin = origin && ALLOWED_ORIGINS.includes(origin) ? origin : "https://fluent-code.xyz";
   return {
     "Access-Control-Allow-Origin": allowedOrigin,
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -27,7 +23,7 @@ function getCorsHeaders(origin: string | null): Record<string, string> {
   };
 }
 
-const ALLOWED_LANGUAGES = ["python", "java", "javascript"];
+const ALLOWED_LANGUAGES = ["python", "java", "javascript", "ruby"]; // ✅ Updated
 const MAX_CODE_LENGTH = 10000;
 const MAX_LESSON_FIELD_LENGTH = 2000;
 
@@ -39,14 +35,11 @@ const RATE_WINDOW_MS = 60 * 1000;
 function isRateLimited(ip: string): boolean {
   const now = Date.now();
   const record = ipRequestCounts.get(ip);
-
   if (!record || now > record.resetAt) {
     ipRequestCounts.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS });
     return false;
   }
-
   if (record.count >= RATE_LIMIT) return true;
-
   record.count++;
   return false;
 }
@@ -58,11 +51,10 @@ function sanitizeString(input: unknown, maxLength: number): string {
 
 function extractJson(text: string) {
   if (!text) return null;
-
   try {
     return JSON.parse(text);
   } catch {}
-
+  
   const fencedJsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/i);
   if (fencedJsonMatch?.[1]) {
     try {
@@ -83,11 +75,11 @@ function extractJson(text: string) {
 
 serve(async (req) => {
   const corsHeaders = getCorsHeaders(req.headers.get("origin"));
-
+  
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
-
+  
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "Method not allowed" }), {
       status: 405,
@@ -123,7 +115,6 @@ serve(async (req) => {
 
   try {
     const body = await req.json().catch(() => null);
-
     if (!body || typeof body !== "object") {
       return new Response(JSON.stringify({ error: "Invalid request body" }), {
         status: 400,
@@ -153,7 +144,6 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-
     if (code.length > MAX_CODE_LENGTH) {
       return new Response(
         JSON.stringify({ error: "Code too long (max 10,000 characters)" }),
@@ -173,7 +163,6 @@ serve(async (req) => {
     }
 
     const groqApiKey = Deno.env.get("GROQ_API_KEY");
-
     if (!groqApiKey) {
       return new Response(
         JSON.stringify({
@@ -202,7 +191,6 @@ serve(async (req) => {
     );
 
     const evaluationPrompt = `You are a kind, encouraging coding tutor for FluentCode.
-
 Your task:
 1. Read the lesson and exercise below.
 2. Evaluate whether the student's code correctly solves the exercise.
@@ -237,8 +225,8 @@ Return exactly this JSON shape:
     // Timeout controller
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
-
     let groqRes: Response;
+
     try {
       groqRes = await fetch(GROQ_API_URL, {
         method: "POST",
@@ -329,7 +317,6 @@ Return exactly this JSON shape:
     );
   } catch (error) {
     console.error("Edge function error:", error);
-
     const isTimeout = error instanceof Error && error.name === "AbortError";
     return new Response(
       JSON.stringify({

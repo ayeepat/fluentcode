@@ -330,17 +330,20 @@ LESSON 8: Dictionary Methods and Iteration
 - Fundamentals through functions and data structures
 - Covers: print, variables, strings, numbers, arithmetic, conditionals, loops, functions, lists, dictionaries
 
-### Java (Fundamentals — Coming Soon)
-- Basic syntax
-- Variables and types
-- Control flow
-- Object-oriented basics
+### Java (Complete Curriculum — 20+ Lessons, 5 Hours)
+- Phase 0-4: From fundamentals through lambdas and streams
+- Covers: classes, main method, variables, control flow, methods, inheritance, interfaces
+- Topics: System.out.println(), types, strings, Scanner input, conditionals, loops, arrays, OOP
 
-### JavaScript (Fundamentals — Coming Soon)
-- ES6+ syntax
-- Variables and scope
-- DOM manipulation
-- Asynchronous basics
+### JavaScript (Complete Curriculum — 13 Lessons, 5 Hours)
+- Phase 0-2: Fundamentals through control flow and beyond
+- Covers: ES6+ syntax, console.log(), variables (let/const), template literals, arrow functions
+- Topics: data types, functions, arrays, objects, template literals, control flow, promises
+
+### Ruby (Complete Curriculum — 13 Lessons, 5 Hours)
+- Phase 0-5: From basics through intermediate Ruby and iterators
+- Covers: puts/print, variables, string interpolation, methods, arrays, hashes, blocks, exception handling
+- Topics: snake_case naming, symbol keys, .each blocks, string interpolation with #{}, def...end syntax
 
 ## Pricing Model
 

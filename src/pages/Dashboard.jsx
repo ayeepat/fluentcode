@@ -63,12 +63,13 @@ export default function Dashboard() {
     loadProgress();
   }, [isLoaded, isSignedIn, user, supabaseClient]);
 
-  // Safety timeout — if still loading after 8 seconds, stop
+  // Safety timeout — if still loading after 8 seconds, show error state
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (loading) {
-        console.warn("Loading timeout hit — forcing render");
+        console.warn("Loading timeout hit — showing error state");
         setLoading(false);
+        setProgress({ error: "Failed to load progress. Please refresh the page." });
       }
     }, 8000);
     return () => clearTimeout(timeout);
@@ -83,6 +84,27 @@ export default function Dashboard() {
   }
 
   if (!isSignedIn) return null;
+
+  // Show error if timeout occurred
+  if (progress?.error) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navbar />
+        <div className="max-w-2xl mx-auto px-6 py-14 flex flex-col items-center justify-center min-h-96">
+          <div className="text-center">
+            <h2 className="text-xl font-bold text-red-600 mb-2">Loading Error</h2>
+            <p className="text-zinc-600 mb-4">{progress.error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-zinc-900 text-white rounded hover:bg-zinc-800"
+            >
+              Refresh Page
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const lang = progress?.language || "python";
   const allLessons = getAllLessons(lang);

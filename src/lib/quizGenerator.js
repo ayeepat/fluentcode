@@ -1,48 +1,38 @@
 // src/lib/quizGenerator.js
-
 export function generateQuizQuestions(lesson, language) {
   const questions = [];
-
   if (lesson.concept) {
     const q = generateConceptQuestion(lesson, language);
     if (q) questions.push(q);
   }
-
   if (lesson.example) {
     const q = generateExampleQuestion(lesson, language);
     if (q) questions.push(q);
   }
-
   if (lesson.exercise?.solution) {
     const q = generateSolutionQuestion(lesson, language);
     if (q) questions.push(q);
   }
-
   if (lesson.exercise?.debuggingTip) {
     const q = generateDebugQuestion(lesson, language);
     if (q) questions.push(q);
   }
-
   if (lesson.example) {
     const q = generateFillBlankQuestion(lesson, language);
     if (q) questions.push(q);
   }
-
   if (lesson.concept) {
     const q = generateTrueOrFalseQuestion(lesson, language);
     if (q) questions.push(q);
   }
-
   if (lesson.example) {
     const q = generatePredictOutputQuestion(lesson, language);
     if (q) questions.push(q);
   }
-
   return questions.slice(0, 7);
 }
 
 // ─── Question generators ───────────────────────────────────────────────────
-
 function generateConceptQuestion(lesson, language) {
   const concept = lesson.concept;
   return {
@@ -68,7 +58,6 @@ function generateExampleQuestion(lesson, language) {
         !l.trim().startsWith("//") &&
         l.trim().length > 0
     ) || lines[0];
-
   return {
     question: `What does this code do?\n\`\`\`\n${firstMeaningfulLine}\n\`\`\``,
     hint: `Look at the keywords in the code. What function or operation is being performed?`,
@@ -124,53 +113,24 @@ function generateFillBlankQuestion(lesson, language) {
         !l.trim().startsWith("#") &&
         !l.trim().startsWith("//")
     );
-
   if (lines.length === 0) return null;
-
+  
   const targetLine =
     lines.find(
       (l) =>
         l.includes("(") || l.includes("=") || l.includes("return")
     ) || lines[0];
-
-  const keywords =
-    language === "python"
-      ? [
-          "print",
-          "def",
-          "return",
-          "for",
-          "if",
-          "while",
-          "import",
-          "class",
-          "append",
-          "range",
-        ]
-      : [
-          "System.out.println",
-          "int",
-          "String",
-          "for",
-          "if",
-          "return",
-          "class",
-          "ArrayList",
-          "static",
-          "void",
-        ];
-
+    
+  const keywords = getKeywords(language);
   const foundKeyword = keywords.find((k) => targetLine.includes(k));
   if (!foundKeyword) return null;
-
+  
   const blanked = targetLine.replace(foundKeyword, "______");
-
   const wrongKeywords = keywords
     .filter((k) => k !== foundKeyword)
     .slice(0, 3);
-
   if (wrongKeywords.length < 3) return null;
-
+  
   return {
     question: `Fill in the blank:\n\`\`\`\n${blanked}\n\`\`\``,
     hint: `This keyword is one of the core building blocks of ${lesson.title}. Check the example in the lesson.`,
@@ -184,7 +144,7 @@ function generateTrueOrFalseQuestion(lesson, language) {
   const concept = lesson.concept;
   const falseStatement = getFalseStatement(lesson, language);
   const isCorrectTrue = Math.random() > 0.5;
-
+  
   if (isCorrectTrue) {
     return {
       question: `True or False: "${concept}"`,
@@ -206,20 +166,24 @@ function generateTrueOrFalseQuestion(lesson, language) {
 
 function generatePredictOutputQuestion(lesson, language) {
   const lines = lesson.example.split("\n").filter((l) => l.trim());
-
-  const printLine = lines.find(
-    (l) =>
-      l.includes("print(") || l.includes("System.out.println")
-  );
-
+  let printLine;
+  if (language === "python") {
+    printLine = lines.find((l) => l.includes("print("));
+  } else if (language === "java") {
+    printLine = lines.find((l) => l.includes("System.out.println") || l.includes("System.out.print"));
+  } else if (language === "javascript") {
+    printLine = lines.find((l) => l.includes("console.log("));
+  } else if (language === "ruby") {
+    printLine = lines.find((l) => l.includes("puts") || l.includes("print "));
+  }
   if (!printLine) return null;
-
+  
   const correctOutput = getPredictedOutput(printLine, lesson, language);
   if (!correctOutput) return null;
-
+  
   return {
     question: `What is the output of this code?\n\`\`\`\n${printLine.trim()}\n\`\`\``,
-    hint: `Trace through the code step by step. What value is being passed to the print function?`,
+    hint: `Trace through the code step by step. What value is being passed to the output function?`,
     options: [
       correctOutput,
       getWrongOutputOption(lesson, language, 0),
@@ -231,48 +195,35 @@ function generatePredictOutputQuestion(lesson, language) {
   };
 }
 
-// ─── Helper functions ──────────────────────────────────────────────────────
-
-function getPredictedOutput(printLine, lesson, language) {
-  if (language === "python") {
-    const match = printLine.match(/print\("([^"]+)"\)/);
-    if (match) return match[1];
-    const match2 = printLine.match(/print\('([^']+)'\)/);
-    if (match2) return match2[1];
-  } else {
-    const match = printLine.match(/println\("([^"]+)"\)/);
-    if (match) return match[1];
+// ─── Helper functions (language-aware) ──────────────────────────────────────
+function getKeywords(language) {
+  switch (language) {
+    case "python": return ["print", "def", "return", "for", "if", "while", "import", "class", "append", "range"];
+    case "java": return ["System.out.println", "int", "String", "for", "if", "return", "class", "ArrayList", "static", "void"];
+    case "javascript": return ["console.log", "function", "let", "const", "var", "for", "if", "while", "return", "class"];
+    case "ruby": return ["puts", "def", "end", "if", "while", "for", "each", "do", "return", "class"];
+    default: return [];
   }
-  return null;
 }
 
-function getFalseStatement(lesson, language) {
-  const falseStatements =
-    language === "python"
-      ? [
-          `Python requires you to declare variable types explicitly.`,
-          `The print() function in Python uses semicolons.`,
-          `Indentation in Python is optional and has no effect on the program.`,
-          `Python functions must always explicitly return a value.`,
-          `Lists in Python can only contain items of the same data type.`,
-          `Python requires a main() function to start execution.`,
-          `The def keyword in Python is used to declare variables.`,
-          `For loops in Python always require a numeric counter.`,
-        ]
-      : [
-          `Java variables do not need a type declaration.`,
-          `In Java, code can be written outside of a class.`,
-          `Java does not require semicolons at the end of statements.`,
-          `The main method in Java can be named anything.`,
-          `Java is a dynamically typed language.`,
-          `ArrayList in Java has a fixed size.`,
-          `Java loops do not need curly braces.`,
-          `You can use print() directly in Java without a class.`,
-        ];
+function getWrongConcepts(language) {
+  switch (language) {
+    case "python": return pythonWrongConcepts;
+    case "java": return javaWrongConcepts;
+    case "javascript": return jsWrongConcepts;
+    case "ruby": return rubyWrongConcepts;
+    default: return [];
+  }
+}
 
-  return falseStatements[
-    (lesson.title.length + lesson.id.length) % falseStatements.length
-  ];
+function getFalseStatements(language) {
+  switch (language) {
+    case "python": return pythonFalseStatements;
+    case "java": return javaFalseStatements;
+    case "javascript": return jsFalseStatements;
+    case "ruby": return rubyFalseStatements;
+    default: return [];
+  }
 }
 
 const pythonWrongConcepts = [
@@ -301,12 +252,101 @@ const javaWrongConcepts = [
   "Inheritance in Java is achieved using the `extends` keyword only in interfaces.",
 ];
 
+const jsWrongConcepts = [
+  "JavaScript must be compiled before running.",
+  "JavaScript is the same as Java.",
+  "In JavaScript, you must declare a variable's type.",
+  "`let` variables cannot be reassigned.",
+  "`console.log()` only works in Node.js, not browsers.",
+  "JavaScript uses `print()` for output.",
+  "JavaScript requires semicolons at the end of every line (modern JS does not).",
+  "Arrow functions are exactly the same as regular functions.",
+  "JavaScript is a statically typed language.",
+  "You cannot use `if` without curly braces.",
+];
+
+const rubyWrongConcepts = [
+  "Ruby uses `console.log()` for output.",
+  "Ruby is a compiled language.",
+  "In Ruby, you must declare variables with `let`.",
+  "Ruby methods always require explicit `return`.",
+  "Ruby uses `end` only for loops, not for methods.",
+  "Double quotes and single quotes behave identically in Ruby.",
+  "Ruby does not support object-oriented programming.",
+  "You can call a method without defining it first.",
+  "Ruby arrays use zero‑based indexing but start from 1.",
+  "Ruby uses `//` for comments.",
+];
+
+const pythonFalseStatements = [
+  `Python requires you to declare variable types explicitly.`,
+  `The print() function in Python uses semicolons.`,
+  `Indentation in Python is optional and has no effect on the program.`,
+  `Python functions must always explicitly return a value.`,
+  `Lists in Python can only contain items of the same data type.`,
+  `Python requires a main() function to start execution.`,
+  `The def keyword in Python is used to declare variables.`,
+  `For loops in Python always require a numeric counter.`,
+];
+
+const javaFalseStatements = [
+  `Java variables do not need a type declaration.`,
+  `In Java, code can be written outside of a class.`,
+  `Java does not require semicolons at the end of statements.`,
+  `The main method in Java can be named anything.`,
+  `Java is a dynamically typed language.`,
+  `ArrayList in Java has a fixed size.`,
+  `Java loops do not need curly braces.`,
+  `You can use print() directly in Java without a class.`,
+];
+
+const jsFalseStatements = [
+  `JavaScript is the same as Java.`,
+  `In JavaScript, you must declare a variable's type.`,
+  `console.log() only works in Node.js.`,
+  `JavaScript uses print() for output.`,
+  `Arrow functions can have their own this context (simplified for beginners).`,
+  `JavaScript requires semicolons at the end of every line.`,
+  `You cannot use if without curly braces.`,
+  `JavaScript is a compiled language.`,
+];
+
+const rubyFalseStatements = [
+  `Ruby uses console.log() for output.`,
+  `Ruby is a compiled language.`,
+  `In Ruby, you must declare variables with let.`,
+  `Ruby methods always require an explicit return.`,
+  `Ruby uses end only for loops, not for methods.`,
+  `Double quotes and single quotes behave identically.`,
+  `Ruby arrays start at index 1.`,
+  `You can call a method without defining it first.`,
+];
+
 function getWrongConceptOption(lesson, language, index) {
-  const wrongs = language === "java" ? javaWrongConcepts : pythonWrongConcepts;
+  const wrongs = getWrongConcepts(language);
   return wrongs[(index + lesson.title.length) % wrongs.length];
 }
 
 function getCorrectExampleAnswer(lesson, codeLine, language) {
+  if (language === "javascript") {
+    if (codeLine.includes("console.log")) return "Outputs text to the console";
+    if (codeLine.includes("function")) return "Defines a function";
+    if (codeLine.includes("=>")) return "Declares an arrow function";
+    if (codeLine.includes("for")) return "Iterates with a for loop";
+    if (codeLine.includes("if")) return "Conditional branch";
+    if (codeLine.includes("let") || codeLine.includes("const")) return "Declares a variable";
+    if (codeLine.includes("return")) return "Returns a value";
+    return `Demonstrates ${lesson.title}`;
+  }
+  if (language === "ruby") {
+    if (codeLine.includes("puts") || codeLine.includes("print")) return "Outputs text";
+    if (codeLine.includes("def")) return "Defines a method";
+    if (codeLine.includes("each")) return "Iterates over a collection";
+    if (codeLine.includes("if")) return "Conditional branch";
+    if (codeLine.includes("=")) return "Assigns a value";
+    if (codeLine.includes("end")) return "Closes a block/method";
+    return `Demonstrates ${lesson.title}`;
+  }
   if (language === "python") {
     if (codeLine.includes("print(")) return "Outputs text to the screen";
     if (codeLine.includes("def ")) return "Defines a new function";
@@ -316,17 +356,17 @@ function getCorrectExampleAnswer(lesson, codeLine, language) {
     if (codeLine.includes("class ")) return "Defines a new class";
     if (codeLine.includes("=")) return "Assigns a value to a variable";
     if (codeLine.includes("return")) return "Returns a value from a function";
-  } else {
-    if (codeLine.includes("System.out.println"))
-      return "Outputs text to the screen";
-    if (codeLine.includes("int ") || codeLine.includes("String "))
-      return "Declares a variable with a type";
+    return `Demonstrates ${lesson.title}`;
+  }
+  if (language === "java") {
+    if (codeLine.includes("System.out.println")) return "Outputs text to the screen";
+    if (codeLine.includes("int ") || codeLine.includes("String ")) return "Declares a variable with a type";
     if (codeLine.includes("for ")) return "Iterates a fixed number of times";
     if (codeLine.includes("if ")) return "Checks a condition";
     if (codeLine.includes("class ")) return "Defines a new class";
     if (codeLine.includes("return")) return "Returns a value from a method";
-    if (codeLine.includes("new ArrayList"))
-      return "Creates a new resizable list";
+    if (codeLine.includes("new ArrayList")) return "Creates a new resizable list";
+    return `Demonstrates ${lesson.title}`;
   }
   return `Demonstrates ${lesson.title}`;
 }
@@ -396,6 +436,25 @@ function getWrongDebugOption(lesson, language, index) {
   ];
 }
 
+function getPredictedOutput(printLine, lesson, language) {
+  if (language === "python") {
+    const match = printLine.match(/print\("([^"]+)"\)/);
+    if (match) return match[1];
+    const match2 = printLine.match(/print\('([^']+)'\)/);
+    if (match2) return match2[1];
+  } else if (language === "java") {
+    const match = printLine.match(/println\("([^"]+)"\)/);
+    if (match) return match[1];
+  } else if (language === "javascript") {
+    const match = printLine.match(/console\.log\(\s*['"`]([^'"`]+)['"`]\s*\)/);
+    if (match) return match[1];
+  } else if (language === "ruby") {
+    const match = printLine.match(/puts\s+['"]([^'"]+)['"]/);
+    if (match) return match[1];
+  }
+  return null;
+}
+
 const wrongOutputOptions = [
   "Nothing — the code has a syntax error",
   "undefined",
@@ -411,4 +470,9 @@ function getWrongOutputOption(lesson, language, index) {
   return wrongOutputOptions[
     (index + lesson.id.length) % wrongOutputOptions.length
   ];
+}
+
+function getFalseStatement(lesson, language) {
+  const arr = getFalseStatements(language);
+  return arr[(lesson.title.length + lesson.id.length) % arr.length];
 }

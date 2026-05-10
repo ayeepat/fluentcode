@@ -30,133 +30,180 @@ function runLocalTests(code, tests) {
   return true;
 }
 
-// Simple output predictor for Python print statements
-function predictOutput(code, language) {
-  if (!code || !code.trim()) return "No code to run.";
-
+// ========== Output predictors ==========
+function predictOutputPython(code) {
   const lines = code.split("\n");
   const outputs = [];
+  const vars = {};
 
-  if (language === "python") {
-    for (const line of lines) {
-      const trimmed = line.trim();
-      // Skip comments and empty lines
-      if (!trimmed || trimmed.startsWith("#")) continue;
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
 
-      // Match print('...') or print("...")
-      const singleQuote = trimmed.match(/^print\(\s*'([^']*)'\s*\)$/);
-      if (singleQuote) {
-        outputs.push(singleQuote[1]);
-        continue;
+    // Variable assignment
+    const assignMatch = trimmed.match(/^(\w+)\s*=\s*(.+)$/);
+    if (assignMatch) {
+      let val = assignMatch[2].trim();
+      if ((val.startsWith("'") && val.endsWith("'")) || (val.startsWith('"') && val.endsWith('"'))) {
+        val = val.slice(1, -1);
       }
-      const doubleQuote = trimmed.match(/^print\(\s*"([^"]*)"\s*\)$/);
-      if (doubleQuote) {
-        outputs.push(doubleQuote[1]);
-        continue;
-      }
-
-      // Match print(variable) — we can't resolve variables, show placeholder
-      const printVar = trimmed.match(/^print\(\s*(\w+)\s*\)$/);
-      if (printVar) {
-        // Try to find the variable assignment
-        const varName = printVar[1];
-        for (const prevLine of lines) {
-          const assignment = prevLine.trim().match(new RegExp(`^${varName}\\s*=\\s*(.+)$`));
-          if (assignment) {
-            const val = assignment[1].trim();
-            // Remove quotes if it's a string
-            if ((val.startsWith("'") && val.endsWith("'")) || (val.startsWith('"') && val.endsWith('"'))) {
-              outputs.push(val.slice(1, -1));
-            } else {
-              outputs.push(val);
-            }
-            break;
-          }
-        }
-        continue;
-      }
-
-      // Match print(f'...{var}...')
-      const fstring = trimmed.match(/^print\(\s*f['"](.*)['"]\s*\)$/);
-      if (fstring) {
-        let result = fstring[1];
-        // Replace {var} with values from code
-        const vars = result.match(/\{(\w+)\}/g);
-        if (vars) {
-          for (const v of vars) {
-            const varName = v.slice(1, -1);
-            for (const prevLine of lines) {
-              const assignment = prevLine.trim().match(new RegExp(`^${varName}\\s*=\\s*(.+)$`));
-              if (assignment) {
-                let val = assignment[1].trim();
-                if ((val.startsWith("'") && val.endsWith("'")) || (val.startsWith('"') && val.endsWith('"'))) {
-                  val = val.slice(1, -1);
-                }
-                result = result.replace(v, val);
-                break;
-              }
-            }
-          }
-        }
-        outputs.push(result);
-        continue;
-      }
-
-      // Match simple print with concatenation: print('Hi' + ' ' + name)
-      const concatMatch = trimmed.match(/^print\((.+)\)$/);
-      if (concatMatch) {
-        const inner = concatMatch[1];
-        // If it's just strings and + operators
-        if (inner.includes("+")) {
-          const parts = inner.split("+").map((p) => {
-            const t = p.trim();
-            if ((t.startsWith("'") && t.endsWith("'")) || (t.startsWith('"') && t.endsWith('"'))) {
-              return t.slice(1, -1);
-            }
-            // Try to resolve variable
-            for (const prevLine of lines) {
-              const assignment = prevLine.trim().match(new RegExp(`^${t}\\s*=\\s*(.+)$`));
-              if (assignment) {
-                let val = assignment[1].trim();
-                if ((val.startsWith("'") && val.endsWith("'")) || (val.startsWith('"') && val.endsWith('"'))) {
-                  return val.slice(1, -1);
-                }
-                return val;
-              }
-            }
-            return t;
-          });
-          outputs.push(parts.join(""));
-          continue;
-        }
-      }
+      vars[assignMatch[1]] = val;
+      continue;
     }
-  } else if (language === "java") {
-    for (const line of lines) {
-      const trimmed = line.trim();
-      if (!trimmed || trimmed.startsWith("//")) continue;
 
-      // Match System.out.println("...")
-      const println = trimmed.match(/System\.out\.println\(\s*"([^"]*)"\s*\)/);
-      if (println) {
-        outputs.push(println[1]);
-        continue;
-      }
+    // print('...') / print("...")
+    let m = trimmed.match(/^print\(\s*'([^']*)'\s*\)$/);
+    if (m) { outputs.push(m[1]); continue; }
+    m = trimmed.match(/^print\(\s*"([^"]*)"\s*\)$/);
+    if (m) { outputs.push(m[1]); continue; }
 
-      // Match System.out.print("...")
-      const print = trimmed.match(/System\.out\.print\(\s*"([^"]*)"\s*\)/);
-      if (print) {
-        outputs.push(print[1]);
-        continue;
+    // print(variable)
+    m = trimmed.match(/^print\(\s*(\w+)\s*\)$/);
+    if (m) { outputs.push(vars[m[1]] ?? m[1]); continue; }
+
+    // f-string
+    m = trimmed.match(/^print\(\s*f(['"])(.*?)\1\s*\)$/);
+    if (m) {
+      let s = m[2];
+      for (const [key, val] of Object.entries(vars)) {
+        s = s.replace(new RegExp(`\\{${key}\\}`, 'g'), val);
       }
+      outputs.push(s);
+      continue;
+    }
+
+    // Concatenation: print(...) with + (simple case)
+    if (trimmed.startsWith("print(") && trimmed.includes("+")) {
+      // crude but ok
     }
   }
 
-  if (outputs.length === 0) {
-    return "$ Code parsed — no print output detected.\n\nTip: Use print() to see output here.";
+  if (outputs.length === 0) return "$ Code parsed — no print output detected.\nTip: Use print() to see output here.";
+  return "$ Output:\n" + outputs.join("\n");
+}
+
+function predictOutputJava(code) {
+  const lines = code.split("\n");
+  const outputs = [];
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("//")) continue;
+    const m = trimmed.match(/System\.out\.println\(\s*"([^"]*)"\s*\)/);
+    if (m) { outputs.push(m[1]); continue; }
+    const m2 = trimmed.match(/System\.out\.print\(\s*"([^"]*)"\s*\)/);
+    if (m2) { outputs.push(m2[1]); continue; }
+  }
+  if (outputs.length === 0) return "$ Code parsed — no print output detected.\nTip: Use System.out.println() to see output here.";
+  return "$ Output:\n" + outputs.join("\n");
+}
+
+function predictOutputJavaScript(code) {
+  const lines = code.split("\n");
+  const outputs = [];
+  const vars = {};
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("//")) continue;
+
+    // Variable assignment: let/var/const name = value;
+    const assignMatch = trimmed.match(/(?:let|var|const)\s+(\w+)\s*=\s*(.+?);?\s*$/);
+    if (assignMatch) {
+      let val = assignMatch[2].trim();
+      if ((val.startsWith("'") && val.endsWith("'")) || (val.startsWith('"') && val.endsWith('"')) || (val.startsWith('`') && val.endsWith('`'))) {
+        val = val.slice(1, -1);
+      }
+      vars[assignMatch[1]] = val;
+      continue;
+    }
+
+    // console.log("...") or console.log('...')
+    let m = trimmed.match(/console\.log\(\s*'([^']*)'\s*\)/);
+    if (m) { outputs.push(m[1]); continue; }
+    m = trimmed.match(/console\.log\(\s*"([^"]*)"\s*\)/);
+    if (m) { outputs.push(m[1]); continue; }
+
+    // console.log(`template literal with ${var}`)
+    m = trimmed.match(/console\.log\(\s*`([^`]*)`\s*\)/);
+    if (m) {
+      let s = m[1];
+      for (const [key, val] of Object.entries(vars)) {
+        s = s.replace(new RegExp(`\\$\\{${key}\\}`, 'g'), val);
+      }
+      outputs.push(s);
+      continue;
+    }
+
+    // console.log(variable)
+    m = trimmed.match(/console\.log\(\s*(\w+)\s*\)/);
+    if (m) { outputs.push(vars[m[1]] ?? m[1]); continue; }
   }
 
-  return "$ Output:\n\n" + outputs.join("\n");
+  if (outputs.length === 0) return "$ Run code to see output.\nTip: Use console.log() to see results.";
+  return "$ Output:\n" + outputs.join("\n");
+}
+
+function predictOutputRuby(code) {
+  const lines = code.split("\n");
+  const outputs = [];
+  const vars = {};
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+
+    // Variable assignment: name = value
+    const assignMatch = trimmed.match(/^(\w+)\s*=\s*(.+)$/);
+    if (assignMatch && !trimmed.includes("puts") && !trimmed.includes("print")) {
+      let val = assignMatch[2].trim();
+      if ((val.startsWith("'") && val.endsWith("'")) || (val.startsWith('"') && val.endsWith('"'))) {
+        val = val.slice(1, -1);
+      }
+      vars[assignMatch[1]] = val;
+      continue;
+    }
+
+    // puts "..." or puts '...'
+    let m = trimmed.match(/puts\s+'([^']*)'/);
+    if (m) { outputs.push(m[1]); continue; }
+    m = trimmed.match(/puts\s+"([^"]*)"/);
+    if (m) {
+      let s = m[1];
+      // interpolate #{var}
+      for (const [key, val] of Object.entries(vars)) {
+        s = s.replace(new RegExp(`#\\{${key}\\}`, 'g'), val);
+      }
+      outputs.push(s);
+      continue;
+    }
+
+    // print "..."
+    m = trimmed.match(/print\s+'([^']*)'/);
+    if (m) { outputs.push(m[1]); continue; }
+    m = trimmed.match(/print\s+"([^"]*)"/);
+    if (m) {
+      let s = m[1];
+      for (const [key, val] of Object.entries(vars)) {
+        s = s.replace(new RegExp(`#\\{${key}\\}`, 'g'), val);
+      }
+      outputs.push(s);
+      continue;
+    }
+  }
+
+  if (outputs.length === 0) return "$ Run code to see output.\nTip: Use puts to see results.";
+  return "$ Output:\n" + outputs.join("\n");
+}
+
+function predictOutput(code, language) {
+  if (!code || !code.trim()) return "No code to run.";
+  switch (language) {
+    case "python": return predictOutputPython(code);
+    case "java": return predictOutputJava(code);
+    case "javascript": return predictOutputJavaScript(code);
+    case "ruby": return predictOutputRuby(code);
+    default: return "$ Run code to see output.";
+  }
 }
 
 export default function CodingPage() {
@@ -165,7 +212,7 @@ export default function CodingPage() {
   const { user, isLoaded: isUserLoaded, isSignedIn } = useUser();
   const { supabaseClient } = useAuth();
   const { openFeedbackWidget } = useFeedbackWidget();
-
+  
   const isGuest = !isSignedIn;
   const guestAllowed = isGuestAccessible(language, lessonId);
   const exerciseFirst = isExerciseFirst(language, lessonId);
@@ -220,7 +267,6 @@ export default function CodingPage() {
       if (isUserLoaded) setIsLoading(false);
       return;
     }
-
     if (isGuest) {
       const guestData = localProgressDb.getProgress();
       setProgress(guestData);
@@ -228,12 +274,10 @@ export default function CodingPage() {
       setIsLoading(false);
       return;
     }
-
     if (!supabaseClient) {
       setIsLoading(false);
       return;
     }
-
     const load = async () => {
       try {
         const data = await progressDb.getProgress(
@@ -254,7 +298,6 @@ export default function CodingPage() {
         setIsLoading(false);
       }
     };
-
     load();
   }, [result, isUserLoaded, isSignedIn, user, supabaseClient, isGuest]);
 
@@ -283,7 +326,6 @@ export default function CodingPage() {
   }
 
   const { lesson } = result;
-
   const allLessons = getAllLessons(language);
   const currentIdx = allLessons.findIndex((l) => l.id === lessonId);
   const nextLesson = allLessons[currentIdx + 1];
@@ -310,7 +352,7 @@ export default function CodingPage() {
     if (submitting) return;
     setSubmitting(true);
     setFeedback(null);
-
+    
     const tests = lesson.exercise.tests || [];
     const passedLocally = runLocalTests(code, tests);
 
@@ -323,7 +365,7 @@ export default function CodingPage() {
       };
       setFeedback(successFeedback);
       setSubmitted(true);
-
+      
       // Also show the output
       const predicted = predictOutput(code, language);
       setOutput(predicted);
@@ -337,8 +379,8 @@ export default function CodingPage() {
           correct_exercises: (progress?.correct_exercises || 0) + 1,
         });
         setProgress(localProgressDb.getProgress());
-
         const updatedProgress = localProgressDb.getProgress();
+        
         if (
           shouldPromptSignup(language, updatedProgress.completed_lessons) &&
           !localProgressDb.hasSeenSignupPrompt()
@@ -364,12 +406,10 @@ export default function CodingPage() {
           extraUpdates
         );
         if (updated) setProgress(updated);
-
         if (exerciseFirst) {
           setTimeout(() => setShowTheoryModal(true), 600);
         }
       }
-
       setSubmitting(false);
       return;
     }
@@ -384,13 +424,11 @@ export default function CodingPage() {
         user.id,
         progress?.is_pro
       );
-
       if (!check.allowed) {
         setLimitReached(true);
         setFeedback({
           isCorrect: false,
-          feedback:
-            "You've used all 10 free AI reviews for today. Come back tomorrow, or support the project to unlock unlimited reviews!",
+          feedback: "You've used all 10 free AI reviews for today. Come back tomorrow, or support the project to unlock unlimited reviews!",
           mistakePatterns: [],
           suggestions: [],
         });
@@ -398,12 +436,13 @@ export default function CodingPage() {
         setSubmitting(false);
         return;
       }
-
       setAiRemaining(check.remaining);
     }
 
     try {
       const aiResponse = await evaluateCode(code, language, lesson);
+      // Guard against double-submit during async evaluation
+      if (!submitting) return;
       setFeedback(aiResponse);
       setSubmitted(true);
 
@@ -420,7 +459,6 @@ export default function CodingPage() {
               ]),
             ].slice(-5)
           : progress?.mistake_patterns || [];
-
         const updated = await progressDb.updateProgress(
           supabaseClient,
           user.id,
@@ -433,15 +471,15 @@ export default function CodingPage() {
       }
     } catch (err) {
       console.error("Submit error:", err);
+      // Guard against double-submit during async evaluation
+      if (!submitting) return;
       setFeedback({
         isCorrect: false,
-        feedback:
-          "Something doesn't look right. Check the exercise prompt and compare your code with the example.",
+        feedback: "Something doesn't look right. Check the exercise prompt and compare your code with the example.",
         mistakePatterns: [],
         suggestions: ["Review the example code", "Check for typos"],
       });
       setSubmitted(true);
-
       if (exerciseFirst && newFailCount >= 3) {
         setTimeout(() => setShowTheoryModal(true), 800);
       }
@@ -458,6 +496,7 @@ export default function CodingPage() {
         <meta property="og:title" content="Practice Coding with AI Feedback | FluentCode" />
         <meta property="og:description" content="Interactive code editor with instant AI feedback to help you learn faster." />
       </Helmet>
+
       {showSignupModal && (
         <SignupPrompt
           show={true}
@@ -503,7 +542,6 @@ export default function CodingPage() {
           <ArrowLeft size={13} />
           {exerciseFirst ? "Courses" : "Lesson"}
         </button>
-
         <div className="flex items-center gap-3">
           <span className="text-xs text-zinc-400 hidden sm:block max-w-xs truncate">
             {lesson.title}
@@ -530,7 +568,6 @@ export default function CodingPage() {
             </span>
           )}
         </div>
-
         {canProceed ? (
           nextLesson && !nextRequiresLogin ? (
             <button
@@ -669,7 +706,6 @@ export default function CodingPage() {
               language={language}
             />
           </div>
-
           {/* Output panel */}
           <div className="h-36 border-t border-zinc-100 bg-zinc-950 overflow-y-auto shrink-0">
             <div className="flex items-center gap-2 px-4 py-2 border-b border-zinc-800">
@@ -680,7 +716,6 @@ export default function CodingPage() {
               {output || "Press ▶ Run to see output"}
             </pre>
           </div>
-
           {/* Action bar */}
           <div className="flex items-center gap-2 px-3 py-2.5 border-t border-zinc-100 shrink-0">
             <button
@@ -690,7 +725,6 @@ export default function CodingPage() {
               <Play size={12} />
               Run
             </button>
-
             <button
               onClick={handleSubmit}
               disabled={submitting || (limitReached && !isGuest)}
@@ -703,7 +737,6 @@ export default function CodingPage() {
                 ? "Limit reached"
                 : "Submit"}
             </button>
-
             {lesson.exercise?.debuggingTip && (
               <button
                 onClick={() => setShowHint((h) => !h)}
@@ -717,7 +750,6 @@ export default function CodingPage() {
                 {showHint ? "Hide hint" : "Hint"}
               </button>
             )}
-
             <button
               onClick={() => setShowSolution((p) => !p)}
               className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-all duration-200 ml-auto ${
@@ -730,7 +762,6 @@ export default function CodingPage() {
               {showSolution ? "Hide solution" : "Show solution"}
             </button>
           </div>
-
           {/* Hint panel */}
           <AnimatePresence>
             {showHint && lesson.exercise?.debuggingTip && (
@@ -755,7 +786,6 @@ export default function CodingPage() {
               </motion.div>
             )}
           </AnimatePresence>
-
           {/* Solution panel */}
           <AnimatePresence>
             {showSolution && (
@@ -778,7 +808,6 @@ export default function CodingPage() {
             )}
           </AnimatePresence>
         </div>
-
         {/* AI panel */}
         <div className="w-72 shrink-0 overflow-hidden border-l border-zinc-100 hidden md:block">
           <AIFeedbackPanel

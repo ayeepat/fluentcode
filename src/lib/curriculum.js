@@ -195,11 +195,11 @@ export const curriculum = {
             title: "Making Decisions with if",
             explanation: "The if statement is how your program makes choices. You write 'if' followed by a condition that evaluates to True or False, then a colon, then an indented block of code. That indented code only runs if the condition is True. If the condition is False, Python skips right over it. Simple but incredibly powerful!",
             concept: "An if statement runs its indented code block only when its condition is True — the colon and indentation are mandatory.",
-            example: "temperature = 30\nif temperature > 25:\n    print('It is a hot day!')\n    print('Stay hydrated!')\n    print('Weather check complete.')",
+            example: "temperature = 30\nif temperature > 25:\nprint('It is a hot day!')\nprint('Stay hydrated!')\nprint('Weather check complete.')",
             exercise: {
               prompt: "Create a variable 'score' and set it to 85. Write an if statement that checks if score is greater than or equal to 60. If it is, print 'You passed!' and on the next indented line print 'Congratulations!'.",
               starterCode: "# Create score = 85\n# Write an if statement that prints two messages\n",
-              solution: "score = 85\nif score >= 60:\n    print('You passed!')\n    print('Congratulations!')",
+              solution: "score = 85\nif score >= 60:\nprint('You passed!')\nprint('Congratulations!')",
               tests: [{ type: "contains", value: "if score >= 60:" }, { type: "contains", value: "print('You passed!')" }, { type: "contains", value: "print('Congratulations!')" }],
               debuggingTip: "Don't forget the colon after the condition! if score >= 60 without the colon is a syntax error. And make sure both print statements are indented the same amount — inconsistent indentation confuses Python."
             }
@@ -209,11 +209,11 @@ export const curriculum = {
             title: "Handling Multiple Paths: elif and else",
             explanation: "Real decisions have more than one outcome. After an if, you can add elif (short for 'else if') to check another condition, and else to catch everything that didn't match any condition. Python checks the if first, then each elif in order, and finally runs the else block if nothing matched. Only ONE block will execute.",
             concept: "elif checks additional conditions after an if, and else catches everything else — only one block runs in an if/elif/else chain.",
-            example: "score = 75\nif score >= 90:\n    print('A')\nelif score >= 80:\n    print('B')\nelif score >= 70:\n    print('C')\nelse:\n    print('F')",
+            example: "score = 75\nif score >= 90:\nprint('A')\nelif score >= 80:\nprint('B')\nelif score >= 70:\nprint('C')\nelse:\nprint('F')",
             exercise: {
               prompt: "Write a program that grades a score. Create score = 73. If score is 90 or above, print 'A'. If score is 80 or above (but less than 90), print 'B'. If 70 or above, print 'C'. For anything else, print 'Needs work'. Only one grade should print.",
               starterCode: "# Create score = 73\n# Use if/elif/else to print the correct grade\n",
-              solution: "score = 73\nif score >= 90:\n    print('A')\nelif score >= 80:\n    print('B')\nelif score >= 70:\n    print('C')\nelse:\n    print('Needs work')",
+              solution: "score = 73\nif score >= 90:\nprint('A')\nelif score >= 80:\nprint('B')\nelif score >= 70:\nprint('C')\nelse:\nprint('Needs work')",
               tests: [{ type: "contains", value: "if score >= 90:" }, { type: "contains", value: "elif score >= 80:" }, { type: "contains", value: "elif score >= 70:" }, { type: "contains", value: "else:" }],
               debuggingTip: "The order of your elifs matters enormously! Check the highest threshold first (90), then 80, then 70. If you flip the order and check >= 70 first, every score above 70 will get 'C' and never reach the higher grades."
             }
@@ -223,11 +223,11 @@ export const curriculum = {
             title: "Repeating with While Loops",
             explanation: "A while loop keeps repeating a block of code as long as a condition is True. It checks the condition before each repetition. If the condition starts as False, the loop body never runs at all. Be careful — if the condition never becomes False, you'll get an infinite loop that runs forever!",
             concept: "A while loop repeats code as long as its condition is True — always make sure the condition can eventually become False.",
-            example: "count = 0\nwhile count < 5:\n    print(count)\n    count = count + 1\nprint('Done!')",
+            example: "count = 0\nwhile count < 5:\nprint(count)\ncount = count + 1\nprint('Done!')",
             exercise: {
               prompt: "Create a variable 'num' set to 1. Write a while loop that continues as long as num is less than or equal to 5. Inside the loop, print num, then increase num by 1. The output should show numbers 1 through 5.",
               starterCode: "# Create num = 1\n# Write a while loop to print 1 through 5\n",
-              solution: "num = 1\nwhile num <= 5:\n    print(num)\n    num = num + 1",
+              solution: "num = 1\nwhile num <= 5:\nprint(num)\nnum = num + 1",
               tests: [{ type: "contains", value: "while num <= 5:" }, { type: "contains", value: "num = num + 1" }],
               debuggingTip: "If your loop runs forever (the page freezes), you probably forgot to increment num inside the loop. Without num = num + 1, the condition num <= 5 is always True and the loop never ends. Always double-check that your loop condition will eventually fail!"
             }
@@ -237,11 +237,11 @@ export const curriculum = {
             title: "For Loops with range()",
             explanation: "For loops are perfect when you know exactly how many times you want to repeat something. The range() function generates a sequence of numbers — range(5) gives you 0, 1, 2, 3, 4. You can also specify a start and end: range(1, 6) gives 1, 2, 3, 4, 5. For loops are cleaner than while loops when you're counting.",
             concept: "for loops with range() iterate a specific number of times — range(n) counts from 0 to n-1.",
-            example: "for i in range(5):\n    print('Hello!')\nfor num in range(1, 4):\n    print(num)",
+            example: "for i in range(5):\nprint('Hello!')\nfor num in range(1, 4):\nprint(num)",
             exercise: {
               prompt: "Write a for loop using range() that prints the numbers 0 through 7 (all on separate lines). Then write a second for loop using range(10, 16) that prints the numbers 10 through 15.",
               starterCode: "# Print 0 through 7 with a for loop\n# Print 10 through 15 with a for loop\n",
-              solution: "for i in range(8):\n    print(i)\nfor num in range(10, 16):\n    print(num)",
+              solution: "for i in range(8):\nprint(i)\nfor num in range(10, 16):\nprint(num)",
               tests: [{ type: "contains", value: "for i in range(8):" }, { type: "contains", value: "for num in range(10, 16):" }],
               debuggingTip: "Remember that range(8) goes from 0 to 7 — that's 8 numbers total, but the last one is 7. If you want 0 through 7, use range(8). The stop value is always exclusive, so range(10, 16) includes 10 but stops before 16."
             }
@@ -251,11 +251,11 @@ export const curriculum = {
             title: "For Loops with Lists",
             explanation: "For loops shine when you use them to go through each item in a list. Instead of range(), you put the list itself after 'in'. The loop variable takes on each value from the list, one at a time. This is how you process collections of data — and it's one of the most common patterns in programming.",
             concept: "A for loop can iterate directly over a list — the loop variable gets each item one by one.",
-            example: "fruits = ['apple', 'banana', 'orange']\nfor fruit in fruits:\n    print(f'I like {fruit}')",
+            example: "fruits = ['apple', 'banana', 'orange']\nfor fruit in fruits:\nprint(f'I like {fruit}')",
             exercise: {
               prompt: "Create a list called 'colors' with three of your favorite colors (as strings). Use a for loop to print each color preceded by 'Color: ' — so if one color is 'blue', print 'Color: blue'.",
               starterCode: "# Create a list of three colors\n# Loop through and print each with 'Color: ' prefix\n",
-              solution: "colors = ['red', 'blue', 'green']\nfor color in colors:\n    print(f'Color: {color}')",
+              solution: "colors = ['red', 'blue', 'green']\nfor color in colors:\nprint(f'Color: {color}')",
               tests: [{ type: "contains", value: "for color in colors:" }, { type: "contains", value: "print(f'Color: {color}')" }],
               debuggingTip: "The variable name after 'for' is up to you — choose something descriptive. color makes sense here, but x works too. Just make sure you use the SAME variable name inside the loop. for color in colors: print(fruit) would crash because 'fruit' doesn't exist!"
             }
@@ -265,11 +265,11 @@ export const curriculum = {
             title: "Break and Continue",
             explanation: "Sometimes you need to control a loop from the inside. The break statement immediately exits the loop entirely — no more iterations. The continue statement skips the rest of the current iteration and jumps to the next one. These give you fine-grained control when simple conditions aren't enough.",
             concept: "break exits a loop immediately; continue skips to the next iteration — use them sparingly for special cases.",
-            example: "for i in range(10):\n    if i == 3:\n        continue\n    if i == 7:\n        break\n    print(i)",
+            example: "for i in range(10):\nif i == 3:\ncontinue\nif i == 7:\nbreak\nprint(i)",
             exercise: {
               prompt: "Write a for loop that goes through numbers 0 to 9 (use range). If the number is 4, skip it with continue. If the number is 8, exit the loop with break. Print every other number inside the loop. You should see 0, 1, 2, 3, 5, 6, 7.",
               starterCode: "# Loop through 0 to 9\n# Skip 4, stop at 8\n",
-              solution: "for i in range(10):\n    if i == 4:\n        continue\n    if i == 8:\n        break\n    print(i)",
+              solution: "for i in range(10):\nif i == 4:\ncontinue\nif i == 8:\nbreak\nprint(i)",
               tests: [{ type: "contains", value: "continue" }, { type: "contains", value: "break" }],
               debuggingTip: "Make sure your print comes AFTER the continue and break checks. If you print before checking, you'll print 4 and 8 before the continue and break can do their jobs. The order of operations inside the loop matters!"
             }
@@ -279,11 +279,11 @@ export const curriculum = {
             title: "Capstone: Number Guessing Game",
             explanation: "Let's put it all together! You'll build a number guessing game using everything you've learned: variables, input, while loops, conditionals, and comparisons. The computer will pick a secret number (we'll hardcode it for now), and the user keeps guessing until they get it right. You'll give hints like 'too high' or 'too low'.",
             concept: "Combine variables, while loops, input, and if/else to build an interactive guessing game.",
-            example: "secret = 7\nguess = 0\nwhile guess != secret:\n    guess = int(input('Guess: '))\n    if guess < secret:\n        print('Too low!')\n    elif guess > secret:\n        print('Too high!')\nprint('Correct!')",
+            example: "secret = 7\nguess = 0\nwhile guess != secret:\nguess = int(input('Guess: '))\nif guess < secret:\nprint('Too low!')\nelif guess > secret:\nprint('Too high!')\nprint('Correct!')",
             exercise: {
               prompt: "Build a guessing game: set secret = 5. Use a while loop to keep asking the user for guesses (convert their input to an int). If the guess is too low, print 'Higher!'. If too high, print 'Lower!'. When they guess correctly, print 'You got it!' — and the loop should end.",
               starterCode: "# Build a number guessing game\n# secret = 5\n# Keep asking until they guess correctly\n",
-              solution: "secret = 5\nguess = 0\nwhile guess != secret:\n    guess = int(input('Guess the number: '))\n    if guess < secret:\n        print('Higher!')\n    elif guess > secret:\n        print('Lower!')\nprint('You got it!')",
+              solution: "secret = 5\nguess = 0\nwhile guess != secret:\nguess = int(input('Guess the number: '))\nif guess < secret:\nprint('Higher!')\nelif guess > secret:\nprint('Lower!')\nprint('You got it!')",
               tests: [{ type: "contains", value: "while guess != secret:" }, { type: "contains", value: "int(input(" }, { type: "contains", value: "print('You got it!')" }],
               debuggingTip: "Don't forget to convert input() to an int! input() always returns a string, and comparing a string to the integer 5 will always say they're not equal. Wrap that input in int() right away."
             }
@@ -300,11 +300,11 @@ export const curriculum = {
             title: "Defining Functions",
             explanation: "A function is a reusable block of code that has a name. You define it once with 'def', then call it by name whenever you need it. Functions keep your code organized and prevent you from writing the same thing over and over. When you call a function, Python jumps to its definition, runs the code inside, then comes back.",
             concept: "Functions package reusable code under a name — define with def, call by using the name with parentheses.",
-            example: "def greet():\n    print('Hello!')\n    print('How are you?')\n\ngreet()\nprint('Back in main code')\ngreet()",
+            example: "def greet():\nprint('Hello!')\nprint('How are you?')\ngreet()\nprint('Back in main code')\ngreet()",
             exercise: {
               prompt: "Define a function called 'say_motto' that prints 'Keep coding!' and 'Never give up!' on two separate lines. Then call the function twice. You should see the two lines printed twice.",
               starterCode: "# Define your function here\n# Call it twice here\n",
-              solution: "def say_motto():\n    print('Keep coding!')\n    print('Never give up!')\n\nsay_motto()\nsay_motto()",
+              solution: "def say_motto():\nprint('Keep coding!')\nprint('Never give up!')\nsay_motto()\nsay_motto()",
               tests: [{ type: "contains", value: "def say_motto():" }, { type: "contains", value: "say_motto()" }],
               debuggingTip: "Make sure you define the function BEFORE you call it. Python reads top to bottom — if you try to call say_motto() before defining it, Python won't know what you're talking about. Always put your def statements at the top."
             }
@@ -314,11 +314,11 @@ export const curriculum = {
             title: "Functions with Parameters",
             explanation: "Parameters make functions flexible. Instead of doing the same thing every time, a function can accept input values (parameters) and behave differently based on what you pass in. You define parameters inside the parentheses when writing the function, and you provide arguments when calling it.",
             concept: "Parameters let functions accept input — define them in the parentheses, pass arguments when calling.",
-            example: "def greet(name):\n    print(f'Hello, {name}!')\n\ngreet('Alice')\ngreet('Bob')\ngreet('Charlie')",
+            example: "def greet(name):\nprint(f'Hello, {name}!')\ngreet('Alice')\ngreet('Bob')\ngreet('Charlie')",
             exercise: {
               prompt: "Define a function called 'double' that takes one parameter 'number'. Inside the function, print the number multiplied by 2. Then call double(5), double(10), and double(3) — you should see 10, 20, and 6 printed.",
               starterCode: "# Define double function with one parameter\n# Call it three times with different values\n",
-              solution: "def double(number):\n    print(number * 2)\n\ndouble(5)\ndouble(10)\ndouble(3)",
+              solution: "def double(number):\nprint(number * 2)\ndouble(5)\ndouble(10)\ndouble(3)",
               tests: [{ type: "contains", value: "def double(number):" }, { type: "contains", value: "double(5)" }, { type: "contains", value: "double(10)" }],
               debuggingTip: "Don't put quotes around numbers when calling the function! double('5') passes a string, and '5' * 2 gives you '55' (string repetition), not 10. Pass the actual integer: double(5)."
             }
@@ -328,11 +328,11 @@ export const curriculum = {
             title: "Return Values",
             explanation: "Functions can do more than just print things — they can send a value back using the 'return' keyword. That returned value can be stored in a variable or used directly. Once a function hits return, it stops running and hands the value back to whoever called it. This is how functions produce results you can actually use.",
             concept: "The return keyword sends a value back from a function — capture it in a variable to use it later.",
-            example: "def add(a, b):\n    return a + b\n\nresult = add(5, 3)\nprint(result)\nprint(add(10, 20))",
+            example: "def add(a, b):\nreturn a + b\nresult = add(5, 3)\nprint(result)\nprint(add(10, 20))",
             exercise: {
               prompt: "Define a function 'multiply' that takes two parameters a and b, and RETURNS their product (a * b). Call the function with 4 and 7, store the result in a variable, and print it. The output should be 28.",
               starterCode: "# Define multiply function that returns a * b\n# Call it, store result, print\n",
-              solution: "def multiply(a, b):\n    return a * b\n\nproduct = multiply(4, 7)\nprint(product)",
+              solution: "def multiply(a, b):\nreturn a * b\nproduct = multiply(4, 7)\nprint(product)",
               tests: [{ type: "contains", value: "return a * b" }, { type: "contains", value: "multiply(4, 7)" }],
               debuggingTip: "Don't confuse return with print! If your function prints the result instead of returning it, you'll see the number but you won't be able to store it. print(product) will show None because the function didn't return anything. Use return when you want to use the result later."
             }
@@ -342,11 +342,11 @@ export const curriculum = {
             title: "Default Parameters",
             explanation: "You can give parameters default values — if the caller doesn't provide an argument, the default is used. This makes functions more flexible. Define defaults with an equals sign in the parameter list. Parameters with defaults must come after any without defaults.",
             concept: "Default parameter values let callers omit arguments — the function falls back to the default.",
-            example: "def greet(name='friend'):\n    print(f'Hello, {name}!')\n\ngreet('Alice')\ngreet()",
+            example: "def greet(name='friend'):\nprint(f'Hello, {name}!')\ngreet('Alice')\ngreet()",
             exercise: {
               prompt: "Define a function 'power' with parameters 'base' and 'exponent' where exponent defaults to 2. The function should return base raised to the exponent power (use **). Call it twice: once as power(5) and once as power(3, 4). Print both results — you should see 25 and 81.",
               starterCode: "# Define power with exponent defaulting to 2\n# Call twice and print results\n",
-              solution: "def power(base, exponent=2):\n    return base ** exponent\n\nprint(power(5))\nprint(power(3, 4))",
+              solution: "def power(base, exponent=2):\nreturn base ** exponent\nprint(power(5))\nprint(power(3, 4))",
               tests: [{ type: "contains", value: "exponent=2" }, { type: "contains", value: "power(5)" }, { type: "contains", value: "power(3, 4)" }],
               debuggingTip: "Parameters with defaults must come AFTER parameters without defaults. def power(exponent=2, base) is a syntax error. Python reads left to right and needs all required parameters first."
             }
@@ -398,11 +398,11 @@ export const curriculum = {
             title: "Dictionary Methods and Iteration",
             explanation: "Dictionaries have handy methods: .keys() gives all the keys, .values() gives all values, .items() gives key-value pairs. You can loop through a dictionary with a for loop. The .get() method safely accesses keys, returning a default value if the key doesn't exist instead of crashing.",
             concept: "Use .keys(), .values(), .items() to iterate dictionaries; .get() provides safe access with defaults.",
-            example: "person = {'name': 'Alex', 'age': 25}\nfor key, value in person.items():\n    print(f'{key}: {value}')\nprint(person.get('job', 'unknown'))",
+            example: "person = {'name': 'Alex', 'age': 25}\nfor key, value in person.items():\nprint(f'{key}: {value}')\nprint(person.get('job', 'unknown'))",
             exercise: {
               prompt: "Create a dictionary 'prices' with: 'apple' -> 0.5, 'banana' -> 0.3, 'orange' -> 0.6. Use a for loop with .items() to print each item like 'apple costs 0.5'. Then use .get() to safely try to get the price of 'grape' with a default of 'Not found' and print the result.",
               starterCode: "# Create prices dictionary\n# Loop with .items()\n# Use .get() safely\n",
-              solution: "prices = {'apple': 0.5, 'banana': 0.3, 'orange': 0.6}\nfor fruit, price in prices.items():\n    print(f'{fruit} costs {price}')\nprint(prices.get('grape', 'Not found'))",
+              solution: "prices = {'apple': 0.5, 'banana': 0.3, 'orange': 0.6}\nfor fruit, price in prices.items():\nprint(f'{fruit} costs {price}')\nprint(prices.get('grape', 'Not found'))",
               tests: [{ type: "contains", value: "prices.items()" }, { type: "contains", value: "prices.get('grape', 'Not found')" }],
               debuggingTip: "When using .items() in a for loop, remember you need TWO loop variables: one for the key and one for the value. for fruit, price in prices.items(): — if you only use one variable (for item in prices.items():), you'll get a tuple instead of unpacked values."
             }
@@ -412,7 +412,7 @@ export const curriculum = {
             title: "Tuples: Immutable Lists",
             explanation: "A tuple is like a list, but you can't change it after creation — it's immutable. Tuples use parentheses instead of square brackets. You still access items by index. Use tuples when you have a collection that should never change, like coordinates or days of the week. They're faster and safer for fixed data.",
             concept: "Tuples are immutable sequences — use parentheses, they can't be modified after creation.",
-            example: "point = (3, 4)\nprint(point[0])\nprint(point[1])\n# point[0] = 5 # This would crash!\nfor val in point:\n    print(val)",
+            example: "point = (3, 4)\nprint(point[0])\nprint(point[1])\n# point[0] = 5 # This would crash!\nfor val in point:\nprint(val)",
             exercise: {
               prompt: "Create a tuple 'dimensions' with values (1920, 1080). Print the first value and the second value. Then print both dimensions with labels.",
               starterCode: "# Create dimensions tuple\n# Print both values with labels\n",
@@ -440,11 +440,11 @@ export const curriculum = {
             title: "Capstone: Contact Book",
             explanation: "You've learned so much — let's build something real! A contact book uses dictionaries to store contacts (name as key, phone as value), and functions to add, look up, and list contacts. This combines functions, dictionaries, loops, and conditionals into one practical mini-application you could actually use.",
             concept: "Combine functions, dictionaries, loops, and conditionals to build a practical contact management app.",
-            example: "contacts = {}\ndef add_contact(name, phone):\n    contacts[name] = phone\ndef lookup(name):\n    return contacts.get(name, 'Not found')\n\nadd_contact('Alice', '555-1234')\nprint(lookup('Alice'))\nprint(lookup('Bob'))",
+            example: "contacts = {}\ndef add_contact(name, phone):\ncontacts[name] = phone\ndef lookup(name):\nreturn contacts.get(name, 'Not found')\nadd_contact('Alice', '555-1234')\nprint(lookup('Alice'))\nprint(lookup('Bob'))",
             exercise: {
               prompt: "Build a mini contact book: create an empty dictionary 'contacts'. Define add_contact(name, phone) that adds to the dictionary. Define list_all() that loops through and prints all contacts as 'name: phone'. Call add_contact twice (with any names/numbers you like), then call list_all().",
               starterCode: "# Create contacts dictionary\n# Define add_contact and list_all functions\n# Add two contacts and list them\n",
-              solution: "contacts = {}\ndef add_contact(name, phone):\n    contacts[name] = phone\ndef list_all():\n    for name, phone in contacts.items():\n        print(f'{name}: {phone}')\n\nadd_contact('Alice', '555-1111')\nadd_contact('Bob', '555-2222')\nlist_all()",
+              solution: "contacts = {}\ndef add_contact(name, phone):\ncontacts[name] = phone\ndef list_all():\nfor name, phone in contacts.items():\nprint(f'{name}: {phone}')\nadd_contact('Alice', '555-1111')\nadd_contact('Bob', '555-2222')\nlist_all()",
               tests: [{ type: "contains", value: "def add_contact" }, { type: "contains", value: "def list_all" }, { type: "contains", value: "contacts.items()" }],
               debuggingTip: "Make sure your list_all function actually LOOPs through contacts — it shouldn't hardcode specific names. Use for name, phone in contacts.items(): so it works no matter how many contacts you add later."
             }
@@ -489,11 +489,11 @@ export const curriculum = {
             title: "Error Handling with try/except",
             explanation: "Errors happen — and that's okay! Instead of crashing, you can catch errors with try/except. Put risky code in the try block. If an error occurs, Python jumps to the except block instead of crashing. This lets you handle problems gracefully, like showing a friendly message instead of a scary traceback.",
             concept: "try/except catches errors so your program can handle them gracefully instead of crashing.",
-            example: "try:\n    number = int(input('Enter a number: '))\n    print(f'You entered {number}')\nexcept:\n    print('That was not a valid number!')\nprint('Program continues...')",
+            example: "try:\nnumber = int(input('Enter a number: '))\nprint(f'You entered {number}')\nexcept:\nprint('That was not a valid number!')\nprint('Program continues...')",
             exercise: {
               prompt: "Write a try/except block that tries to convert the string 'abc' to an integer with int(). In the except block, print 'Conversion failed!'. After the whole try/except, print 'Done.' — this should print even if the error occurs.",
               starterCode: "# Try to convert 'abc' to int\n# Catch the error and print a message\n",
-              solution: "try:\n    int('abc')\nexcept:\n    print('Conversion failed!')\nprint('Done.')",
+              solution: "try:\nint('abc')\nexcept:\nprint('Conversion failed!')\nprint('Done.')",
               tests: [{ type: "contains", value: "try:" }, { type: "contains", value: "except:" }, { type: "contains", value: "print('Conversion failed!')" }],
               debuggingTip: "A bare 'except:' catches ALL errors, which can hide bugs. In this simple lesson it's fine, but as you advance, specify the error type: except ValueError: — this way you only catch what you expect and other bugs still get your attention."
             }
@@ -503,11 +503,11 @@ export const curriculum = {
             title: "Specific Exceptions",
             explanation: "Python has many specific error types: ValueError (wrong type of value), TypeError (wrong type of operation), ZeroDivisionError (dividing by zero), and more. Catching specific exceptions lets you respond differently to different problems. It also prevents you from accidentally hiding bugs you didn't anticipate.",
             concept: "Catch specific exceptions like ValueError and TypeError to handle different errors differently.",
-            example: "try:\n    num = int('hello')\nexcept ValueError:\n    print('Not a valid number!')\nexcept TypeError:\n    print('Wrong type!')\nprint('Handled gracefully.')",
+            example: "try:\nnum = int('hello')\nexcept ValueError:\nprint('Not a valid number!')\nexcept TypeError:\nprint('Wrong type!')\nprint('Handled gracefully.')",
             exercise: {
               prompt: "Write a try block that divides 10 by 0 (which causes a ZeroDivisionError). Catch that specific error with 'except ZeroDivisionError:' and print 'Cannot divide by zero!'. Print 'All done.' after the except block.",
               starterCode: "# Try dividing by zero\n# Catch ZeroDivisionError specifically\n",
-              solution: "try:\n    result = 10 / 0\nexcept ZeroDivisionError:\n    print('Cannot divide by zero!')\nprint('All done.')",
+              solution: "try:\nresult = 10 / 0\nexcept ZeroDivisionError:\nprint('Cannot divide by zero!')\nprint('All done.')",
               tests: [{ type: "contains", value: "except ZeroDivisionError:" }, { type: "contains", value: "print('Cannot divide by zero!')" }],
               debuggingTip: "If you write except ValueError: but the actual error is ZeroDivisionError, your except block won't catch it and the program will still crash. Make sure the exception type matches what actually happens — read the error message to find the right type!"
             }
@@ -521,7 +521,7 @@ export const curriculum = {
             exercise: {
               prompt: "Write the syntax for reading a file. Write a with statement that opens 'data.txt' in read mode ('r') and aliases it as 'f'. Inside the with block, read the content into a variable 'content' using .read() and print it.",
               starterCode: "# Write file reading syntax\n# Open 'data.txt', read, print\n",
-              solution: "with open('data.txt', 'r') as f:\n    content = f.read()\n    print(content)",
+              solution: "with open('data.txt', 'r') as f:\ncontent = f.read()\nprint(content)",
               tests: [{ type: "contains", value: "with open('data.txt', 'r') as f:" }, { type: "contains", value: "f.read()" }],
               debuggingTip: "Always use 'with' when opening files — it ensures the file is properly closed even if an error occurs. If you just do file = open('data.txt'), you must manually call file.close() later, which is easy to forget."
             }
@@ -535,7 +535,7 @@ export const curriculum = {
             exercise: {
               prompt: "Write a with statement that opens 'output.txt' in write mode ('w') as 'f'. Inside, write the string 'Line one\\n' to the file, then write 'Line two'. Remember that .write() doesn't automatically add newlines — you'll need to add \\n yourself if you want them on separate lines.",
               starterCode: "# Open output.txt for writing\n# Write two lines\n",
-              solution: "with open('output.txt', 'w') as f:\n    f.write('Line one\\n')\n    f.write('Line two')",
+              solution: "with open('output.txt', 'w') as f:\nf.write('Line one\\n')\nf.write('Line two')",
               tests: [{ type: "contains", value: "with open('output.txt', 'w') as f:" }, { type: "contains", value: "f.write(" }],
               debuggingTip: "The .write() method doesn't add newlines automatically! If you want text on separate lines, you must include \\n yourself. f.write('hello') followed by f.write('world') will produce 'helloworld' in the file, not two lines."
             }
@@ -594,11 +594,11 @@ export const curriculum = {
             title: "What Is a Class?",
             explanation: "A class is a blueprint for creating objects. Think of it like a cookie cutter — the class defines the shape and the objects are the actual cookies. Classes let you bundle data (attributes) and behavior (methods) together into one package. This is the foundation of object-oriented programming, and it helps you organize larger programs.",
             concept: "A class is a blueprint for objects — it groups related data and functions together under one name.",
-            example: "class Dog:\n    pass\n\nmy_dog = Dog()\nprint(type(my_dog))\nprint(isinstance(my_dog, Dog))",
+            example: "class Dog:\npass\nmy_dog = Dog()\nprint(type(my_dog))\nprint(isinstance(my_dog, Dog))",
             exercise: {
               prompt: "Create an empty class called 'Car' (use the 'pass' keyword for the empty body). Then create an instance of Car and assign it to a variable called 'my_car'. Print the type of my_car to verify it's a Car object.",
               starterCode: "# Define Car class\n# Create an instance\n# Print type\n",
-              solution: "class Car:\n    pass\n\nmy_car = Car()\nprint(type(my_car))",
+              solution: "class Car:\npass\nmy_car = Car()\nprint(type(my_car))",
               tests: [{ type: "contains", value: "class Car:" }, { type: "contains", value: "my_car = Car()" }],
               debuggingTip: "Class names by convention start with a capital letter (Car, not car), and you create instances using the class name followed by parentheses: Car(). The 'pass' keyword is just a placeholder that means 'do nothing' — it's required when the class body is empty."
             }
@@ -608,11 +608,11 @@ export const curriculum = {
             title: "__init__ and self",
             explanation: "The __init__ method is a special function that runs automatically when you create a new object. It's where you set up the object's initial data. The 'self' parameter refers to the specific instance being created — it's how you attach data to that particular object. Every method in a class must have self as its first parameter.",
             concept: "__init__ initializes new objects; self refers to the specific instance — it's how you attach attributes.",
-            example: "class Student:\n    def __init__(self, name, grade):\n        self.name = name\n        self.grade = grade\n\ns1 = Student('Alice', 90)\ns2 = Student('Bob', 85)\nprint(s1.name)\nprint(s2.grade)",
+            example: "class Student:\ndef __init__(self, name, grade):\nself.name = name\nself.grade = grade\ns1 = Student('Alice', 90)\ns2 = Student('Bob', 85)\nprint(s1.name)\nprint(s2.grade)",
             exercise: {
               prompt: "Create a class 'Book' with an __init__ method that takes 'title' and 'author' as parameters and stores them as attributes (self.title and self.author). Create two Book instances with different titles and authors, then print the title of each.",
               starterCode: "# Define Book class with __init__\n# Create two instances\n# Print titles\n",
-              solution: "class Book:\n    def __init__(self, title, author):\n        self.title = title\n        self.author = author\n\nbook1 = Book('1984', 'Orwell')\nbook2 = Book('Dune', 'Herbert')\nprint(book1.title)\nprint(book2.title)",
+              solution: "class Book:\ndef __init__(self, title, author):\nself.title = title\nself.author = author\nbook1 = Book('1984', 'Orwell')\nbook2 = Book('Dune', 'Herbert')\nprint(book1.title)\nprint(book2.title)",
               tests: [{ type: "contains", value: "def __init__(self, title, author):" }, { type: "contains", value: "self.title = title" }, { type: "contains", value: "book1.title" }],
               debuggingTip: "Always put self as the first parameter in __init__! def __init__(title, author): without self will give you an error. Also, ensure you use two underscores on each side: __init__."
             }
@@ -622,11 +622,11 @@ export const curriculum = {
             title: "Class Methods",
             explanation: "Besides __init__, you can add other methods to your class — these are the actions your objects can perform. Methods are just functions defined inside a class, with self as the first parameter. They can access and modify the object's attributes using self. This is where your objects come alive with behavior!",
             concept: "Methods are functions inside a class — they use self to access the object's data and perform actions.",
-            example: "class Counter:\n    def __init__(self):\n        self.count = 0\n    def increment(self):\n        self.count += 1\n    def get_value(self):\n        return self.count\n\nc = Counter()\nc.increment()\nc.increment()\nprint(c.get_value())",
+            example: "class Counter:\ndef __init__(self):\nself.count = 0\ndef increment(self):\nself.count += 1\ndef get_value(self):\nreturn self.count\nc = Counter()\nc.increment()\nc.increment()\nprint(c.get_value())",
             exercise: {
               prompt: "Create a class 'BankAccount' with __init__ that sets self.balance to 0. Add a method 'deposit(self, amount)' that adds amount to self.balance. Add a method 'get_balance(self)' that returns self.balance. Create an account, deposit 100, then 50, and print the balance.",
               starterCode: "# Define BankAccount class\n# Add deposit and get_balance methods\n# Test with two deposits\n",
-              solution: "class BankAccount:\n    def __init__(self):\n        self.balance = 0\n    def deposit(self, amount):\n        self.balance += amount\n    def get_balance(self):\n        return self.balance\n\naccount = BankAccount()\naccount.deposit(100)\naccount.deposit(50)\nprint(account.get_balance())",
+              solution: "class BankAccount:\ndef __init__(self):\nself.balance = 0\ndef deposit(self, amount):\nself.balance += amount\ndef get_balance(self):\nreturn self.balance\naccount = BankAccount()\naccount.deposit(100)\naccount.deposit(50)\nprint(account.get_balance())",
               tests: [{ type: "contains", value: "def deposit(self, amount):" }, { type: "contains", value: "self.balance += amount" }, { type: "contains", value: "account.get_balance()" }],
               debuggingTip: "Don't forget self in your method definitions! def deposit(amount): will crash because Python calls deposit with the instance as the first argument. Always write def deposit(self, amount): so the self can receive the instance."
             }
@@ -636,11 +636,11 @@ export const curriculum = {
             title: "Inheritance",
             explanation: "Inheritance lets a class take on all the methods and attributes of another class. The new class is the 'child', the original is the 'parent'. You indicate inheritance by putting the parent class name in parentheses after the child class name. The child can add new methods or modify inherited ones — this is how you reuse and extend code.",
             concept: "Inheritance lets a child class inherit everything from a parent class — put the parent in parentheses.",
-            example: "class Vehicle:\n    def start(self):\n        print('Engine starting...')\n\nclass Car(Vehicle):\n    def honk(self):\n        print('Beep beep!')\n\nmy_car = Car()\nmy_car.start()\nmy_car.honk()",
+            example: "class Vehicle:\ndef start(self):\nprint('Engine starting...')\nclass Car(Vehicle):\ndef honk(self):\nprint('Beep beep!')\nmy_car = Car()\nmy_car.start()\nmy_car.honk()",
             exercise: {
               prompt: "Create a parent class 'Animal' with a method 'speak(self)' that prints 'Some sound'. Create a child class 'Dog' that inherits from Animal. Create a Dog instance and call speak() on it — it should print 'Some sound' even though Dog has no speak method!",
               starterCode: "# Define Animal with speak method\n# Define Dog inheriting from Animal\n# Create Dog instance and call speak\n",
-              solution: "class Animal:\n    def speak(self):\n        print('Some sound')\n\nclass Dog(Animal):\n    pass\n\nd = Dog()\nd.speak()",
+              solution: "class Animal:\ndef speak(self):\nprint('Some sound')\nclass Dog(Animal):\npass\nd = Dog()\nd.speak()",
               tests: [{ type: "contains", value: "class Dog(Animal):" }, { type: "contains", value: "d.speak()" }],
               debuggingTip: "The parent class must be defined BEFORE the child class. If you write class Dog(Animal): before defining Animal, Python will complain that Animal is not defined. Always put your parent class definitions first."
             }
@@ -650,11 +650,11 @@ export const curriculum = {
             title: "Overriding Methods",
             explanation: "Inheritance is great, but sometimes the child needs to do things differently. Overriding means defining a method in the child class with the same name as one in the parent. The child's version takes over — that's override. You can even call the parent's version using super().method_name() if you want to extend rather than replace.",
             concept: "Override a parent method by defining one with the same name in the child — use super() to call the parent version.",
-            example: "class Animal:\n    def speak(self):\n        print('Some sound')\n\nclass Cat(Animal):\n    def speak(self):\n        print('Meow!')\n\nc = Cat()\nc.speak()",
+            example: "class Animal:\ndef speak(self):\nprint('Some sound')\nclass Cat(Animal):\ndef speak(self):\nprint('Meow!')\nc = Cat()\nc.speak()",
             exercise: {
               prompt: "Start with the Animal class from before (with speak printing 'Some sound'). Create a class 'Cat' that inherits from Animal and OVERRIDES speak to print 'Meow!' instead. Create a Cat instance and call speak() — it should say 'Meow!', not 'Some sound'.",
               starterCode: "# Define Animal (same as before)\n# Define Cat with overridden speak\n# Test it\n",
-              solution: "class Animal:\n    def speak(self):\n        print('Some sound')\n\nclass Cat(Animal):\n    def speak(self):\n        print('Meow!')\n\nc = Cat()\nc.speak()",
+              solution: "class Animal:\ndef speak(self):\nprint('Some sound')\nclass Cat(Animal):\ndef speak(self):\nprint('Meow!')\nc = Cat()\nc.speak()",
               tests: [{ type: "contains", value: "class Cat(Animal):" }, { type: "contains", value: "def speak(self):" }, { type: "contains", value: "print('Meow!')" }],
               debuggingTip: "If your Cat still says 'Some sound', check that you spelled the method name exactly the same as in the parent. speak is not the same as Speak or speaak — Python is case-sensitive and exact-match on names. A typo means you're defining a new method instead of overriding."
             }
@@ -664,11 +664,11 @@ export const curriculum = {
             title: "Capstone: Bank Account Class",
             explanation: "Time to build something real! You'll create a full BankAccount class with deposits, withdrawals, a minimum balance check, and even a savings account that inherits from it. This ties together classes, __init__, methods, inheritance, and overriding into one practical project you could actually use as a foundation.",
             concept: "Combine classes, __init__, methods, and inheritance to build a practical banking system.",
-            example: "class BankAccount:\n    def __init__(self, owner, balance=0):\n        self.owner = owner\n        self.balance = balance\n    def withdraw(self, amount):\n        if amount <= self.balance:\n            self.balance -= amount\n            return True\n        return False\n\nacc = BankAccount('Alice', 100)\nprint(acc.withdraw(50))\nprint(acc.balance)",
+            example: "class BankAccount:\ndef __init__(self, owner, balance=0):\nself.owner = owner\nself.balance = balance\ndef withdraw(self, amount):\nif amount <= self.balance:\nself.balance -= amount\nreturn True\nreturn False\nacc = BankAccount('Alice', 100)\nprint(acc.withdraw(50))\nprint(acc.balance)",
             exercise: {
               prompt: "Build a BankAccount class with __init__(self, owner, balance=0) that stores owner and balance. Add withdraw(self, amount) that subtracts from balance only if there are enough funds — return True if successful, False otherwise. Add deposit(self, amount). Create an account, deposit 200, withdraw 50, and print the final balance.",
               starterCode: "# Define BankAccount class\n# withdraw, deposit methods\n# Test and print final balance\n",
-              solution: "class BankAccount:\n    def __init__(self, owner, balance=0):\n        self.owner = owner\n        self.balance = balance\n    def withdraw(self, amount):\n        if amount <= self.balance:\n            self.balance -= amount\n            return True\n        return False\n    def deposit(self, amount):\n        self.balance += amount\n\nacc = BankAccount('Alice')\nacc.deposit(200)\nacc.withdraw(50)\nprint(acc.balance)",
+              solution: "class BankAccount:\ndef __init__(self, owner, balance=0):\nself.owner = owner\nself.balance = balance\ndef withdraw(self, amount):\nif amount <= self.balance:\nself.balance -= amount\nreturn True\nreturn False\ndef deposit(self, amount):\nself.balance += amount\nacc = BankAccount('Alice')\nacc.deposit(200)\nacc.withdraw(50)\nprint(acc.balance)",
               tests: [{ type: "contains", value: "class BankAccount:" }, { type: "contains", value: "def withdraw" }, { type: "contains", value: "return False" }],
               debuggingTip: "Your withdraw method needs to check the balance BEFORE subtracting! If you just do self.balance -= amount without the if check, your account could go negative — which is fine for some designs but not what we want here. Always verify sufficient funds first."
             }
@@ -713,11 +713,11 @@ export const curriculum = {
             title: "Unit Testing with unittest",
             explanation: "Professional developers write tests for their code, and Python's unittest module makes it easy. You create a test class that inherits from unittest.TestCase, then write methods starting with 'test_' that check your code. Use self.assertEqual() and other assert methods to verify your functions return the right values.",
             concept: "unittest lets you write automated tests — create a TestCase class with test_ methods using assertEqual and friends.",
-            example: "import unittest\ndef add(a, b):\n    return a + b\n\nclass TestAdd(unittest.TestCase):\n    def test_add_positive(self):\n        self.assertEqual(add(2, 3), 5)\n\nprint('Tests defined!')",
+            example: "import unittest\ndef add(a, b):\nreturn a + b\nclass TestAdd(unittest.TestCase):\ndef test_add_positive(self):\nself.assertEqual(add(2, 3), 5)\nprint('Tests defined!')",
             exercise: {
               prompt: "Define a function 'square(x)' that returns x * x. Import unittest. Create a test class 'TestSquare' that inherits from unittest.TestCase. Add a test method 'test_square' that uses self.assertEqual to check that square(4) equals 16.",
               starterCode: "# Define square function\n# Import unittest\n# Create TestSquare class with one test\n",
-              solution: "import unittest\n\ndef square(x):\n    return x * x\n\nclass TestSquare(unittest.TestCase):\n    def test_square(self):\n        self.assertEqual(square(4), 16)",
+              solution: "import unittest\ndef square(x):\nreturn x * x\nclass TestSquare(unittest.TestCase):\ndef test_square(self):\nself.assertEqual(square(4), 16)",
               tests: [{ type: "contains", value: "import unittest" }, { type: "contains", value: "class TestSquare(unittest.TestCase):" }, { type: "contains", value: "self.assertEqual" }],
               debuggingTip: "Test method names MUST start with 'test_' — not 'Test', not 'check_', but exactly 'test_'. If your method is called square_test() or testSquare(), unittest won't find it. The prefix is how unittest knows which methods are tests."
             }
@@ -726,7 +726,7 @@ export const curriculum = {
       }
     ]
   },
-    java: {
+  java: {
     label: "Java",
     modules: [
       {
@@ -739,11 +739,11 @@ export const curriculum = {
             title: "Your First Java Program",
             explanation: "Welcome to Java on FluentCode! Java is one of the world's most popular programming languages. Every Java program needs a class and a main method. Your first tool is System.out.println(), which prints text to the console.",
             concept: "Java programs start in the main method, and System.out.println() prints output to the console.",
-            example: "public class HelloWorld {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, world!\");\n        System.out.println(\"I am learning Java!\");\n    }\n}",
+            example: "public class HelloWorld {\npublic static void main(String[] args) {\nSystem.out.println(\"Hello, world!\");\nSystem.out.println(\"I am learning Java!\");\n}\n}",
             exercise: {
               prompt: "Write a complete Java program with a class called 'FirstProgram' and a main method. Inside main, use System.out.println() to print 'I am ready to code in Java!' exactly.",
               starterCode: "// Define a public class called FirstProgram\n// Add the main method inside\n// Print the message\n",
-              solution: "public class FirstProgram {\n    public static void main(String[] args) {\n        System.out.println(\"I am ready to code in Java!\");\n    }\n}",
+              solution: "public class FirstProgram {\npublic static void main(String[] args) {\nSystem.out.println(\"I am ready to code in Java!\");\n}\n}",
               tests: [{ type: "contains", value: "public class FirstProgram" }, { type: "contains", value: "System.out.println" }],
               debuggingTip: "Java is case-sensitive! It's 'System' and 'String' with capital S. Use double quotes for text. Single quotes are only for single letters (chars)!"
             }
@@ -760,11 +760,11 @@ export const curriculum = {
             title: "System.out.println Basics",
             explanation: "System.out.println() adds a newline after each message. System.out.print() does not. In Java, text must be in double quotes.",
             concept: "System.out.println() prints with a newline; System.out.print() prints without one.",
-            example: "public class Output {\n    public static void main(String[] args) {\n        System.out.println(\"First line\");\n        System.out.print(\"Hello \");\n        System.out.print(\"World!\");\n    }\n}",
+            example: "public class Output {\npublic static void main(String[] args) {\nSystem.out.println(\"First line\");\nSystem.out.print(\"Hello \");\nSystem.out.print(\"World!\");\n}\n}",
             exercise: {
               prompt: "Write a complete Java program (class 'Printer') that prints 'Ready', 'Set', and 'Go!' on separate lines using three println statements.",
               starterCode: "// Create Printer class\n// Add main method\n// Print three lines\n",
-              solution: "public class Printer {\n    public static void main(String[] args) {\n        System.out.println(\"Ready\");\n        System.out.println(\"Set\");\n        System.out.println(\"Go!\");\n    }\n}",
+              solution: "public class Printer {\npublic static void main(String[] args) {\nSystem.out.println(\"Ready\");\nSystem.out.println(\"Set\");\nSystem.out.println(\"Go!\");\n}\n}",
               tests: [{ type: "contains", value: "public class Printer" }, { type: "contains", value: "System.out.println" }],
               debuggingTip: "Check your semicolons! Every statement in Java must end with one (;)."
             }
@@ -774,11 +774,11 @@ export const curriculum = {
             title: "Variables and Primitive Types",
             explanation: "Java types include int (whole numbers), double (decimals), boolean (true/false), and char (single characters). Once declared, the type cannot change.",
             concept: "Java variables must declare a fixed type: int, double, boolean, or char.",
-            example: "public class Types {\n    public static void main(String[] args) {\n        int age = 25;\n        double price = 19.99;\n        boolean isReady = true;\n        char grade = 'A';\n        System.out.println(age);\n    }\n}",
+            example: "public class Types {\npublic static void main(String[] args) {\nint age = 25;\ndouble price = 19.99;\nboolean isReady = true;\nchar grade = 'A';\nSystem.out.println(age);\n}\n}",
             exercise: {
               prompt: "Write a program (class 'Variables') declaring: int 'students' = 30, double 'average' = 87.5, and boolean 'passed' = true. Print all three.",
               starterCode: "// Create Variables class\n// Declare int, double, boolean and print\n",
-              solution: "public class Variables {\n    public static void main(String[] args) {\n        int students = 30;\n        double average = 87.5;\n        boolean passed = true;\n        System.out.println(students);\n        System.out.println(average);\n        System.out.println(passed);\n    }\n}",
+              solution: "public class Variables {\npublic static void main(String[] args) {\nint students = 30;\ndouble average = 87.5;\nboolean passed = true;\nSystem.out.println(students);\nSystem.out.println(average);\nSystem.out.println(passed);\n}\n}",
               tests: [{ type: "contains", value: "int students" }, { type: "contains", value: "double average" }, { type: "contains", value: "boolean passed" }],
               debuggingTip: "Variables do not need quotes around them when being printed. System.out.println(students) will print 30."
             }
@@ -788,11 +788,11 @@ export const curriculum = {
             title: "String Type and Operations",
             explanation: "String (capital S) is for text. You can join strings with the + operator.",
             concept: "String (capital S) holds text — use + to concatenate.",
-            example: "public class Strings {\n    public static void main(String[] args) {\n        String first = \"Hello\";\n        String last = \"World\";\n        System.out.println(first + \" \" + last);\n    }\n}",
+            example: "public class Strings {\npublic static void main(String[] args) {\nString first = \"Hello\";\nString last = \"World\";\nSystem.out.println(first + \" \" + last);\n}\n}",
             exercise: {
               prompt: "Create a class 'Greeting' with Strings 'title' (Mr.) and 'name' (Smith). Combine them with a space into 'fullGreeting' and print it. Then print 'Age: ' followed by 42.",
               starterCode: "// Create Greeting class\n// Combine strings and print\n",
-              solution: "public class Greeting {\n    public static void main(String[] args) {\n        String title = \"Mr.\";\n        String name = \"Smith\";\n        String fullGreeting = title + \" \" + name;\n        System.out.println(fullGreeting);\n        System.out.println(\"Age: \" + 42);\n    }\n}",
+              solution: "public class Greeting {\npublic static void main(String[] args) {\nString title = \"Mr.\";\nString name = \"Smith\";\nString fullGreeting = title + \" \" + name;\nSystem.out.println(fullGreeting);\nSystem.out.println(\"Age: \" + 42);\n}\n}",
               tests: [{ type: "contains", value: "String title" }, { type: "contains", value: "String fullGreeting" }],
               debuggingTip: "Remember: 'string' lowercase will not work. It must be 'String'."
             }
@@ -806,7 +806,7 @@ export const curriculum = {
             exercise: {
               prompt: "Create a class 'CaseChanger' with String 'mixed' = 'JaVa Is CoOl'. Print it in UPPERCASE, then lowercase, then print its .length().",
               starterCode: "// Create CaseChanger class\n",
-              solution: "public class CaseChanger {\n    public static void main(String[] args) {\n        String mixed = \"JaVa Is CoOl\";\n        System.out.println(mixed.toUpperCase());\n        System.out.println(mixed.toLowerCase());\n        System.out.println(mixed.length());\n        System.out.println(mixed);\n    }\n}",
+              solution: "public class CaseChanger {\npublic static void main(String[] args) {\nString mixed = \"JaVa Is CoOl\";\nSystem.out.println(mixed.toUpperCase());\nSystem.out.println(mixed.toLowerCase());\nSystem.out.println(mixed.length());\nSystem.out.println(mixed);\n}\n}",
               tests: [{ type: "contains", value: "mixed.toUpperCase()" }],
               debuggingTip: "Methods like length() require parentheses, unlike the length property for arrays."
             }
@@ -820,7 +820,7 @@ export const curriculum = {
             exercise: {
               prompt: "Create a class 'Formatter' with item = 'book' and price = 15.99. Use String.format to print 'The book costs 15.99 dollars.' using %s and %.2f.",
               starterCode: "// Use String.format\n",
-              solution: "public class Formatter {\n    public static void main(String[] args) {\n        String item = \"book\";\n        double price = 15.99;\n        String message = String.format(\"The %s costs %.2f dollars.\", item, price);\n        System.out.println(message);\n    }\n}",
+              solution: "public class Formatter {\npublic static void main(String[] args) {\nString item = \"book\";\ndouble price = 15.99;\nString message = String.format(\"The %s costs %.2f dollars.\", item, price);\nSystem.out.println(message);\n}\n}",
               tests: [{ type: "contains", value: "String.format" }],
               debuggingTip: "%.2f tells Java to format a decimal with exactly two digits after the point."
             }
@@ -834,7 +834,7 @@ export const curriculum = {
             exercise: {
               prompt: "Create a class 'Calculator' with x = 20 and y = 6. Print x / y, x % y, and then (double) x / y.",
               starterCode: "// Integer vs Double math\n",
-              solution: "public class Calculator {\n    public static void main(String[] args) {\n        int x = 20;\n        int y = 6;\n        System.out.println(x / y);\n        System.out.println(x % y);\n        System.out.println((double) x / y);\n    }\n}",
+              solution: "public class Calculator {\npublic static void main(String[] args) {\nint x = 20;\nint y = 6;\nSystem.out.println(x / y);\nSystem.out.println(x % y);\nSystem.out.println((double) x / y);\n}\n}",
               tests: [{ type: "contains", value: "(double) x" }],
               debuggingTip: "The modulo operator (%) gives you the remainder of a division."
             }
@@ -848,7 +848,7 @@ export const curriculum = {
             exercise: {
               prompt: "Create a class 'Reader'. Ask 'Enter your age: ', read an int, and print 'You will be ' + (age + 1) + ' next year.' Close the scanner.",
               starterCode: "import java.util.Scanner;\n",
-              solution: "import java.util.Scanner;\npublic class Reader {\n    public static void main(String[] args) {\n        Scanner input = new Scanner(System.in);\n        System.out.print(\"Enter your age: \");\n        int age = input.nextInt();\n        System.out.println(\"You will be \" + (age + 1) + \" next year.\");\n        input.close();\n    }\n}",
+              solution: "import java.util.Scanner;\npublic class Reader {\npublic static void main(String[] args) {\nScanner input = new Scanner(System.in);\nSystem.out.print(\"Enter your age: \");\nint age = input.nextInt();\nSystem.out.println(\"You will be \" + (age + 1) + \" next year.\");\ninput.close();\n}\n}",
               tests: [{ type: "contains", value: "Scanner input = new Scanner" }],
               debuggingTip: "Always import Scanner at the very top of your file, before the class."
             }
@@ -862,7 +862,7 @@ export const curriculum = {
             exercise: {
               prompt: "Create class 'Converter'. Cast double value = 9.7 to an int 'whole'. Print both.",
               starterCode: "// Practice narrowing casting\n",
-              solution: "public class Converter {\n    public static void main(String[] args) {\n        double value = 9.7;\n        int whole = (int) value;\n        System.out.println(value);\n        System.out.println(whole);\n    }\n}",
+              solution: "public class Converter {\npublic static void main(String[] args) {\ndouble value = 9.7;\nint whole = (int) value;\nSystem.out.println(value);\nSystem.out.println(whole);\n}\n}",
               tests: [{ type: "contains", value: "(int) value" }],
               debuggingTip: "Casting doesn't round numbers; it simply deletes everything after the decimal point."
             }
@@ -876,7 +876,7 @@ export const curriculum = {
             exercise: {
               prompt: "In class 'MathFun', print the square root of 144 and 3 cubed using Math methods.",
               starterCode: "// Use Math.sqrt and Math.pow\n",
-              solution: "public class MathFun {\n    public static void main(String[] args) {\n        System.out.println(Math.sqrt(144));\n        System.out.println(Math.pow(3, 3));\n    }\n}",
+              solution: "public class MathFun {\npublic static void main(String[] args) {\nSystem.out.println(Math.sqrt(144));\nSystem.out.println(Math.pow(3, 3));\n}\n}",
               tests: [{ type: "contains", value: "Math.sqrt(144)" }],
               debuggingTip: "Math.pow(base, exponent) returns a double value."
             }
@@ -897,7 +897,7 @@ export const curriculum = {
             exercise: {
               prompt: "Compare x=50 and y=30. Print x > y, x == y, and check if String s1=\"Java\" equals s2=\"Java\".",
               starterCode: "// Compare numbers and strings\n",
-              solution: "public class Compare {\n    public static void main(String[] args) {\n        int x = 50; int y = 30;\n        System.out.println(x > y);\n        System.out.println(x == y);\n        String s1 = \"Java\"; String s2 = \"Java\";\n        System.out.println(s1.equals(s2));\n    }\n}",
+              solution: "public class Compare {\npublic static void main(String[] args) {\nint x = 50; int y = 30;\nSystem.out.println(x > y);\nSystem.out.println(x == y);\nString s1 = \"Java\"; String s2 = \"Java\";\nSystem.out.println(s1.equals(s2));\n}\n}",
               tests: [{ type: "contains", value: ".equals(" }]
             }
           },
@@ -910,7 +910,7 @@ export const curriculum = {
             exercise: {
               prompt: "If score = 75 is >= 60, print 'You passed!' and 'Well done!'.",
               starterCode: "// If block\n",
-              solution: "public class PassCheck {\n    public static void main(String[] args) {\n        int score = 75;\n        if (score >= 60) {\n            System.out.println(\"You passed!\");\n            System.out.println(\"Well done!\");\n        }\n    }\n}",
+              solution: "public class PassCheck {\npublic static void main(String[] args) {\nint score = 75;\nif (score >= 60) {\nSystem.out.println(\"You passed!\");\nSystem.out.println(\"Well done!\");\n}\n}\n}",
               tests: [{ type: "contains", value: "if (score >= 60)" }]
             }
           },
@@ -923,7 +923,7 @@ export const curriculum = {
             exercise: {
               prompt: "Grade score 73: 90+ 'A', 80+ 'B', 70+ 'C', else 'Needs work'.",
               starterCode: "// Multi-branch if\n",
-              solution: "public class Grader {\n    public static void main(String[] args) {\n        int score = 73;\n        if (score >= 90) System.out.println(\"A\");\n        else if (score >= 80) System.out.println(\"B\");\n        else if (score >= 70) System.out.println(\"C\");\n        else System.out.println(\"Needs work\");\n    }\n}",
+              solution: "public class Grader {\npublic static void main(String[] args) {\nint score = 73;\nif (score >= 90) System.out.println(\"A\");\nelse if (score >= 80) System.out.println(\"B\");\nelse if (score >= 70) System.out.println(\"C\");\nelse System.out.println(\"Needs work\");\n}\n}",
               tests: [{ type: "contains", value: "else if" }]
             }
           },
@@ -936,7 +936,7 @@ export const curriculum = {
             exercise: {
               prompt: "Print numbers 1 to 5 using a while loop and num++.",
               starterCode: "// Counting loop\n",
-              solution: "public class Counter {\n    public static void main(String[] args) {\n        int num = 1;\n        while (num <= 5) {\n            System.out.println(num);\n            num++;\n        }\n    }\n}",
+              solution: "public class Counter {\npublic static void main(String[] args) {\nint num = 1;\nwhile (num <= 5) {\nSystem.out.println(num);\nnum++;\n}\n}\n}",
               tests: [{ type: "contains", value: "while (num <= 5)" }]
             }
           },
@@ -949,7 +949,7 @@ export const curriculum = {
             exercise: {
               prompt: "Print 0-7 with a for loop, then 10-15 with a second for loop.",
               starterCode: "// For loops\n",
-              solution: "public class LoopDemo {\n    public static void main(String[] args) {\n        for (int i = 0; i <= 7; i++) System.out.println(i);\n        for (int j = 10; j <= 15; j++) System.out.println(j);\n    }\n}",
+              solution: "public class LoopDemo {\npublic static void main(String[] args) {\nfor (int i = 0; i <= 7; i++) System.out.println(i);\nfor (int j = 10; j <= 15; j++) System.out.println(j);\n}\n}",
               tests: [{ type: "contains", value: "for (int i = 0;" }]
             }
           },
@@ -962,7 +962,7 @@ export const curriculum = {
             exercise: {
               prompt: "Loop 0-9. Skip 4 with continue, break at 8.",
               starterCode: "// Loop control\n",
-              solution: "public class LoopControl {\n    public static void main(String[] args) {\n        for (int i = 0; i < 10; i++) {\n            if (i == 4) continue;\n            if (i == 8) break;\n            System.out.println(i);\n        }\n    }\n}",
+              solution: "public class LoopControl {\npublic static void main(String[] args) {\nfor (int i = 0; i < 10; i++) {\nif (i == 4) continue;\nif (i == 8) break;\nSystem.out.println(i);\n}\n}\n}",
               tests: [{ type: "contains", value: "continue;" }, { type: "contains", value: "break;" }]
             }
           },
@@ -975,7 +975,7 @@ export const curriculum = {
             exercise: {
               prompt: "Switch dayNumber = 5. Case 1 'Monday', Case 5 'Friday', Case 7 'Sunday', default 'Not a special day'.",
               starterCode: "// Switch case\n",
-              solution: "public class DayFinder {\n    public static void main(String[] args) {\n        int dayNumber = 5;\n        switch (dayNumber) {\n            case 1: System.out.println(\"Monday\"); break;\n            case 5: System.out.println(\"Friday\"); break;\n            case 7: System.out.println(\"Sunday\"); break;\n            default: System.out.println(\"Not a special day\");\n        }\n    }\n}",
+              solution: "public class DayFinder {\npublic static void main(String[] args) {\nint dayNumber = 5;\nswitch (dayNumber) {\ncase 1: System.out.println(\"Monday\"); break;\ncase 5: System.out.println(\"Friday\"); break;\ncase 7: System.out.println(\"Sunday\"); break;\ndefault: System.out.println(\"Not a special day\");\n}\n}\n}",
               tests: [{ type: "contains", value: "switch (dayNumber)" }]
             }
           },
@@ -988,7 +988,7 @@ export const curriculum = {
             exercise: {
               prompt: "Secret = 5. Keep asking for guess. If < secret 'Higher!', if > secret 'Lower!'. End with 'You got it!'.",
               starterCode: "import java.util.Scanner;\n",
-              solution: "import java.util.Scanner;\npublic class GuessGame {\n    public static void main(String[] args) {\n        Scanner input = new Scanner(System.in);\n        int secret = 5; int guess = 0;\n        while (guess != secret) {\n            System.out.print(\"Guess the number: \");\n            guess = input.nextInt();\n            if (guess < secret) System.out.println(\"Higher!\");\n            else if (guess > secret) System.out.println(\"Lower!\");\n        }\n        System.out.println(\"You got it!\");\n        input.close();\n    }\n}",
+              solution: "import java.util.Scanner;\npublic class GuessGame {\npublic static void main(String[] args) {\nScanner input = new Scanner(System.in);\nint secret = 5; int guess = 0;\nwhile (guess != secret) {\nSystem.out.print(\"Guess the number: \");\nguess = input.nextInt();\nif (guess < secret) System.out.println(\"Higher!\");\nelse if (guess > secret) System.out.println(\"Lower!\");\n}\nSystem.out.println(\"You got it!\");\ninput.close();\n}\n}",
               tests: [{ type: "contains", value: "while (guess != secret)" }]
             }
           }
@@ -1008,7 +1008,7 @@ export const curriculum = {
             exercise: {
               prompt: "Method 'sayMotto' prints 'Keep coding!' and 'Never give up!'. Call twice from main.",
               starterCode: "// Define method\n",
-              solution: "public class Motto {\n    static void sayMotto() {\n        System.out.println(\"Keep coding!\");\n        System.out.println(\"Never give up!\");\n    }\n    public static void main(String[] args) {\n        sayMotto(); sayMotto();\n    }\n}",
+              solution: "public class Motto {\nstatic void sayMotto() {\nSystem.out.println(\"Keep coding!\");\nSystem.out.println(\"Never give up!\");\n}\npublic static void main(String[] args) {\nsayMotto(); sayMotto();\n}\n}",
               tests: [{ type: "contains", value: "static void sayMotto()" }]
             }
           },
@@ -1021,7 +1021,7 @@ export const curriculum = {
             exercise: {
               prompt: "Method 'doublePrint(int number)' prints number * 2. Call with 5, 10, 3.",
               starterCode: "// Method params\n",
-              solution: "public class Doubler {\n    static void doublePrint(int number) {\n        System.out.println(number * 2);\n    }\n    public static void main(String[] args) {\n        doublePrint(5); doublePrint(10); doublePrint(3);\n    }\n}",
+              solution: "public class Doubler {\nstatic void doublePrint(int number) {\nSystem.out.println(number * 2);\n}\npublic static void main(String[] args) {\ndoublePrint(5); doublePrint(10); doublePrint(3);\n}\n}",
               tests: [{ type: "contains", value: "doublePrint(int number)" }]
             }
           },
@@ -1034,7 +1034,7 @@ export const curriculum = {
             exercise: {
               prompt: "Method 'multiply' returns product of two ints. Print result of 4 * 7.",
               starterCode: "// Return int\n",
-              solution: "public class Multiplier {\n    static int multiply(int a, int b) {\n        return a * b;\n    }\n    public static void main(String[] args) {\n        int product = multiply(4, 7);\n        System.out.println(product);\n    }\n}",
+              solution: "public class Multiplier {\nstatic int multiply(int a, int b) {\nreturn a * b;\n}\npublic static void main(String[] args) {\nint product = multiply(4, 7);\nSystem.out.println(product);\n}\n}",
               tests: [{ type: "contains", value: "static int multiply" }, { type: "contains", value: "return" }]
             }
           },
@@ -1047,7 +1047,7 @@ export const curriculum = {
             exercise: {
               prompt: "Overload 'add' method: one for 2 ints, one for 3 ints. Call both.",
               starterCode: "// Overloading\n",
-              solution: "public class Adder {\n    static int add(int a, int b) { return a + b; }\n    static int add(int a, int b, int c) { return a + b + c; }\n    public static void main(String[] args) {\n        System.out.println(add(5, 3));\n        System.out.println(add(1, 2, 3));\n    }\n}",
+              solution: "public class Adder {\nstatic int add(int a, int b) { return a + b; }\nstatic int add(int a, int b, int c) { return a + b + c; }\npublic static void main(String[] args) {\nSystem.out.println(add(5, 3));\nSystem.out.println(add(1, 2, 3));\n}\n}",
               tests: [{ type: "contains", value: "add(int a, int b, int c)" }]
             }
           },
@@ -1060,7 +1060,7 @@ export const curriculum = {
             exercise: {
               prompt: "Array 'numbers' = {10, 20, 30, 40, 50}. Print index 0, 2, 4. Change index 1 to 25.",
               starterCode: "// Array practice\n",
-              solution: "public class ArrayPractice {\n    public static void main(String[] args) {\n        int[] numbers = {10, 20, 30, 40, 50};\n        System.out.println(numbers[0]);\n        System.out.println(numbers[2]);\n        System.out.println(numbers[4]);\n        numbers[1] = 25;\n        System.out.println(numbers[1]);\n    }\n}",
+              solution: "public class ArrayPractice {\npublic static void main(String[] args) {\nint[] numbers = {10, 20, 30, 40, 50};\nSystem.out.println(numbers[0]);\nSystem.out.println(numbers[2]);\nSystem.out.println(numbers[4]);\nnumbers[1] = 25;\nSystem.out.println(numbers[1]);\n}\n}",
               tests: [{ type: "contains", value: "int[] numbers" }]
             }
           },
@@ -1073,7 +1073,7 @@ export const curriculum = {
             exercise: {
               prompt: "Array fruits = {'apple', 'banana', 'cherry'}. Print with standard for, then with for-each.",
               starterCode: "// Loop through arrays\n",
-              solution: "public class LoopArray {\n    public static void main(String[] args) {\n        String[] fruits = {\"apple\", \"banana\", \"cherry\"};\n        for (int i = 0; i < fruits.length; i++) System.out.println(fruits[i]);\n        for (String f : fruits) System.out.println(f);\n    }\n}",
+              solution: "public class LoopArray {\npublic static void main(String[] args) {\nString[] fruits = {\"apple\", \"banana\", \"cherry\"};\nfor (int i = 0; i < fruits.length; i++) System.out.println(fruits[i]);\nfor (String f : fruits) System.out.println(f);\n}\n}",
               tests: [{ type: "contains", value: "fruits.length" }]
             }
           },
@@ -1086,7 +1086,7 @@ export const curriculum = {
             exercise: {
               prompt: "ArrayList<String> 'tasks'. Add 'Study', 'Exercise', 'Sleep'. Print size, get index 0, remove index 0, print size again.",
               starterCode: "import java.util.ArrayList;\n",
-              solution: "import java.util.ArrayList;\npublic class ListFun {\n    public static void main(String[] args) {\n        ArrayList<String> tasks = new ArrayList<>();\n        tasks.add(\"Study\"); tasks.add(\"Exercise\"); tasks.add(\"Sleep\");\n        System.out.println(tasks.size());\n        System.out.println(tasks.get(0));\n        tasks.remove(0);\n        System.out.println(tasks.size());\n    }\n}",
+              solution: "import java.util.ArrayList;\npublic class ListFun {\npublic static void main(String[] args) {\nArrayList<String> tasks = new ArrayList<>();\ntasks.add(\"Study\"); tasks.add(\"Exercise\"); tasks.add(\"Sleep\");\nSystem.out.println(tasks.size());\nSystem.out.println(tasks.get(0));\ntasks.remove(0);\nSystem.out.println(tasks.size());\n}\n}",
               tests: [{ type: "contains", value: "ArrayList<String>" }]
             }
           },
@@ -1099,7 +1099,7 @@ export const curriculum = {
             exercise: {
               prompt: "HashMap<String, String> 'capitals'. Put France/Paris, Japan/Tokyo, Italy/Rome. Print Japan's capital.",
               starterCode: "import java.util.HashMap;\n",
-              solution: "import java.util.HashMap;\npublic class MapFun {\n    public static void main(String[] args) {\n        HashMap<String, String> capitals = new HashMap<>();\n        capitals.put(\"France\", \"Paris\");\n        capitals.put(\"Japan\", \"Tokyo\");\n        capitals.put(\"Italy\", \"Rome\");\n        System.out.println(capitals.get(\"Japan\"));\n    }\n}",
+              solution: "import java.util.HashMap;\npublic class MapFun {\npublic static void main(String[] args) {\nHashMap<String, String> capitals = new HashMap<>();\ncapitals.put(\"France\", \"Paris\");\ncapitals.put(\"Japan\", \"Tokyo\");\ncapitals.put(\"Italy\", \"Rome\");\nSystem.out.println(capitals.get(\"Japan\"));\n}\n}",
               tests: [{ type: "contains", value: "HashMap<String, String>" }]
             }
           },
@@ -1112,7 +1112,7 @@ export const curriculum = {
             exercise: {
               prompt: "Build 'GradeTracker'. Method addGrade(name, score) adds to student's list. Add 2 for Alice, 1 for Bob. Print map.",
               starterCode: "import java.util.*;\n",
-              solution: "import java.util.HashMap;\nimport java.util.ArrayList;\npublic class GradeTracker {\n    static HashMap<String, ArrayList<Integer>> gradeBook = new HashMap<>();\n    static void addGrade(String name, int score) {\n        if (!gradeBook.containsKey(name)) gradeBook.put(name, new ArrayList<>());\n        gradeBook.get(name).add(score);\n    }\n    public static void main(String[] args) {\n        addGrade(\"Alice\", 90); addGrade(\"Alice\", 85); addGrade(\"Bob\", 78);\n        System.out.println(gradeBook);\n    }\n}",
+              solution: "import java.util.HashMap;\nimport java.util.ArrayList;\npublic class GradeTracker {\nstatic HashMap<String, ArrayList<Integer>> gradeBook = new HashMap<>();\nstatic void addGrade(String name, int score) {\nif (!gradeBook.containsKey(name)) gradeBook.put(name, new ArrayList<>());\ngradeBook.get(name).add(score);\n}\npublic static void main(String[] args) {\naddGrade(\"Alice\", 90); addGrade(\"Alice\", 85); addGrade(\"Bob\", 78);\nSystem.out.println(gradeBook);\n}\n}",
               tests: [{ type: "contains", value: "gradeBook.containsKey" }]
             }
           }
@@ -1132,7 +1132,7 @@ export const curriculum = {
             exercise: {
               prompt: "Class Car with color field and drive() method. Create Car in Main, color it 'red', and drive.",
               starterCode: "class Car { ... }\npublic class Main { ... }",
-              solution: "class Car {\n    String color;\n    void drive() { System.out.println(\"Driving a \" + color + \" car!\"); }\n}\npublic class Main {\n    public static void main(String[] args) {\n        Car myCar = new Car();\n        myCar.color = \"red\";\n        myCar.drive();\n    }\n}",
+              solution: "class Car {\nString color;\nvoid drive() { System.out.println(\"Driving a \" + color + \" car!\"); }\n}\npublic class Main {\npublic static void main(String[] args) {\nCar myCar = new Car();\nmyCar.color = \"red\";\nmyCar.drive();\n}\n}",
               tests: [{ type: "contains", value: "new Car()" }]
             }
           },
@@ -1145,7 +1145,7 @@ export const curriculum = {
             exercise: {
               prompt: "Class Book with title and author. Add constructor to set both. Create two Books and print titles.",
               starterCode: "// Define constructor\n",
-              solution: "class Book {\n    String title; String author;\n    Book(String title, String author) {\n        this.title = title;\n        this.author = author;\n    }\n}\npublic class Main {\n    public static void main(String[] args) {\n        Book b1 = new Book(\"1984\", \"Orwell\");\n        Book b2 = new Book(\"Dune\", \"Herbert\");\n        System.out.println(b1.title);\n        System.out.println(b2.title);\n    }\n}",
+              solution: "class Book {\nString title; String author;\nBook(String title, String author) {\nthis.title = title;\nthis.author = author;\n}\n}\npublic class Main {\npublic static void main(String[] args) {\nBook b1 = new Book(\"1984\", \"Orwell\");\nBook b2 = new Book(\"Dune\", \"Herbert\");\nSystem.out.println(b1.title);\nSystem.out.println(b2.title);\n}\n}",
               tests: [{ type: "contains", value: "this.title = title" }]
             }
           },
@@ -1158,7 +1158,7 @@ export const curriculum = {
             exercise: {
               prompt: "BankAccount class. balance=0. Methods deposit(amount) and getBalance(). Test in Main.",
               starterCode: "// Instance methods\n",
-              solution: "class BankAccount {\n    int balance = 0;\n    void deposit(int amount) { balance += amount; }\n    int getBalance() { return balance; }\n}\npublic class Main {\n    public static void main(String[] args) {\n        BankAccount acc = new BankAccount();\n        acc.deposit(100); acc.deposit(50);\n        System.out.println(acc.getBalance());\n    }\n}",
+              solution: "class BankAccount {\nint balance = 0;\nvoid deposit(int amount) { balance += amount; }\nint getBalance() { return balance; }\n}\npublic class Main {\npublic static void main(String[] args) {\nBankAccount acc = new BankAccount();\nacc.deposit(100); acc.deposit(50);\nSystem.out.println(acc.getBalance());\n}\n}",
               tests: [{ type: "contains", value: "acc.deposit" }]
             }
           },
@@ -1171,7 +1171,7 @@ export const curriculum = {
             exercise: {
               prompt: "Class Secret. private message. public methods setMessage and reveal. Test in Main.",
               starterCode: "// private fields\n",
-              solution: "class Secret {\n    private String message;\n    public void setMessage(String m) { message = m; }\n    public String reveal() { return message; }\n}\npublic class Main {\n    public static void main(String[] args) {\n        Secret s = new Secret();\n        s.setMessage(\"I love Java!\");\n        System.out.println(s.reveal());\n    }\n}",
+              solution: "class Secret {\nprivate String message;\npublic void setMessage(String m) { message = m; }\npublic String reveal() { return message; }\n}\npublic class Main {\npublic static void main(String[] args) {\nSecret s = new Secret();\ns.setMessage(\"I love Java!\");\nSystem.out.println(s.reveal());\n}\n}",
               tests: [{ type: "contains", value: "private String message" }]
             }
           },
@@ -1184,7 +1184,7 @@ export const curriculum = {
             exercise: {
               prompt: "Class Product. private price. getter/setter getPrice/setPrice. Only set if p > 0. Test in Main.",
               starterCode: "// Validation in setter\n",
-              solution: "class Product {\n    private double price = 0;\n    public double getPrice() { return price; }\n    public void setPrice(double p) { if (p > 0) price = p; }\n}\npublic class Main {\n    public static void main(String[] args) {\n        Product p = new Product();\n        p.setPrice(29.99);\n        System.out.println(p.getPrice());\n        p.setPrice(-5);\n        System.out.println(p.getPrice());\n    }\n}",
+              solution: "class Product {\nprivate double price = 0;\npublic double getPrice() { return price; }\npublic void setPrice(double p) { if (p > 0) price = p; }\n}\npublic class Main {\npublic static void main(String[] args) {\nProduct p = new Product();\np.setPrice(29.99);\nSystem.out.println(p.getPrice());\np.setPrice(-5);\nSystem.out.println(p.getPrice());\n}\n}",
               tests: [{ type: "contains", value: "if (p > 0)" }]
             }
           },
@@ -1197,7 +1197,7 @@ export const curriculum = {
             exercise: {
               prompt: "Parent Animal (eat). Child Dog (bark). In Main, create Dog and call both.",
               starterCode: "// Inheritance\n",
-              solution: "class Animal {\n    void eat() { System.out.println(\"Eating...\"); }\n}\nclass Dog extends Animal {\n    void bark() { System.out.println(\"Woof!\"); }\n}\npublic class Main {\n    public static void main(String[] args) {\n        Dog d = new Dog();\n        d.eat(); d.bark();\n    }\n}",
+              solution: "class Animal {\nvoid eat() { System.out.println(\"Eating...\"); }\n}\nclass Dog extends Animal {\nvoid bark() { System.out.println(\"Woof!\"); }\n}\npublic class Main {\npublic static void main(String[] args) {\nDog d = new Dog();\nd.eat(); d.bark();\n}\n}",
               tests: [{ type: "contains", value: "extends Animal" }]
             }
           },
@@ -1210,7 +1210,7 @@ export const curriculum = {
             exercise: {
               prompt: "Animal speak() 'Some sound'. Cat extends Animal, @Override speak() 'Meow!'. Test in Main.",
               starterCode: "// Method override\n",
-              solution: "class Animal {\n    void speak() { System.out.println(\"Some sound\"); }\n}\nclass Cat extends Animal {\n    @Override\n    void speak() { System.out.println(\"Meow!\"); }\n}\npublic class Main {\n    public static void main(String[] args) {\n        Cat c = new Cat();\n        c.speak();\n    }\n}",
+              solution: "class Animal {\nvoid speak() { System.out.println(\"Some sound\"); }\n}\nclass Cat extends Animal {\n@Override\nvoid speak() { System.out.println(\"Meow!\"); }\n}\npublic class Main {\npublic static void main(String[] args) {\nCat c = new Cat();\nc.speak();\n}\n}",
               tests: [{ type: "contains", value: "@Override" }]
             }
           },
@@ -1223,7 +1223,7 @@ export const curriculum = {
             exercise: {
               prompt: "Interface Playable (void play). Class Guitar implements it. In Main, call play().",
               starterCode: "// Interfaces\n",
-              solution: "interface Playable {\n    void play();\n}\nclass Guitar implements Playable {\n    public void play() { System.out.println(\"Strumming guitar\"); }\n}\npublic class Main {\n    public static void main(String[] args) {\n        Guitar g = new Guitar();\n        g.play();\n    }\n}",
+              solution: "interface Playable {\nvoid play();\n}\nclass Guitar implements Playable {\npublic void play() { System.out.println(\"Strumming guitar\"); }\n}\npublic class Main {\npublic static void main(String[] args) {\nGuitar g = new Guitar();\ng.play();\n}\n}",
               tests: [{ type: "contains", value: "implements Playable" }]
             }
           },
@@ -1236,7 +1236,7 @@ export const curriculum = {
             exercise: {
               prompt: "Abstract Animal (name, makeSound). Interface Trainable (doTrick). Dolphin class. Main test.",
               starterCode: "// Full OOP design\n",
-              solution: "abstract class Animal {\n    String name;\n    Animal(String name) { this.name = name; }\n    abstract void makeSound();\n}\ninterface Trainable {\n    void doTrick();\n}\nclass Dolphin extends Animal implements Trainable {\n    Dolphin(String name) { super(name); }\n    void makeSound() { System.out.println(\"Click!\"); }\n    public void doTrick() { System.out.println(\"Jumps through hoop!\"); }\n}\npublic class Main {\n    public static void main(String[] args) {\n        Dolphin d = new Dolphin(\"Flipper\");\n        d.makeSound(); d.doTrick();\n    }\n}",
+              solution: "abstract class Animal {\nString name;\nAnimal(String name) { this.name = name; }\nabstract void makeSound();\n}\ninterface Trainable {\nvoid doTrick();\n}\nclass Dolphin extends Animal implements Trainable {\nDolphin(String name) { super(name); }\nvoid makeSound() { System.out.println(\"Click!\"); }\npublic void doTrick() { System.out.println(\"Jumps through hoop!\"); }\n}\npublic class Main {\npublic static void main(String[] args) {\nDolphin d = new Dolphin(\"Flipper\");\nd.makeSound(); d.doTrick();\n}\n}",
               tests: [{ type: "contains", value: "super(name)" }]
             }
           }
@@ -1256,7 +1256,7 @@ export const curriculum = {
             exercise: {
               prompt: "Try dividing 10 by 0. Catch ArithmeticException. Print 'Math error!' and 'All done.'",
               starterCode: "// try/catch\n",
-              solution: "public class SafeDivider {\n    public static void main(String[] args) {\n        try {\n            int res = 10 / 0;\n        } catch (ArithmeticException e) {\n            System.out.println(\"Math error!\");\n        }\n        System.out.println(\"All done.\");\n    }\n}",
+              solution: "public class SafeDivider {\npublic static void main(String[] args) {\ntry {\nint res = 10 / 0;\n} catch (ArithmeticException e) {\nSystem.out.println(\"Math error!\");\n}\nSystem.out.println(\"All done.\");\n}\n}",
               tests: [{ type: "contains", value: "catch (ArithmeticException" }]
             }
           },
@@ -1269,7 +1269,7 @@ export const curriculum = {
             exercise: {
               prompt: "Try Integer.parseInt('abc'). Catch NumberFormatException. Print 'Not a valid number!'.",
               starterCode: "// Parsing errors\n",
-              solution: "public class ParseDemo {\n    public static void main(String[] args) {\n        try {\n            int num = Integer.parseInt(\"abc\");\n        } catch (NumberFormatException e) {\n            System.out.println(\"Not a valid number!\");\n        }\n    }\n}",
+              solution: "public class ParseDemo {\npublic static void main(String[] args) {\ntry {\nint num = Integer.parseInt(\"abc\");\n} catch (NumberFormatException e) {\nSystem.out.println(\"Not a valid number!\");\n}\n}\n}",
               tests: [{ type: "contains", value: "catch (NumberFormatException" }]
             }
           },
@@ -1282,7 +1282,7 @@ export const curriculum = {
             exercise: {
               prompt: "In FileReaderDemo, read first line of 'data.txt' and print it. Catch IOException.",
               starterCode: "import java.io.*;\n",
-              solution: "import java.io.*;\npublic class FileReaderDemo {\n    public static void main(String[] args) {\n        try (BufferedReader br = new BufferedReader(new FileReader(\"data.txt\"))) {\n            System.out.println(br.readLine());\n        } catch (IOException e) {\n            System.out.println(\"File error\");\n        }\n    }\n}",
+              solution: "import java.io.*;\npublic class FileReaderDemo {\npublic static void main(String[] args) {\ntry (BufferedReader br = new BufferedReader(new FileReader(\"data.txt\"))) {\nSystem.out.println(br.readLine());\n} catch (IOException e) {\nSystem.out.println(\"File error\");\n}\n}\n}",
               tests: [{ type: "contains", value: "new FileReader" }]
             }
           },
@@ -1295,7 +1295,7 @@ export const curriculum = {
             exercise: {
               prompt: "List 'numbers' = {1, 2, 2, 3}. Set 'unique' = {1, 2, 2, 3}. Print both.",
               starterCode: "import java.util.*;\n",
-              solution: "import java.util.*;\npublic class CollectionFun {\n    public static void main(String[] args) {\n        List<Integer> numbers = new ArrayList<>(Arrays.asList(1, 2, 2, 3));\n        Set<Integer> unique = new HashSet<>(numbers);\n        System.out.println(numbers);\n        System.out.println(unique);\n    }\n}",
+              solution: "import java.util.*;\npublic class CollectionFun {\npublic static void main(String[] args) {\nList<Integer> numbers = new ArrayList<>(Arrays.asList(1, 2, 2, 3));\nSet<Integer> unique = new HashSet<>(numbers);\nSystem.out.println(numbers);\nSystem.out.println(unique);\n}\n}",
               tests: [{ type: "contains", value: "HashSet" }]
             }
           },
@@ -1308,8 +1308,662 @@ export const curriculum = {
             exercise: {
               prompt: "List 1,2,3,4,5. Use .forEach lambda to print squares. Use stream().filter() for n > 3.",
               starterCode: "import java.util.*;\n",
-              solution: "import java.util.*;\npublic class LambdaFun {\n    public static void main(String[] args) {\n        List<Integer> nums = Arrays.asList(1, 2, 3, 4, 5);\n        nums.forEach(n -> System.out.println(n * n));\n        nums.stream().filter(n -> n > 3).forEach(System.out::println);\n    }\n}",
+              solution: "import java.util.*;\npublic class LambdaFun {\npublic static void main(String[] args) {\nList<Integer> nums = Arrays.asList(1, 2, 3, 4, 5);\nnums.forEach(n -> System.out.println(n * n));\nnums.stream().filter(n -> n > 3).forEach(System.out::println);\n}\n}",
               tests: [{ type: "contains", value: "->" }]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  javascript: {
+    label: "JavaScript",
+    modules: [
+      {
+        id: "javascript-phase0-m1",
+        title: "Phase 0 — Welcome",
+        duration: "5 min",
+        lessons: [
+          {
+            id: "javascript-phase0-m1-l1",
+            title: "Your First JavaScript Step",
+            explanation: "Welcome to JavaScript! In JS we use console.log() to display messages. It's the first way we make the computer talk to us.",
+            concept: "console.log() prints output to the browser console or terminal.",
+            example: "console.log('Hello, world!');\nconsole.log('I am learning JavaScript!');",
+            exercise: {
+              prompt: "Use console.log() to print exactly: 'I am ready to code in JavaScript!'",
+              starterCode: "// Write your first console.log statement below:\n// Make it say: I am ready to code in JavaScript!\n",
+              solution: "console.log('I am ready to code in JavaScript!');",
+              tests: [{ type: "contains", value: "console.log('I am ready to code in JavaScript!')" }],
+              debuggingTip: "Did you use single or double quotes around your message? JavaScript accepts both – just make sure they match. And don't forget the semicolon!"
+            }
+          }
+        ]
+      },
+      {
+        id: "javascript-phase1-m1",
+        title: "Phase 1 — Fundamentals",
+        duration: "2.5 hours",
+        lessons: [
+          {
+            id: "javascript-phase1-m1-l1",
+            title: "Talking with console.log()",
+            explanation: "console.log() is how JavaScript talks to you. Each call prints a new line in the console.",
+            concept: "console.log() outputs text to the console – each call creates a new line.",
+            example: "console.log('Hello');\nconsole.log('Goodbye');\nconsole.log('JavaScript is fun!');",
+            exercise: {
+              prompt: "Write code that prints these three lines exactly (one per console.log): 'Ready', 'Set', 'Go!'",
+              starterCode: "// Print 'Ready', 'Set', and 'Go!' on separate lines\n",
+              solution: "console.log('Ready');\nconsole.log('Set');\nconsole.log('Go!');",
+              tests: [{ type: "contains", value: "console.log('Ready')" }, { type: "contains", value: "console.log('Set')" }, { type: "contains", value: "console.log('Go!')" }],
+              debuggingTip: "Each console.log() goes on its own line. Make sure you have three separate statements, not just one."
+            }
+          },
+          {
+            id: "javascript-phase1-m1-l2",
+            title: "Variables with let",
+            explanation: "Variables store data. In modern JavaScript we use 'let' to declare a variable. You can change its value later.",
+            concept: "'let' creates a variable that can be reassigned later.",
+            example: "let name = 'Alex';\nconsole.log(name);\nname = 'Bob';\nconsole.log(name);",
+            exercise: {
+              prompt: "Create a variable called 'city' and set it to 'Paris'. Print it. Then change city to 'London' and print again.",
+              starterCode: "// Create city variable, print, change, print again\n",
+              solution: "let city = 'Paris';\nconsole.log(city);\ncity = 'London';\nconsole.log(city);",
+              tests: [{ type: "contains", value: "let city" }, { type: "contains", value: "console.log(city)" }],
+              debuggingTip: "Variable names are case-sensitive. 'city' is different from 'City'. Use camelCase by convention."
+            }
+          },
+          {
+            id: "javascript-phase1-m1-l3",
+            title: "Strings and Template Literals",
+            explanation: "Strings can be in single, double quotes, or backticks. Backticks allow embedding variables with ${}.",
+            concept: "Template literals (` `) let you insert variables and expressions directly in strings.",
+            example: "let name = 'Alice';\nconsole.log(`Hello, ${name}!`);",
+            exercise: {
+              prompt: "Create a variable 'item' set to 'book' and 'price' set to 15. Use a template literal to print: 'The book costs 15 dollars.' exactly.",
+              starterCode: "// Create item and price, then use backticks to print\n",
+              solution: "let item = 'book';\nlet price = 15;\nconsole.log(`The ${item} costs ${price} dollars.`);",
+              tests: [{ type: "contains", value: "`The ${item} costs ${price} dollars.`" }],
+              debuggingTip: "Template literals use backticks (` ), not regular quotes. The variables must be inside ${}."
+            }
+          },
+          {
+            id: "javascript-phase1-m1-l4",
+            title: "Numbers and Arithmetic",
+            explanation: "JavaScript has numbers (integers and floats) and standard math operators (+, -, *, /). Order of operations applies.",
+            concept: "JavaScript does math with +, -, *, / and follows PEMDAS.",
+            example: "let width = 7;\nlet height = 12;\nlet area = width * height;\nconsole.log(area);",
+            exercise: {
+              prompt: "Calculate the area of a rectangle with width = 7, height = 12. Store in 'area' and print it. Then calculate the perimeter and print it on the next line.",
+              starterCode: "// Set width and height, compute area and perimeter\n",
+              solution: "let width = 7;\nlet height = 12;\nlet area = width * height;\nlet perimeter = 2 * (width + height);\nconsole.log(area);\nconsole.log(perimeter);",
+              tests: [{ type: "contains", value: "let area = width * height" }, { type: "contains", value: "console.log(perimeter)" }],
+              debuggingTip: "Use parentheses to make sure operations happen in the right order. 2 * width + height is not the same as 2 * (width + height)."
+            }
+          },
+          {
+            id: "javascript-phase1-m1-l5",
+            title: "Booleans and Comparisons",
+            explanation: "Booleans are true/false. Comparisons like >, <, === return a boolean.",
+            concept: "=== checks equality, !== checks inequality. Comparison returns true or false.",
+            example: "let a = 10;\nlet b = 20;\nconsole.log(a > b); // false\nconsole.log(a === b); // false",
+            exercise: {
+              prompt: "Create x = 50 and y = 30. Print whether x is greater than y, whether x equals y, and whether x is not equal to y (three separate console.log statements).",
+              starterCode: "// Create two variables and compare them\n",
+              solution: "let x = 50;\nlet y = 30;\nconsole.log(x > y);\nconsole.log(x === y);\nconsole.log(x !== y);",
+              tests: [{ type: "contains", value: "x > y" }, { type: "contains", value: "x === y" }, { type: "contains", value: "x !== y" }],
+              debuggingTip: "JavaScript uses === (triple equals) for strict equality. A single = is assignment, not comparison."
+            }
+          },
+          {
+            id: "javascript-phase1-m1-l6",
+            title: "Type Conversion",
+            explanation: "Convert strings to numbers with Number() or parseInt(), and numbers to strings with toString().",
+            concept: "Number() converts strings to numbers; String() converts numbers to strings.",
+            example: "let ageString = '25';\nlet ageNum = Number(ageString);\nconsole.log(ageNum + 5);",
+            exercise: {
+              prompt: "Create a string variable 'scoreStr' = '95'. Convert it to a number and store in 'score'. Print the number plus 5. Then convert 100 to a string and concat with ' percent'.",
+              starterCode: "// Convert string to number and number to string\n",
+              solution: "let scoreStr = '95';\nlet score = Number(scoreStr);\nconsole.log(score + 5);\nconsole.log(String(100) + ' percent');",
+              tests: [{ type: "contains", value: "Number(scoreStr)" }, { type: "contains", value: "String(100)" }],
+              debuggingTip: "Number('abc') gives NaN (not a number). Only convert if the string looks like a number."
+            }
+          },
+          {
+            id: "javascript-phase1-m1-l7",
+            title: "String Methods",
+            explanation: "Strings have methods like .toUpperCase(), .toLowerCase(), and .length property.",
+            concept: ".toUpperCase() and .toLowerCase() return new strings; .length gives character count.",
+            example: "let text = 'JavaScript';\nconsole.log(text.toUpperCase());\nconsole.log(text.length);",
+            exercise: {
+              prompt: "Create a variable 'greeting' = 'Hello World'. Print it in all uppercase, then all lowercase, and then its length.",
+              starterCode: "// Use string methods\n",
+              solution: "let greeting = 'Hello World';\nconsole.log(greeting.toUpperCase());\nconsole.log(greeting.toLowerCase());\nconsole.log(greeting.length);",
+              tests: [{ type: "contains", value: ".toUpperCase()" }, { type: "contains", value: ".toLowerCase()" }, { type: "contains", value: ".length" }],
+              debuggingTip: "Methods need parentheses! .toUpperCase() not .toUpperCase."
+            }
+          },
+          {
+            id: "javascript-phase1-m1-l8",
+            title: "Getting Input (prompt)",
+            explanation: "In browsers, prompt() pops up a dialog to get user input. It always returns a string.",
+            concept: "prompt() asks the user for text; store it in a variable.",
+            example: "let name = prompt('What is your name?');\nconsole.log('Hello ' + name);",
+            exercise: {
+              prompt: "Use prompt() to ask 'What is your favorite color?'. Store the answer and then print 'That is a great color!' (do not include the color in the compliment).",
+              starterCode: "// Ask user for favorite color\n",
+              solution: "let color = prompt('What is your favorite color?');\nconsole.log('That is a great color!');",
+              tests: [{ type: "contains", value: "prompt(" }, { type: "contains", value: "console.log('That is a great color!')" }],
+              debuggingTip: "Don't forget the parentheses after prompt! And note that prompt returns a string, even if the user types a number."
+            }
+          }
+        ]
+      },
+      {
+        id: "javascript-phase2-m1",
+        title: "Phase 2 — Control Flow",
+        duration: "2 hours",
+        lessons: [
+          {
+            id: "javascript-phase2-m1-l1",
+            title: "If Statements",
+            explanation: "if/else controls which code runs based on a condition.",
+            concept: "if (condition) { ... } else { ... }",
+            example: "let score = 85;\nif (score >= 60) {\n  console.log('You passed!');\n} else {\n  console.log('Try again');\n}",
+            exercise: {
+              prompt: "Create score = 73. If score >= 90, print 'A'. Else if >= 80 print 'B'. Else if >= 70 print 'C'. Else print 'Needs work'.",
+              starterCode: "// Set score and use if/else if/else\n",
+              solution: "let score = 73;\nif (score >= 90) {\n  console.log('A');\n} else if (score >= 80) {\n  console.log('B');\n} else if (score >= 70) {\n  console.log('C');\n} else {\n  console.log('Needs work');\n}",
+              tests: [{ type: "contains", value: "if (score >= 90)" }, { type: "contains", value: "else if" }],
+              debuggingTip: "Check the order of conditions: highest range first. And remember curly braces around each block."
+            }
+          },
+          {
+            id: "javascript-phase2-m1-l2",
+            title: "While Loops",
+            explanation: "while repeats code while a condition is true.",
+            concept: "while (condition) { ... } – make sure the condition eventually becomes false.",
+            example: "let count = 0;\nwhile (count < 5) {\n  console.log(count);\n  count = count + 1;\n}",
+            exercise: {
+              prompt: "Use a while loop to print numbers 1 to 5 (inclusive). Start with let num = 1.",
+              starterCode: "// Print 1 to 5 with while\n",
+              solution: "let num = 1;\nwhile (num <= 5) {\n  console.log(num);\n  num = num + 1;\n}",
+              tests: [{ type: "contains", value: "while (num <= 5)" }, { type: "contains", value: "num = num + 1" }],
+              debuggingTip: "Don't forget to increment num inside the loop, or it will run forever!"
+            }
+          },
+          {
+            id: "javascript-phase2-m1-l3",
+            title: "For Loops",
+            explanation: "for loop has three parts: init, condition, increment.",
+            concept: "for (let i = 0; i < 5; i++) { ... }",
+            example: "for (let i = 0; i < 3; i++) {\n  console.log(i);\n}",
+            exercise: {
+              prompt: "Print numbers 0 through 7 using a for loop. Then print numbers 10 through 15 using a second for loop.",
+              starterCode: "// Two for loops\n",
+              solution: "for (let i = 0; i <= 7; i++) {\n  console.log(i);\n}\nfor (let j = 10; j <= 15; j++) {\n  console.log(j);\n}",
+              tests: [{ type: "contains", value: "i <= 7" }, { type: "contains", value: "j <= 15" }],
+              debuggingTip: "The loop variable (i or j) is often declared with let. The condition uses <= if you want to include the last number."
+            }
+          },
+          {
+            id: "javascript-phase2-m1-l4",
+            title: "Break and Continue",
+            explanation: "break exits the loop; continue skips the current iteration.",
+            concept: "Use break to stop looping early, continue to jump to the next iteration.",
+            example: "for (let i = 0; i < 10; i++) {\n  if (i === 4) continue;\n  if (i === 7) break;\n  console.log(i);\n}",
+            exercise: {
+              prompt: "Loop from 0 to 9. Skip 4 with continue. Stop entirely at 8 with break. Print every other number.",
+              starterCode: "// Loop with break and continue\n",
+              solution: "for (let i = 0; i < 10; i++) {\n  if (i === 4) continue;\n  if (i === 8) break;\n  console.log(i);\n}",
+              tests: [{ type: "contains", value: "continue" }, { type: "contains", value: "break" }],
+              debuggingTip: "Place console.log after the continue/break checks, or you might print the skipped number."
+            }
+          },
+          {
+            id: "javascript-phase2-m1-l5",
+            title: "Capstone: Guessing Game",
+            explanation: "Combine prompt, while, and if to build a number guessing game.",
+            concept: "Integrate loops, conditionals, and user input.",
+            example: "let secret = 5;\nlet guess = 0;\nwhile (guess !== secret) {\n  guess = Number(prompt('Guess: '));\n  if (guess < secret) console.log('Higher!');\n  else if (guess > secret) console.log('Lower!');\n}\nconsole.log('You got it!');",
+            exercise: {
+              prompt: "Build a guessing game with secret = 5. Keep asking for a guess. If guess is too low print 'Higher!', too high 'Lower!'. When correct print 'You got it!' and stop.",
+              starterCode: "// Number guessing game\nlet secret = 5;\n",
+              solution: "let secret = 5;\nlet guess = 0;\nwhile (guess !== secret) {\n  guess = Number(prompt('Guess the number: '));\n  if (guess < secret) {\n    console.log('Higher!');\n  } else if (guess > secret) {\n    console.log('Lower!');\n  }\n}\nconsole.log('You got it!');",
+              tests: [{ type: "contains", value: "while (guess !== secret)" }, { type: "contains", value: "console.log('You got it!')" }],
+              debuggingTip: "Convert prompt input to a number with Number(), otherwise comparison may not work correctly."
+            }
+          }
+        ]
+      },
+      {
+        id: "javascript-phase3-m1",
+        title: "Phase 3 — Functions",
+        duration: "2 hours",
+        lessons: [
+          {
+            id: "javascript-phase3-m1-l1",
+            title: "Defining Functions",
+            explanation: "Functions group reusable code. Use function keyword.",
+            concept: "function name() { ... } – call by name().",
+            example: "function greet() {\n  console.log('Hello!');\n}\ngreet();",
+            exercise: {
+              prompt: "Define a function sayMotto that prints 'Keep coding!' and 'Never give up!' on two lines. Call it twice.",
+              starterCode: "// Define sayMotto and call twice\n",
+              solution: "function sayMotto() {\n  console.log('Keep coding!');\n  console.log('Never give up!');\n}\nsayMotto();\nsayMotto();",
+              tests: [{ type: "contains", value: "function sayMotto()" }, { type: "contains", value: "sayMotto()" }],
+              debuggingTip: "Define the function before calling it, or JavaScript may not know what you're referring to."
+            }
+          },
+          {
+            id: "javascript-phase3-m1-l2",
+            title: "Parameters and Return",
+            explanation: "Functions can take parameters and return values with return.",
+            concept: "function add(a, b) { return a + b; }",
+            example: "function double(n) {\n  return n * 2;\n}\nconsole.log(double(5));",
+            exercise: {
+              prompt: "Write a function multiply that takes two parameters and returns their product. Call it with 4 and 7, store the result, and print it.",
+              starterCode: "// Define multiply function\n",
+              solution: "function multiply(a, b) {\n  return a * b;\n}\nlet product = multiply(4, 7);\nconsole.log(product);",
+              tests: [{ type: "contains", value: "return a * b" }, { type: "contains", value: "multiply(4, 7)" }],
+              debuggingTip: "Make sure to use return, not console.log inside the function, if you want to save the result."
+            }
+          },
+          {
+            id: "javascript-phase3-m1-l3",
+            title: "Arrow Functions (Basics)",
+            explanation: "Arrow functions are a shorter syntax: (params) => expression.",
+            concept: "const double = (x) => x * 2;",
+            example: "const triple = (n) => n * 3;\nconsole.log(triple(4));",
+            exercise: {
+              prompt: "Create an arrow function 'square' that takes one argument and returns its square. Test with 4 and 9, printing both results.",
+              starterCode: "// Arrow function\n",
+              solution: "const square = (x) => x * x;\nconsole.log(square(4));\nconsole.log(square(9));",
+              tests: [{ type: "contains", value: "(x)" }, { type: "contains", value: "square(4)" }],
+              debuggingTip: "If the function body is a single expression, you can omit braces and return."
+            }
+          }
+        ]
+      },
+      {
+        id: "javascript-phase4-m1",
+        title: "Phase 4 — Arrays and Objects",
+        duration: "2 hours",
+        lessons: [
+          {
+            id: "javascript-phase4-m1-l1",
+            title: "Arrays",
+            explanation: "Arrays hold ordered lists. Create with []. Access by index (0-based).",
+            concept: "let arr = [1, 2, 3]; arr[0] gets first element.",
+            example: "let fruits = ['apple', 'banana'];\nconsole.log(fruits[0]);\nfruits.push('orange');\nconsole.log(fruits);",
+            exercise: {
+              prompt: "Create an array 'colors' with three strings. Print the first and second color. Then add a fourth color using .push() and print the whole array.",
+              starterCode: "// Create array, access, and push\n",
+              solution: "let colors = ['red', 'green', 'blue'];\nconsole.log(colors[0]);\nconsole.log(colors[1]);\ncolors.push('yellow');\nconsole.log(colors);",
+              tests: [{ type: "contains", value: "colors.push" }, { type: "contains", value: "console.log(colors[0])" }],
+              debuggingTip: "Array indices start at 0, so colors[1] is the second element."
+            }
+          },
+          {
+            id: "javascript-phase4-m1-l2",
+            title: "Objects",
+            explanation: "Objects store key-value pairs. Access with dot or bracket notation.",
+            concept: "let obj = { name: 'Alice' }; obj.name or obj['name'].",
+            example: "let person = { name: 'Alex', age: 25 };\nconsole.log(person.name);\nperson.job = 'developer';\nconsole.log(person);",
+            exercise: {
+              prompt: "Create an object 'book' with title = '1984', author = 'Orwell'. Print the title. Then add a key 'year' with value 1949 and print the whole object.",
+              starterCode: "// Create book object and modify\n",
+              solution: "let book = { title: '1984', author: 'Orwell' };\nconsole.log(book.title);\nbook.year = 1949;\nconsole.log(book);",
+              tests: [{ type: "contains", value: "book.title" }, { type: "contains", value: "book.year = 1949" }],
+              debuggingTip: "Object keys can be unquoted if they are valid variable names."
+            }
+          }
+        ]
+      },
+      {
+        id: "javascript-phase5-m1",
+        title: "Phase 5 — Intermediate JS",
+        duration: "2 hours",
+        lessons: [
+          {
+            id: "javascript-phase5-m1-l1",
+            title: "Try/Catch",
+            explanation: "try/catch handles errors gracefully.",
+            concept: "try { ... } catch (error) { ... }.",
+            example: "try {\n  JSON.parse('not json');\n} catch (e) {\n  console.log('Parsing failed');\n}",
+            exercise: {
+              prompt: "Write a try/catch that tries to parse 'abc' with JSON.parse, and logs 'Invalid JSON' if it fails.",
+              starterCode: "// Try to parse invalid JSON\n",
+              solution: "try {\n  JSON.parse('abc');\n} catch (e) {\n  console.log('Invalid JSON');\n}",
+              tests: [{ type: "contains", value: "try {" }, { type: "contains", value: "catch" }],
+              debuggingTip: "The catch block receives an error object, but you don't have to use it."
+            }
+          },
+          {
+            id: "javascript-phase5-m1-l2",
+            title: "Map, Filter, ForEach",
+            explanation: "Array methods like .map(), .filter() and .forEach() are powerful.",
+            concept: ".map() transforms elements, .filter() selects, .forEach() loops.",
+            example: "let nums = [1,2,3];\nnums.forEach(n => console.log(n * 2));",
+            exercise: {
+              prompt: "Given nums = [1,2,3,4,5], use .forEach() to print each number squared. Then use .filter() to create a new array of numbers > 2 and print it.",
+              starterCode: "// Use forEach and filter\nlet nums = [1,2,3,4,5];\n",
+              solution: "let nums = [1,2,3,4,5];\nnums.forEach(n => console.log(n * n));\nlet big = nums.filter(n => n > 2);\nconsole.log(big);",
+              tests: [{ type: "contains", value: "forEach" }, { type: "contains", value: "filter" }],
+              debuggingTip: ".filter() returns a new array; it doesn't modify the original."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  ruby: {
+    label: "Ruby",
+    modules: [
+      {
+        id: "ruby-phase0-m1",
+        title: "Phase 0 — Welcome",
+        duration: "5 min",
+        lessons: [
+          {
+            id: "ruby-phase0-m1-l1",
+            title: "Your First Ruby Program",
+            explanation: "Ruby uses puts and print to output text. puts adds a newline.",
+            concept: "puts and print display messages on the screen.",
+            example: "puts 'Hello, world!'\nputs 'I am learning Ruby!'",
+            exercise: {
+              prompt: "Use puts to print exactly: 'I am ready to code in Ruby!'",
+              starterCode: "# Write your first puts statement below:\n# Make it say: I am ready to code in Ruby!\n",
+              solution: "puts 'I am ready to code in Ruby!'",
+              tests: [{ type: "contains", value: "puts 'I am ready to code in Ruby!'" }],
+              debuggingTip: "Ruby can use single or double quotes. Double quotes allow string interpolation with #{}."
+            }
+          }
+        ]
+      },
+      {
+        id: "ruby-phase1-m1",
+        title: "Phase 1 — Fundamentals",
+        duration: "2.5 hours",
+        lessons: [
+          {
+            id: "ruby-phase1-m1-l1",
+            title: "puts and print",
+            explanation: "puts adds a newline; print does not. Both can print strings and numbers.",
+            concept: "puts 'text' -> with newline; print 'text' -> same line.",
+            example: "puts 'Hello'\nprint 'Goodbye'\nputs '!'",
+            exercise: {
+              prompt: "Print 'Ready', 'Set', 'Go!' on three separate lines using puts.",
+              starterCode: "# Use puts three times\n",
+              solution: "puts 'Ready'\nputs 'Set'\nputs 'Go!'",
+              tests: [{ type: "contains", value: "puts 'Ready'" }, { type: "contains", value: "puts 'Set'" }, { type: "contains", value: "puts 'Go!'" }],
+              debuggingTip: "Don't forget the quotes around the strings. Both single and double quotes work."
+            }
+          },
+          {
+            id: "ruby-phase1-m1-l2",
+            title: "Variables",
+            explanation: "Variables store data; no type declaration needed. Use snake_case.",
+            concept: "name = 'Alice' – assignment, no let/var required.",
+            example: "city = 'Paris'\nputs city\ncity = 'London'\nputs city",
+            exercise: {
+              prompt: "Create a variable 'language' set to 'Ruby'. Print it. Then change it to 'Python' and print again.",
+              starterCode: "# Create language variable, print, change, print\n",
+              solution: "language = 'Ruby'\nputs language\nlanguage = 'Python'\nputs language",
+              tests: [{ type: "contains", value: "language = 'Ruby'" }, { type: "contains", value: "puts language" }],
+              debuggingTip: "Variable names use lowercase letters and underscores, e.g., my_variable."
+            }
+          },
+          {
+            id: "ruby-phase1-m1-l3",
+            title: "String Interpolation",
+            explanation: "Inside double quotes, #{variable} inserts the variable's value.",
+            concept: "Use double quotes and #{ } to embed variables.",
+            example: "name = 'Alice'\nputs \"Hello, #{name}!\"",
+            exercise: {
+              prompt: "Create a variable 'item' = 'book' and 'price' = 15. Use string interpolation to print: 'The book costs 15 dollars.'",
+              starterCode: "# Create variables, then interpolate\n",
+              solution: "item = 'book'\nprice = 15\nputs \"The #{item} costs #{price} dollars.\"",
+              tests: [{ type: "contains", value: "\"The #{item} costs #{price} dollars.\"" }],
+              debuggingTip: "Interpolation only works inside double-quoted strings, not single-quoted."
+            }
+          },
+          {
+            id: "ruby-phase1-m1-l4",
+            title: "Numbers and Math",
+            explanation: "Ruby handles integers and floats. Arithmetic: +, -, *, /. Integer division truncates.",
+            concept: "Integer division (5/2) gives 2; use 5.0/2 for float.",
+            example: "width = 7\nheight = 12\narea = width * height\nputs area",
+            exercise: {
+              prompt: "Compute area of rectangle width=7, height=12 and store in area. Print area. Then compute perimeter and print it.",
+              starterCode: "# Calculate area and perimeter\n",
+              solution: "width = 7\nheight = 12\narea = width * height\nperimeter = 2 * (width + height)\nputs area\nputs perimeter",
+              tests: [{ type: "contains", value: "area = width * height" }, { type: "contains", value: "puts perimeter" }],
+              debuggingTip: "Use parentheses to control order of operations."
+            }
+          },
+          {
+            id: "ruby-phase1-m1-l5",
+            title: "Comparison Operators",
+            explanation: "Compare with ==, !=, <, >, <=, >=. Returns true or false.",
+            concept: "== checks equality; != not equal.",
+            example: "a = 10\nb = 20\nputs a < b  # true\nputs a == b # false",
+            exercise: {
+              prompt: "Set x=50, y=30. Print whether x > y, x == y, and x != y using puts.",
+              starterCode: "# Compare x and y\n",
+              solution: "x = 50\ny = 30\nputs x > y\nputs x == y\nputs x != y",
+              tests: [{ type: "contains", value: "x > y" }, { type: "contains", value: "x == y" }, { type: "contains", value: "x != y" }],
+              debuggingTip: "Don't confuse = (assignment) with == (comparison)."
+            }
+          },
+          {
+            id: "ruby-phase1-m1-l6",
+            title: "Type Conversion",
+            explanation: "Use .to_i to convert to integer, .to_s to string, .to_f to float.",
+            concept: ".to_i, .to_s, .to_f change types.",
+            example: "num = '42'.to_i\nputs num + 8",
+            exercise: {
+              prompt: "Convert '100' to integer and add 25, print result. Convert 3.14 to a string and concatenate with ' is pi'.",
+              starterCode: "# Type conversion\n",
+              solution: "num = '100'.to_i\nputs num + 25\nputs 3.14.to_s + ' is pi'",
+              tests: [{ type: "contains", value: ".to_i" }, { type: "contains", value: ".to_s" }],
+              debuggingTip: "These methods are called on the object itself, e.g., '5'.to_i."
+            }
+          },
+          {
+            id: "ruby-phase1-m1-l7",
+            title: "Getting Input with gets",
+            explanation: "gets reads a line from the user. .chomp removes the trailing newline.",
+            concept: "name = gets.chomp",
+            example: "print 'What is your name? '\nname = gets.chomp\nputs \"Hello, #{name}\"",
+            exercise: {
+              prompt: "Ask the user 'What is your favorite color? ' using print and gets.chomp. Store it and then print 'That is a great color!' (don't include the color in that output).",
+              starterCode: "# Get user input and print compliment\n",
+              solution: "print 'What is your favorite color? '\ncolor = gets.chomp\nputs 'That is a great color!'",
+              tests: [{ type: "contains", value: "gets.chomp" }, { type: "contains", value: "puts 'That is a great color!'" }],
+              debuggingTip: "Always use .chomp unless you want the newline character."
+            }
+          }
+        ]
+      },
+      {
+        id: "ruby-phase2-m1",
+        title: "Phase 2 — Control Flow",
+        duration: "2 hours",
+        lessons: [
+          {
+            id: "ruby-phase2-m1-l1",
+            title: "If/Else",
+            explanation: "if/elsif/else controls flow. End with 'end'.",
+            concept: "if condition ... elsif ... else ... end",
+            example: "score = 73\nif score >= 90\n  puts 'A'\nelsif score >= 80\n  puts 'B'\nelsif score >= 70\n  puts 'C'\nelse\n  puts 'Needs work'\nend",
+            exercise: {
+              prompt: "Create score = 73 and implement the grade checker as shown in the example.",
+              starterCode: "# Grade checker\nscore = 73\n",
+              solution: "score = 73\nif score >= 90\n  puts 'A'\nelsif score >= 80\n  puts 'B'\nelsif score >= 70\n  puts 'C'\nelse\n  puts 'Needs work'\nend",
+              tests: [{ type: "contains", value: "if score >= 90" }, { type: "contains", value: "elsif" }],
+              debuggingTip: "Ruby uses 'elsif', not 'elseif'. And don't forget 'end'."
+            }
+          },
+          {
+            id: "ruby-phase2-m1-l2",
+            title: "While Loop",
+            explanation: "while repeats until condition false.",
+            concept: "while condition ... end",
+            example: "count = 1\nwhile count <= 5\n  puts count\n  count += 1\nend",
+            exercise: {
+              prompt: "Print numbers 1 to 5 using a while loop.",
+              starterCode: "# While loop 1..5\ncount = 1\n",
+              solution: "count = 1\nwhile count <= 5\n  puts count\n  count += 1\nend",
+              tests: [{ type: "contains", value: "while count <= 5" }, { type: "contains", value: "count += 1" }],
+              debuggingTip: "Use += to increment. Make sure the condition changes inside the loop."
+            }
+          },
+          {
+            id: "ruby-phase2-m1-l3",
+            title: "For Loop and Ranges",
+            explanation: "for i in 1..5 iterates over a range. 1..5 includes 5.",
+            concept: "for variable in range ... end",
+            example: "for i in 1..5\n  puts i\nend",
+            exercise: {
+              prompt: "Use a for loop with a range to print numbers 0 through 7. Then another to print 10 through 15.",
+              starterCode: "# Ranges with for\n",
+              solution: "for i in 0..7\n  puts i\nend\nfor i in 10..15\n  puts i\nend",
+              tests: [{ type: "contains", value: "for i in 0..7" }, { type: "contains", value: "for i in 10..15" }],
+              debuggingTip: "Two dots includes the last number; three dots excludes it."
+            }
+          },
+          {
+            id: "ruby-phase2-m1-l4",
+            title: "Break and Next",
+            explanation: "break exits the loop; next skips to the next iteration.",
+            concept: "break and next control flow inside a loop.",
+            example: "for i in 0..9\n  next if i == 4\n  break if i == 8\n  puts i\nend",
+            exercise: {
+              prompt: "Loop 0..9. Skip 4 with next, stop at 8 with break. Print all other numbers.",
+              starterCode: "# Loop with next and break\n",
+              solution: "for i in 0..9\n  next if i == 4\n  break if i == 8\n  puts i\nend",
+              tests: [{ type: "contains", value: "next if" }, { type: "contains", value: "break if" }],
+              debuggingTip: "You can write 'next if condition' as a one-liner."
+            }
+          },
+          {
+            id: "ruby-phase2-m1-l5",
+            title: "Capstone: Guessing Game",
+            explanation: "Combine gets, while, and if to build a guessing game.",
+            concept: "Interactive program using loops and conditionals.",
+            example: "secret = 5\nguess = 0\nwhile guess != secret\n  print 'Guess: '\n  guess = gets.chomp.to_i\n  if guess < secret\n    puts 'Higher!'\n  elsif guess > secret\n    puts 'Lower!'\n  end\nend\nputs 'You got it!'",
+            exercise: {
+              prompt: "Build a number guessing game with secret = 5. Keep asking for guesses. Too low -> 'Higher!', too high -> 'Lower!'. Correct -> 'You got it!'",
+              starterCode: "# Guessing game\nsecret = 5\n",
+              solution: "secret = 5\nguess = 0\nwhile guess != secret\n  print 'Guess the number: '\n  guess = gets.chomp.to_i\n  if guess < secret\n    puts 'Higher!'\n  elsif guess > secret\n    puts 'Lower!'\n  end\nend\nputs 'You got it!'",
+              tests: [{ type: "contains", value: "while guess != secret" }, { type: "contains", value: "puts 'You got it!'" }],
+              debuggingTip: "Remember to convert gets.chomp to integer using .to_i."
+            }
+          }
+        ]
+      },
+      {
+        id: "ruby-phase3-m1",
+        title: "Phase 3 — Methods",
+        duration: "2 hours",
+        lessons: [
+          {
+            id: "ruby-phase3-m1-l1",
+            title: "Defining Methods",
+            explanation: "def ... end defines a method. Call by name.",
+            concept: "def method_name; ... end",
+            example: "def greet\n  puts 'Hello!'\nend\ngreet",
+            exercise: {
+              prompt: "Define a method say_motto that prints 'Keep coding!' and 'Never give up!'. Call it twice.",
+              starterCode: "# Define and call method\n",
+              solution: "def say_motto\n  puts 'Keep coding!'\n  puts 'Never give up!'\nend\nsay_motto\nsay_motto",
+              tests: [{ type: "contains", value: "def say_motto" }, { type: "contains", value: "say_motto" }],
+              debuggingTip: "Method names use snake_case. No parentheses needed for calls without arguments."
+            }
+          },
+          {
+            id: "ruby-phase3-m1-l2",
+            title: "Parameters and Return",
+            explanation: "Methods can accept parameters. The last line is automatically returned.",
+            concept: "def add(a, b); a + b; end (implicit return).",
+            example: "def double(n)\n  n * 2\nend\nputs double(5)",
+            exercise: {
+              prompt: "Define a method multiply that takes two arguments and returns their product. Call with 4 and 7, store result, and print it.",
+              starterCode: "# Define multiply method\n",
+              solution: "def multiply(a, b)\n  a * b\nend\nproduct = multiply(4, 7)\nputs product",
+              tests: [{ type: "contains", value: "def multiply" }, { type: "contains", value: "multiply(4, 7)" }],
+              debuggingTip: "Ruby methods return the last expression by default; you don't need 'return' explicitly."
+            }
+          }
+        ]
+      },
+      {
+        id: "ruby-phase4-m1",
+        title: "Phase 4 — Arrays and Hashes",
+        duration: "2 hours",
+        lessons: [
+          {
+            id: "ruby-phase4-m1-l1",
+            title: "Arrays",
+            explanation: "Arrays are ordered lists. Access with [index].",
+            concept: "arr = [1,2,3]; arr[0]",
+            example: "fruits = ['apple', 'banana']\nputs fruits[0]\nfruits << 'orange'\nputs fruits",
+            exercise: {
+              prompt: "Create an array colors with three strings. Print first and second. Append a fourth color with << and print the whole array.",
+              starterCode: "# Array basics\n",
+              solution: "colors = ['red', 'green', 'blue']\nputs colors[0]\nputs colors[1]\ncolors << 'yellow'\nputs colors",
+              tests: [{ type: "contains", value: "colors <<" }, { type: "contains", value: "puts colors[0]" }],
+              debuggingTip: "Use << to add an element, or .push (they do the same)."
+            }
+          },
+          {
+            id: "ruby-phase4-m1-l2",
+            title: "Hashes",
+            explanation: "Hashes store key-value pairs. Symbols are common as keys.",
+            concept: "hash = { key: 'value' }; access with hash[:key].",
+            example: "person = { name: 'Alex', age: 25 }\nputs person[:name]\nperson[:job] = 'developer'\nputs person",
+            exercise: {
+              prompt: "Create a hash book with title: '1984' and author: 'Orwell'. Print the title. Add key :year with value 1949, then print the hash.",
+              starterCode: "# Hash practice\n",
+              solution: "book = { title: '1984', author: 'Orwell' }\nputs book[:title]\nbook[:year] = 1949\nputs book",
+              tests: [{ type: "contains", value: "book[:title]" }, { type: "contains", value: "book[:year] = 1949" }],
+              debuggingTip: "Symbol keys start with : but you omit the colon when using the shorthand syntax."
+            }
+          }
+        ]
+      },
+      {
+        id: "ruby-phase5-m1",
+        title: "Phase 5 — Intermediate Ruby",
+        duration: "2 hours",
+        lessons: [
+          {
+            id: "ruby-phase5-m1-l1",
+            title: "Iterators: each",
+            explanation: ".each iterates over collections. Use do...end or { } blocks.",
+            concept: "array.each { |item| ... }",
+            example: "[1,2,3].each { |n| puts n * 2 }",
+            exercise: {
+              prompt: "Given numbers = [1,2,3,4,5], use .each to print each number squared.",
+              starterCode: "# each with block\nnumbers = [1,2,3,4,5]\n",
+              solution: "numbers = [1,2,3,4,5]\nnumbers.each { |n| puts n * n }",
+              tests: [{ type: "contains", value: ".each" }, { type: "contains", value: "|n|" }],
+              debuggingTip: "The block variable is inside pipes: |n|."
+            }
+          },
+          {
+            id: "ruby-phase5-m1-l2",
+            title: "Exception Handling",
+            explanation: "begin/rescue catches errors.",
+            concept: "begin ... rescue ... end",
+            example: "begin\n  1 / 0\nrescue ZeroDivisionError\n  puts 'Cannot divide by zero!'\nend",
+            exercise: {
+              prompt: "Write a begin/rescue block that divides 10 by 0 and prints 'Math error!' if an error occurs.",
+              starterCode: "# Exception handling\n",
+              solution: "begin\n  10 / 0\nrescue\n  puts 'Math error!'\nend",
+              tests: [{ type: "contains", value: "begin" }, { type: "contains", value: "rescue" }],
+              debuggingTip: "You can specify the error type (e.g., rescue ZeroDivisionError) for more precise handling."
             }
           }
         ]
@@ -1319,7 +1973,6 @@ export const curriculum = {
 };
 
 // --- Export Functions ---
-
 export const getLessonById = (language, lessonId) => {
   const lang = curriculum[language];
   if (!lang) return null;

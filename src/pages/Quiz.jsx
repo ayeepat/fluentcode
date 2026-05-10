@@ -139,9 +139,12 @@ export default function Quiz() {
       );
       if (result) {
         setSavedProgress(true);
+      } else {
+        throw new Error("Failed to save quiz progress");
       }
     } catch (err) {
       console.error("Failed to save quiz progress:", err);
+      alert("Error saving your quiz progress. Please try again or contact support.");
     } finally {
       setSaving(false);
     }

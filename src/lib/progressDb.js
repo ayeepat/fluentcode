@@ -5,14 +5,22 @@ const FREE_DAILY_LIMIT = 10;
 // ─── Streak helpers ───────────────────────────────────────────────────────────
 
 function getTodayStr() {
+  // Use UTC to ensure consistent date across all timezones
   const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const utcYear = d.getUTCFullYear();
+  const utcMonth = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const utcDate = String(d.getUTCDate()).padStart(2, "0");
+  return `${utcYear}-${utcMonth}-${utcDate}`;
 }
 
 function getYesterdayStr() {
+  // Use UTC to ensure consistent date across all timezones
   const d = new Date();
-  d.setDate(d.getDate() - 1);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  d.setUTCDate(d.getUTCDate() - 1);
+  const utcYear = d.getUTCFullYear();
+  const utcMonth = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const utcDate = String(d.getUTCDate()).padStart(2, "0");
+  return `${utcYear}-${utcMonth}-${utcDate}`;
 }
 
 function computeNewStreak(lastStudyDate, currentStreak) {

@@ -7,7 +7,7 @@ import { useFeedbackWidget } from "@/lib/FeedbackContext";
 const FORMSPREE_ENDPOINT = "https://formspree.io/f/xzdojbzn";
 
 export default function FeedbackWidget() {
-  const { isOpen, shouldAutoOpen, closeFeedbackWidget } = useFeedbackWidget();
+  const { isOpen, shouldAutoOpen, openFeedbackWidget, closeFeedbackWidget } = useFeedbackWidget();
   const [feedbackType, setFeedbackType] = useState("feature"); // "feature" or "bug"
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -87,12 +87,12 @@ export default function FeedbackWidget() {
           if (isOpen) {
             handleCancel();
           } else {
-            // Allow manual opening even if auto-dismissed
-            const isDismissed = localStorage.getItem("feedbackWidget_dismissed");
-            if (isDismissed) {
-              localStorage.removeItem("feedbackWidget_dismissed");
-            }
-            closeFeedbackWidget(false);
+            // Allow manual opening even if dismissed - reset dismissal and open
+            localStorage.removeItem("feedbackWidget_dismissed");
+            setSubmitted(false);
+            setError(null);
+            reset();
+            openFeedbackWidget(false);
           }
         }}
         className="fixed bottom-4 right-4 z-40 w-14 h-14 bg-gradient-to-br from-zinc-900 to-zinc-800 text-white rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-200"
@@ -225,9 +225,9 @@ export default function FeedbackWidget() {
                         type="email"
                         placeholder="your@email.com"
                         {...register("email", {
-                          pattern: {
-                            value: /^[A-Z0-9._%+-]*@?[A-Z0-9.-]*$/i,
-                            message: "Invalid email",
+                          validate: (value) => {
+                            if (!value) return true;
+                            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || "Invalid email format";
                           },
                         })}
                         className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-sm bg-white hover:border-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900/20 focus:border-zinc-900 transition-all duration-200"

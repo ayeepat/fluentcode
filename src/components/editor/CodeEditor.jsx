@@ -30,6 +30,8 @@ export default function CodeEditor({ value, onChange, language }) {
   const languageMap = {
     python: "python",
     java: "java",
+    javascript: "javascript",
+    ruby: "ruby",
   };
 
   return (
