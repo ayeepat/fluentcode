@@ -9,8 +9,9 @@ export function FeedbackProvider({ children }) {
   const openFeedbackWidget = (autoOpen = false) => {
     // Check if user has permanently dismissed feedback
     const isDismissed = localStorage.getItem("feedbackWidget_dismissed");
-    // Always respect dismissal - once dismissed, never show again
-    if (isDismissed) {
+    // For auto-open (after lesson), respect dismissal - never force if dismissed
+    // For manual opens (floating button), bypass dismissal - user explicitly clicked it
+    if (autoOpen && isDismissed) {
       return;
     }
     setShouldAutoOpen(autoOpen);
