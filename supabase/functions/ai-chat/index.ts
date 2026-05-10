@@ -13,10 +13,8 @@ const TIMEOUT_MS = 10000;
 const MAX_CONTENT_LENGTH = 50000;
 
 function getCorsHeaders(origin: string | null): Record<string, string> {
-  const allowedOrigin =
-    origin && (ALLOWED_ORIGINS.includes(origin) || origin.endsWith(".vercel.app"))
-      ? origin
-      : "https://fluent-code.xyz";
+  // Only allow explicitly whitelisted origins - no wildcards for security
+  const allowedOrigin = origin && ALLOWED_ORIGINS.includes(origin) ? origin : "https://fluent-code.xyz";
 
   return {
     "Access-Control-Allow-Origin": allowedOrigin,

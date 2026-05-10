@@ -297,7 +297,8 @@ export const progressDb = {
 
     if (error) {
       console.error("Failed to check AI count:", error);
-      return { allowed: true, remaining: null };
+      // Deny access on error instead of allowing - fail securely
+      return { allowed: false, remaining: 0 };
     }
 
     const today = getTodayStr();
