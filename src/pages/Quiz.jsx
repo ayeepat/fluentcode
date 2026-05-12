@@ -39,6 +39,7 @@ export default function Quiz() {
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
   const [lesson, setLesson] = useState(null);
+  const [notFound, setNotFound] = useState(false);
   const [savedProgress, setSavedProgress] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -51,7 +52,13 @@ export default function Quiz() {
 
   const initQuiz = useCallback(() => {
     const result = getLessonById(language, lessonId);
-    if (!result) return;
+    if (!result) {
+      setNotFound(true);
+      setLesson(null);
+      setQuestions([]);
+      return;
+    }
+    setNotFound(false);
     setLesson(result.lesson);
     setQuestions(
       generateQuizQuestions(result.lesson, language).map((q) =>
@@ -157,6 +164,20 @@ export default function Quiz() {
 
   const nextRequiresLogin =
     nextLesson && isGuest && !isGuestAccessible(language, nextLesson.id);
+
+  if (notFound) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-white text-zinc-400">
+        <p className="text-base font-medium">Quiz lesson not found</p>
+        <button
+          onClick={() => navigate("/courses")}
+          className="text-sm text-zinc-500 hover:text-zinc-900 underline underline-offset-4 transition-colors"
+        >
+          Back to courses
+        </button>
+      </div>
+    );
+  }
 
   if (!lesson || questions.length === 0) {
     return (
