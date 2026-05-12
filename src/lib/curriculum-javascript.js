@@ -298,7 +298,7 @@ let quantity = 2;
 // Step 3: Print price with template literal
 
 
-// Step 4: Print total (calculate inside \${})
+// Step 4: Print total (calculate inside \x24{})
 
 
 // Step 5: Add discount variable and print final price
@@ -313,8 +313,8 @@ console.log(\`Total: \$\x24{quantity * price}\`);
 let discount = 10;
 console.log(\`After discount: \$\x24{quantity * price - discount}\`);`,
             tests: [
-              { type: "contains", value: "\${item}" },
-              { type: "contains", value: "\${quantity * price}" }
+              { type: "contains", value: "\x24{item}" },
+              { type: "contains", value: "\x24{quantity * price}" }
             ],
             debuggingTip: `Common mistakes:
 • Using single or double quotes instead of backticks? \x24{variable} only works inside backtick strings (\`\`).
@@ -759,12 +759,12 @@ In Node.js environments, prompt may not be available — use readline instead
 Always handle the case where user might click Cancel (null check)`,
           example: `// Basic prompt
 let name = prompt('What is your name?');
-console.log(\`Hello, \\${name}!\`);
+console.log(\`Hello, \\x24{name}!\`);
 
 // Getting a number from user
 let ageInput = prompt('How old are you?');
 let age = Number(ageInput);  // MUST convert to number!
-console.log(\`In 10 years you will be \\${age + 10}\`);
+console.log(\`In 10 years you will be \\x24{age + 10}\`);
 
 // Wrong way — forgetting to convert:
 let wrong = prompt('Enter a number:');
@@ -777,14 +777,14 @@ console.log(right + 5);  // 47 — actual math!
 // Handling cancel
 let color = prompt('Favorite color?');
 if (color !== null) {
-  console.log(\`\\${color} is a great color!\`);
+  console.log(\`\\x24{color} is a great color!\`);
 } else {
   console.log('You cancelled.');
 }
 
 // confirm for yes/no
 let agree = confirm('Do you accept the terms?');
-console.log(\`Accepted: \\${agree}\`);  // true or false`,
+console.log(\`Accepted: \\x24{agree}\`);  // true or false`,
           exercise: {
             prompt: `Build an interactive mini-program:
 1. Use prompt() to ask 'What is your favorite color?'
@@ -809,7 +809,7 @@ console.log(\`Accepted: \\${agree}\`);  // true or false`,
             solution: `let color = prompt('What is your favorite color?');
 console.log('That is a great color!');
 let letters = Number(prompt('How many letters does it have?'));
-console.log(\`You counted \\${letters} letters!\`);`,
+console.log(\`You counted \\x24{letters} letters!\`);`,
             tests: [
               { type: "contains", value: "prompt(" },
               { type: "contains", value: "color" },
@@ -886,7 +886,7 @@ console.log(result);  // Pass
 // Truthy check
 let username = 'Alice';
 if (username) {
-  console.log(\`Welcome, \\${username}!\`);
+  console.log(\`Welcome, \\x24{username}!\`);
 } else {
   console.log('Please log in.');
 }`,
@@ -989,12 +989,12 @@ while (num <= 100) {
   sum += num;
   num++;
 }
-console.log(\`Sum 1 to 100: \\${sum}\`);  // 5050
+console.log(\`Sum 1 to 100: \\x24{sum}\`);  // 5050
 
 // Countdown
 let seconds = 5;
 while (seconds > 0) {
-  console.log(\`\\${seconds}...\`);
+  console.log(\`\\x24{seconds}...\`);
   seconds--;
 }
 console.log('Blast off! 🚀');
@@ -1041,13 +1041,13 @@ while (num <= 10) {
   sum += num;
   num++;
 }
-console.log(\`Sum: \\${sum}\`);
-console.log(\`Average: \\${sum / 10}\`);
+console.log(\`Sum: \\x24{sum}\`);
+console.log(\`Average: \\x24{sum / 10}\`);
 let n = 51;
 while (n % 7 !== 0) {
   n++;
 }
-console.log(\`First number over 50 divisible by 7: \\${n}\`);
+console.log(\`First number over 50 divisible by 7: \\x24{n}\`);
 let done = false;
 do {
   console.log('Checking...');
@@ -1105,7 +1105,7 @@ for (let i = 0; i <= 10; i += 2) {
 
 // Multiplication table
 for (let i = 1; i <= 10; i++) {
-  console.log(\`4 × \\${i} = \\${4 * i}\`);
+  console.log(\`4 × \\x24{i} = \\x24{4 * i}\`);
 }
 
 // for...of — iterate array values (very common in modern JS)
@@ -1117,7 +1117,7 @@ for (const fruit of fruits) {
 // Nested loops — multiplication grid
 for (let row = 1; row <= 3; row++) {
   for (let col = 1; col <= 3; col++) {
-    process.stdout.write(\`\\${row * col} \`);  // no newline
+    process.stdout.write(\`\\x24{row * col} \`);  // no newline
   }
   console.log();  // newline after each row
 }`,
@@ -1150,7 +1150,7 @@ for (let j = 10; j <= 15; j++) {
   console.log(j);
 }
 for (let i = 1; i <= 10; i++) {
-  console.log(\`5 x \\${i} = \\${5 * i}\`);
+  console.log(\`5 x \\x24{i} = \\x24{5 * i}\`);
 }
 const colors = ['red', 'green', 'blue'];
 for (const color of colors) {
@@ -1199,7 +1199,7 @@ for (let i = 0; i < 10; i++) {
 let target = 7;
 for (let i = 0; i <= 100; i++) {
   if (i === target) {
-    console.log(\`Found \\${target} at index \\${i}\`);
+    console.log(\`Found \\x24{target} at index \\x24{i}\`);
     break;  // stop searching — we found it!
   }
 }
@@ -1221,7 +1221,7 @@ for (const word of words) {
     break;
   }
 }
-console.log(\`First long word: \\${longWord}\`);  // programming`,
+console.log(\`First long word: \\x24{longWord}\`);  // programming`,
           exercise: {
             prompt: `Practice break and continue:
 1. Loop from 0 to 9: skip 4 with continue, stop at 8 with break — print the rest
@@ -1249,7 +1249,7 @@ const words = ['cat', 'elephant', 'dog', 'hippopotamus', 'ant'];
 }
 for (let i = 1; i <= 100; i++) {
   if (i % 3 === 0 && i % 11 === 0) {
-    console.log(\`First divisible by 3 and 11: \\${i}\`);
+    console.log(\`First divisible by 3 and 11: \\x24{i}\`);
     break;
   }
 }
@@ -1260,7 +1260,7 @@ for (let i = 1; i <= 20; i++) {
 const words = ['cat', 'elephant', 'dog', 'hippopotamus', 'ant'];
 for (const word of words) {
   if (word.length > 6) {
-    console.log(\`First long word: \\${word}\`);
+    console.log(\`First long word: \\x24{word}\`);
     break;
   }
 }`,
@@ -1312,7 +1312,7 @@ while (guess !== secret) {
   // If guess === secret, loop condition becomes false → exits
 }
 
-console.log(\`🎉 You got it in \\${attempts} attempt(s)!\`);`,
+console.log(\`🎉 You got it in \\x24{attempts} attempt(s)!\`);`,
           exercise: {
             prompt: `Build the complete number guessing game:
 1. Set: let secret = 5, let guess = 0, let attempts = 0
@@ -1355,7 +1355,7 @@ while (guess !== secret) {
   }
 }
 console.log('You got it!');
-console.log(\`It took \\${attempts} attempt(s).\`);`,
+console.log(\`It took \\x24{attempts} attempt(s).\`);`,
             tests: [
               { type: "contains", value: "while (guess !== secret)" },
               { type: "contains", value: "Number(prompt" },
@@ -1529,9 +1529,9 @@ console.log(add(2, 3) * 10);  // 50
 // Multiple parameters, different types
 function createMessage(name, score, passed) {
   if (passed) {
-    return \`Congratulations \\${name}! You scored \\${score} and passed.\`;
+    return \`Congratulations \\x24{name}! You scored \\x24{score} and passed.\`;
   } else {
-    return \`Sorry \\${name}. You scored \\${score}. Please retry.\`;
+    return \`Sorry \\x24{name}. You scored \\x24{score}. Please retry.\`;
   }
 }
 console.log(createMessage('Alice', 85, true));
@@ -1539,7 +1539,7 @@ console.log(createMessage('Bob', 45, false));
 
 // Default parameters (modern JS)
 function greet(name = 'friend', greeting = 'Hello') {
-  return \`\\${greeting}, \\${name}!\`;
+  return \`\\x24{greeting}, \\x24{name}!\`;
 }
 console.log(greet('Alice', 'Hi'));  // Hi, Alice!
 console.log(greet('Bob'));           // Hello, Bob!
@@ -1607,7 +1607,7 @@ console.log(clamp(-3, 1, 10));
 console.log(clamp(15, 1, 10));
 
 function greetUser(name = 'stranger') {
-  return \`Hello, \\${name}!\`;
+  return \`Hello, \\x24{name}!\`;
 }
 console.log(greetUser('Alice'));
 console.log(greetUser());`,
@@ -1664,7 +1664,7 @@ console.log(squareArrow(4));  // 16
 // Common arrow function patterns
 const double = x => x * 2;
 const isPositive = n => n > 0;
-const greet = name => \`Hello, \\${name}!\`;
+const greet = name => \`Hello, \\x24{name}!\`;
 const add = (a, b) => a + b;
 const noParams = () => 'No input needed';
 
@@ -1722,7 +1722,7 @@ console.log(describeNumber(0));`,
 console.log(square(4));
 console.log(square(9));
 
-const fullName = (firstName, lastName) => \`\\${firstName} \\${lastName}\`;
+const fullName = (firstName, lastName) => \`\\x24{firstName} \\x24{lastName}\`;
 console.log(fullName('John', 'Doe'));
 
 const isAdult = age => age >= 18;
@@ -1868,7 +1868,7 @@ for (let i = 0; i < 3; i++) {
 }
 
 function makeGreeter(greeting) {
-  return name => \`\\${greeting}, \\${name}!\`;
+  return name => \`\\x24{greeting}, \\x24{name}!\`;
 }
 const hello = makeGreeter('Hello');
 const hi = makeGreeter('Hi');
@@ -2201,7 +2201,7 @@ console.log(Object.values(person));  // ['Sofia', 30, 'Rome', 'sofia@example.com
 
 // Iterating over entries
 for (const [key, value] of Object.entries(person)) {
-  console.log(\`\\${key}: \\${value}\`);
+  console.log(\`\\x24{key}: \\x24{value}\`);
 }
 
 // Destructuring — extract into variables
@@ -2254,7 +2254,7 @@ console.log(Object.values(book));
 const { title, author, year } = book;
 console.log(title, author, year);
 for (const [k, v] of Object.entries(book)) {
-  console.log(\`\\${k}: \\${v}\`);
+  console.log(\`\\x24{k}: \\x24{v}\`);
 }`,
             tests: [
               { type: "contains", value: "book.title" },
@@ -2309,7 +2309,7 @@ console.log(names);  // ['Laptop', 'Phone', 'Tablet', 'Watch', 'Headphones']
 const totalValue = products
   .filter(p => p.inStock)
   .reduce((sum, p) => sum + p.price, 0);
-console.log(\`Total: \$\\${totalValue}\`);  // Total: $1747
+console.log(\`Total: \$\\x24{totalValue}\`);  // Total: $1747
 
 // Find by id
 const found = products.find(p => p.id === 3);
@@ -2317,7 +2317,7 @@ console.log(found.name);  // Tablet
 
 // Sort by price (ascending)
 const byPrice = [...products].sort((a, b) => a.price - b.price);
-console.log(byPrice.map(p => \`\\${p.name}: \$\\${p.price}\`));
+console.log(byPrice.map(p => \`\\x24{p.name}: \$\\x24{p.price}\`));
 
 // Transform to summary objects
 const summary = products.map(p => ({
@@ -2365,11 +2365,11 @@ const students = [
 const passingNames = students.filter(s => s.passed).map(s => s.name);
 console.log(passingNames);
 
-const gradeStrings = students.map(s => \`\\${s.name}: \\${s.grade}\`);
+const gradeStrings = students.map(s => \`\\x24{s.name}: \\x24{s.grade}\`);
 console.log(gradeStrings);
 
 const average = students.reduce((sum, s) => sum + s.grade, 0) / students.length;
-console.log(\`Average: \\${average}\`);
+console.log(\`Average: \\x24{average}\`);
 
 const topStudent = students.find(s => s.grade > 90);
 console.log(topStudent);
@@ -2618,10 +2618,10 @@ function fetchUser(id) {
 async function loadUser(id) {
   try {
     const user = await fetchUser(id);
-    console.log(\`User loaded: \\${user.name}\`);
+    console.log(\`User loaded: \\x24{user.name}\`);
     return user;
   } catch (error) {
-    console.log(\`Failed to load user: \\${error.message}\`);
+    console.log(\`Failed to load user: \\x24{error.message}\`);
     return null;
   }
 }
@@ -2801,7 +2801,7 @@ console.log(sum(1, 2, 3, 4, 5)); // 15
 
 // Destructuring in function parameters
 function displayUser({ name, age, city = 'Unknown' }) {
-  console.log(\`\\${name} (\\${age}) from \\${city}\`);
+  console.log(\`\\x24{name} (\\x24{age}) from \\x24{city}\`);
 }
 displayUser(user);  // Alice (28) from Paris`,
           exercise: {
@@ -2858,12 +2858,12 @@ const updated = { ...original, age: 29 };
 console.log(updated);
 
 function logAll(...args) {
-  console.log(\`Received \\${args.length} arguments:\`, args);
+  console.log(\`Received \\x24{args.length} arguments:\`, args);
 }
 logAll(1, 'hello', true, 42);
 
 function displayProduct({ name, price, inStock = true }) {
-  console.log(\`\\${name} - \$\\${price} - In Stock: \\${inStock}\`);
+  console.log(\`\\x24{name} - \$\\x24{price} - In Stock: \\x24{inStock}\`);
 }
 displayProduct({ name: 'Laptop', price: 999 });`,
             tests: [
@@ -2933,7 +2933,7 @@ export default function calculate(operation, a, b) {
   switch(operation) {
     case 'add': return add(a, b);
     case 'multiply': return multiply(a, b);
-    default: throw new Error(\`Unknown operation: \\${operation}\`);
+    default: throw new Error(\`Unknown operation: \\x24{operation}\`);
   }
 }
 
@@ -3013,7 +3013,7 @@ export default function calculate(a, op, b) {
   if (op === '-') return a - b;
   if (op === '*') return a * b;
   if (op === '/') return b !== 0 ? a / b : 'Division by zero';
-  throw new Error(\`Unknown operator: \\${op}\`);
+  throw new Error(\`Unknown operator: \\x24{op}\`);
 }
 
 // === stringUtils.js ===
@@ -3093,12 +3093,12 @@ class Child extends Parent {
   }
   
   speak() {
-    console.log(\`\\${this.name} says \\${this.sound}!\`);
+    console.log(\`\\x24{this.name} says \\x24{this.sound}!\`);
   }
   
   eat(food) {
     this.energy += 20;
-    console.log(\`\\${this.name} eats \\${food}. Energy: \\${this.energy}\`);
+    console.log(\`\\x24{this.name} eats \\x24{food}. Energy: \\x24{this.energy}\`);
   }
   
   get status() {
@@ -3110,7 +3110,7 @@ class Child extends Parent {
   }
   
   toString() {
-    return \`Animal(\\${this.name})\`;
+    return \`Animal(\\x24{this.name})\`;
   }
 }
 
@@ -3122,7 +3122,7 @@ class Dog extends Animal {
   }
   
   fetch(item) {
-    console.log(\`\\${this.name} fetches the \\${item}!\`);
+    console.log(\`\\x24{this.name} fetches the \\x24{item}!\`);
   }
   
   speak() {
@@ -3207,7 +3207,7 @@ const savings = new SavingsAccount('Bob', 500, 0.03);`,
       return;
     }
     this._balance += amount;
-    console.log(\`Deposited \$\\${amount}. New balance: \$\\${this._balance}\`);
+    console.log(\`Deposited \$\\x24{amount}. New balance: \$\\x24{this._balance}\`);
   }
   
   withdraw(amount) {
@@ -3216,7 +3216,7 @@ const savings = new SavingsAccount('Bob', 500, 0.03);`,
       return;
     }
     this._balance -= amount;
-    console.log(\`Withdrew \$\\${amount}. New balance: \$\\${this._balance}\`);
+    console.log(\`Withdrew \$\\x24{amount}. New balance: \$\\x24{this._balance}\`);
   }
   
   get balance() {
@@ -3224,7 +3224,7 @@ const savings = new SavingsAccount('Bob', 500, 0.03);`,
   }
   
   toString() {
-    return \`Account(\\${this.owner}: \$\\${this._balance})\`;
+    return \`Account(\\x24{this.owner}: \$\\x24{this._balance})\`;
   }
 }
 
@@ -3237,7 +3237,7 @@ class SavingsAccount extends BankAccount {
   addInterest() {
     const interest = this._balance * this.interestRate;
     this._balance += interest;
-    console.log(\`Interest added: \$\\${interest.toFixed(2)}. New balance: \$\\${this._balance.toFixed(2)}\`);
+    console.log(\`Interest added: \$\\x24{interest.toFixed(2)}. New balance: \$\\x24{this._balance.toFixed(2)}\`);
   }
 }
 
