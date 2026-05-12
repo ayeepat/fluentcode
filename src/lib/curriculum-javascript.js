@@ -466,7 +466,7 @@ console.log(!hasID);                 // false (flipped)
 // Storing results
 let canVote = age >= 18;
 let canDrinkInUS = age >= 21;
-console.log(\`Can vote: \\${canVote}, Can drink: \\${canDrinkInUS}\`);
+console.log(\`Can vote: \x24{canVote}, Can drink: \x24{canDrinkInUS}\`);
 
 // Truthy/falsy (important JavaScript concept)
 console.log(Boolean(0));         // false
