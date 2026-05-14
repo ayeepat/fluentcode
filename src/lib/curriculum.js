@@ -3,12 +3,14 @@ import { pythonCurriculum } from './curriculum-python.js';
 import { javaCurriculum } from './curriculum-java.js';
 import { javascriptCurriculum } from './curriculum-javascript.js';
 import { rubyCurriculum } from './curriculum-ruby.js';
+import { typescriptCurriculum } from './curriculum-typescript.js';
 
 export const curriculum = {
   python: pythonCurriculum,
   java: javaCurriculum,
   javascript: javascriptCurriculum,
-  ruby: rubyCurriculum
+  ruby: rubyCurriculum,
+  typescript: typescriptCurriculum
 };
 
 // --- Export Functions ---

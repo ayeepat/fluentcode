@@ -169,7 +169,6 @@ function predictOutputRuby(code) {
     m = trimmed.match(/puts\s+"([^"]*)"/);
     if (m) {
       let s = m[1];
-      // interpolate #{var}
       for (const [key, val] of Object.entries(vars)) {
         s = s.replace(new RegExp(`#\\{${key}\\}`, 'g'), val);
       }
@@ -201,6 +200,7 @@ function predictOutput(code, language) {
     case "python": return predictOutputPython(code);
     case "java": return predictOutputJava(code);
     case "javascript": return predictOutputJavaScript(code);
+    case "typescript": return predictOutputJavaScript(code);
     case "ruby": return predictOutputRuby(code);
     default: return "$ Run code to see output.";
   }

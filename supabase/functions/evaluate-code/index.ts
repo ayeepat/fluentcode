@@ -14,7 +14,6 @@ const ALLOWED_ORIGINS = [
 ];
 
 function getCorsHeaders(origin: string | null): Record<string, string> {
-  // Only allow explicitly whitelisted origins - no wildcards for security
   const allowedOrigin = origin && ALLOWED_ORIGINS.includes(origin) ? origin : "https://fluent-code.xyz";
   return {
     "Access-Control-Allow-Origin": allowedOrigin,
@@ -23,11 +22,10 @@ function getCorsHeaders(origin: string | null): Record<string, string> {
   };
 }
 
-const ALLOWED_LANGUAGES = ["python", "java", "javascript", "ruby"]; // ✅ Updated
+const ALLOWED_LANGUAGES = ["python", "java", "javascript", "ruby", "typescript"];
 const MAX_CODE_LENGTH = 10000;
 const MAX_LESSON_FIELD_LENGTH = 2000;
 
-// Simple in-memory rate limiter (resets on cold start — acceptable at this scale)
 const ipRequestCounts = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT = 20;
 const RATE_WINDOW_MS = 60 * 1000;
@@ -87,7 +85,6 @@ serve(async (req) => {
     });
   }
 
-  // Block oversized payloads early
   const contentLength = parseInt(req.headers.get("content-length") || "0", 10);
   if (contentLength > MAX_CONTENT_LENGTH) {
     return new Response(JSON.stringify({ error: "Payload too large" }), {
@@ -96,7 +93,6 @@ serve(async (req) => {
     });
   }
 
-  // Rate limiting by IP
   const ip = req.headers.get("x-forwarded-for") ?? "unknown";
   if (isRateLimited(ip)) {
     return new Response(
@@ -124,7 +120,6 @@ serve(async (req) => {
 
     const { code, language, lesson } = body;
 
-    // Validate language
     if (!language || !ALLOWED_LANGUAGES.includes(language)) {
       return new Response(
         JSON.stringify({
@@ -137,7 +132,6 @@ serve(async (req) => {
       );
     }
 
-    // Validate code
     if (typeof code !== "string") {
       return new Response(JSON.stringify({ error: "Code must be a string" }), {
         status: 400,
@@ -154,7 +148,6 @@ serve(async (req) => {
       );
     }
 
-    // Validate lesson object
     if (!lesson || typeof lesson !== "object") {
       return new Response(JSON.stringify({ error: "Invalid lesson data" }), {
         status: 400,
@@ -178,7 +171,6 @@ serve(async (req) => {
       );
     }
 
-    // Sanitize all user-controlled inputs before embedding in prompt
     const sanitizedCode = sanitizeString(code, MAX_CODE_LENGTH);
     const sanitizedTitle = sanitizeString(lesson.title, MAX_LESSON_FIELD_LENGTH);
     const sanitizedPrompt = sanitizeString(
@@ -222,7 +214,6 @@ Return exactly this JSON shape:
   "suggestions": ["one clear next step if wrong, else empty array"]
 }`;
 
-    // Timeout controller
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
     let groqRes: Response;

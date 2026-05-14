@@ -32,6 +32,7 @@ export default function CodeEditor({ value, onChange, language }) {
     java: "java",
     javascript: "javascript",
     ruby: "ruby",
+    typescript: "typescript",
   };
 
   return (
