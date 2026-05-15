@@ -9,13 +9,11 @@ const ALLOWED_ORIGINS = [
   "http://localhost:8000",
 ];
 const MODEL = "llama-3.3-70b-versatile";
-const TIMEOUT_MS = 10000;
+const TIMEOUT_MS = 15000;  // 15 seconds – increased from 10s
 const MAX_CONTENT_LENGTH = 50000;
 
 function getCorsHeaders(origin: string | null): Record<string, string> {
-  // Only allow explicitly whitelisted origins - no wildcards for security
   const allowedOrigin = origin && ALLOWED_ORIGINS.includes(origin) ? origin : "https://fluent-code.xyz";
-
   return {
     "Access-Control-Allow-Origin": allowedOrigin,
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -184,12 +182,12 @@ serve(async (req) => {
     console.error("ai-chat error:", error);
 
     const isTimeout = error instanceof Error && error.name === "AbortError";
+    const userMessage = isTimeout
+      ? "The AI took too long to respond (over 15 seconds). Please try again or ask a shorter question."
+      : "Sorry, I couldn't process that. Please try again.";
+
     return new Response(
-      JSON.stringify({
-        reply: isTimeout
-          ? "The AI took too long to respond. Please try again."
-          : "Sorry, I couldn't process that. Please try again.",
-      }),
+      JSON.stringify({ reply: userMessage }),
       {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

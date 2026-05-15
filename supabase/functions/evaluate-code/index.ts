@@ -3,7 +3,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const MODEL = "llama-3.3-70b-versatile";
-const TIMEOUT_MS = 10000;
+const TIMEOUT_MS = 15000;  // 15 seconds – increased from 10s
 const MAX_CONTENT_LENGTH = 50000;
 const ALLOWED_ORIGINS = [
   "https://fluent-code.xyz",
@@ -309,14 +309,17 @@ Return exactly this JSON shape:
   } catch (error) {
     console.error("Edge function error:", error);
     const isTimeout = error instanceof Error && error.name === "AbortError";
+    const errorMessage = isTimeout
+      ? "The AI evaluation took too long (over 15 seconds). Please try again or simplify your code."
+      : "Something went wrong on the server. Please try again.";
     return new Response(
       JSON.stringify({
         isCorrect: false,
-        feedback: isTimeout
-          ? "The AI took too long to respond. Please try again."
-          : "Something went wrong on the server. Please try again.",
+        feedback: errorMessage,
         mistakePatterns: [],
-        suggestions: [],
+        suggestions: isTimeout 
+          ? ["Try breaking your code into smaller steps", "Make sure your code is not in an infinite loop"]
+          : ["Refresh the page and try again"],
       }),
       {
         status: 200,
