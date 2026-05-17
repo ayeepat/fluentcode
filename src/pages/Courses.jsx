@@ -207,19 +207,28 @@ export default function Courses() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1, ease }}
-          className="flex gap-2 mb-10"
+          className="flex gap-2 mb-10 flex-wrap"
         >
-          {Object.entries(curriculum).map(([key, val]) => (
+          {[
+            { key: "python", label: "Python" },
+            { key: "javascript", label: "JavaScript" },
+            { key: "typescript", label: "TypeScript" },
+            { key: "java", label: "Java" },
+            { key: "ruby", label: "Ruby" },
+          ].map(({ key, label }) => (
             <button
               key={key}
-              onClick={() => setSelectedLang(key)}
+              onClick={() => {
+                setSelectedLang(key);
+                setCurriculumVersion(hasVersion2(key) ? 2 : 1);
+              }}
               className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
                 selectedLang === key
                   ? "bg-zinc-900 text-white"
                   : "border border-zinc-200 text-zinc-500 hover:border-zinc-400 hover:text-zinc-900"
               }`}
             >
-              {val.label}
+              {label}
             </button>
           ))}
         </motion.div>
