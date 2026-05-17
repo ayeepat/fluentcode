@@ -336,7 +336,8 @@ print(area)`,
         {
           id: "python-v2-l3-3",
           title: "Division – Regular and Floor",
-          explanation: `/` gives a float (decimal). `//` gives integer division (floor, rounds down).`,
+          // FIXED: changed outer backticks to double quotes because the string contains backticks
+          explanation: "/` gives a float (decimal). `//` gives integer division (floor, rounds down).",
           concept: `10 / 3 = 3.333..., 10 // 3 = 3.`,
           example: `print(10 / 3)
 print(10 // 3)
@@ -1148,7 +1149,7 @@ print(doubles)`,
         }
       ]
     },
-    // Level 10: Advanced Topics (4 lessons) – new
+    // Level 10: Advanced Topics (4 lessons)
     {
       id: "python-v2-level10",
       title: "Level 10 — Advanced Topics",
