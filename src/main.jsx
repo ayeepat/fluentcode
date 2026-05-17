@@ -63,3 +63,8 @@ ReactDOM.createRoot(rootElement).render(
 );
 
 console.log("✓ App mounted");
+window.onerror = function(message, source, lineno, colno, error) {
+  console.error("Global error caught:", message, error);
+  alert(`Error: ${message}\n\nStack: ${error?.stack}`);
+  return false;
+};

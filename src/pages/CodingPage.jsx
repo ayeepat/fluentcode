@@ -1,4 +1,3 @@
-// src/pages/CodingPage.jsx
 import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
@@ -30,7 +29,23 @@ function runLocalTests(code, tests) {
   return true;
 }
 
-// ========== Output predictors (full) ==========
+// ========== Output predictors – now safe (never throw) ==========
+function safeEvaluate(code, language) {
+  try {
+    switch (language) {
+      case "python": return predictOutputPython(code);
+      case "java": return predictOutputJava(code);
+      case "javascript": return predictOutputJavaScript(code);
+      case "typescript": return predictOutputJavaScript(code);
+      case "ruby": return predictOutputRuby(code);
+      default: return "$ Run code to see output.";
+    }
+  } catch (err) {
+    console.error("Output prediction error:", err);
+    return `$ Error while predicting output: ${err.message}\nTip: Check that all variables are defined.`;
+  }
+}
+
 function predictOutputPython(code) {
   const lines = code.split("\n");
   const outputs = [];
@@ -62,7 +77,9 @@ function predictOutputPython(code) {
     if (m) {
       let s = m[2];
       for (const [key, val] of Object.entries(vars)) {
-        s = s.replace(new RegExp(`\\{${key}\\}`, 'g'), val);
+        try {
+          s = s.replace(new RegExp(`\\{${key}\\}`, 'g'), val);
+        } catch (e) {}
       }
       outputs.push(s);
       continue;
@@ -116,8 +133,13 @@ function predictOutputJavaScript(code) {
     if (m) {
       let s = m[1];
       for (const [key, val] of Object.entries(vars)) {
-        s = s.replace(new RegExp(`\\$\\{${key}\\}`, 'g'), val);
+        try {
+          const regex = new RegExp(`\\$\\{${key}\\}`, 'g');
+          s = s.replace(regex, val !== undefined ? val : 'undefined');
+        } catch (e) {}
       }
+      // Remove any leftover ${...}
+      s = s.replace(/\$\{[^}]+\}/g, 'undefined');
       outputs.push(s);
       continue;
     }
@@ -155,8 +177,12 @@ function predictOutputRuby(code) {
     if (m) {
       let s = m[1];
       for (const [key, val] of Object.entries(vars)) {
-        s = s.replace(new RegExp(`#\\{${key}\\}`, 'g'), val);
+        try {
+          const regex = new RegExp(`#\\{${key}\\}`, 'g');
+          s = s.replace(regex, val !== undefined ? val : 'undefined');
+        } catch (e) {}
       }
+      s = s.replace(/#\{[^}]+\}/g, 'undefined');
       outputs.push(s);
       continue;
     }
@@ -167,8 +193,12 @@ function predictOutputRuby(code) {
     if (m) {
       let s = m[1];
       for (const [key, val] of Object.entries(vars)) {
-        s = s.replace(new RegExp(`#\\{${key}\\}`, 'g'), val);
+        try {
+          const regex = new RegExp(`#\\{${key}\\}`, 'g');
+          s = s.replace(regex, val !== undefined ? val : 'undefined');
+        } catch (e) {}
       }
+      s = s.replace(/#\{[^}]+\}/g, 'undefined');
       outputs.push(s);
       continue;
     }
@@ -178,18 +208,7 @@ function predictOutputRuby(code) {
   return "$ Output:\n" + outputs.join("\n");
 }
 
-function predictOutput(code, language) {
-  if (!code || !code.trim()) return "No code to run.";
-  switch (language) {
-    case "python": return predictOutputPython(code);
-    case "java": return predictOutputJava(code);
-    case "javascript": return predictOutputJavaScript(code);
-    case "typescript": return predictOutputJavaScript(code);
-    case "ruby": return predictOutputRuby(code);
-    default: return "$ Run code to see output.";
-  }
-}
-
+// Main component (unchanged except for using safeEvaluate)
 export default function CodingPage() {
   const { language, lessonId } = useParams();
   const navigate = useNavigate();
@@ -258,7 +277,6 @@ export default function CodingPage() {
       if (isGuest) {
         const guestData = localProgressDb.getProgress();
         setProgress(guestData);
-        // Guests use version 2 only if the language has it, otherwise version 1
         setCurriculumVersion(hasVersion2(language) ? 2 : 1);
         setIsLoading(false);
         return;
@@ -323,7 +341,7 @@ export default function CodingPage() {
     nextLesson && isGuest && !isGuestAccessible(language, nextLesson.id);
 
   const handleRun = () => {
-    const predicted = predictOutput(code, language);
+    const predicted = safeEvaluate(code, language);
     setOutput(predicted);
   };
 
@@ -354,7 +372,7 @@ export default function CodingPage() {
       };
       setFeedback(successFeedback);
       setSubmitted(true);
-      const predicted = predictOutput(code, language);
+      const predicted = safeEvaluate(code, language);
       setOutput(predicted);
       setTimeout(() => openFeedbackWidget(true), 1200);
 
