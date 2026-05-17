@@ -12,11 +12,10 @@ inject();
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
+console.log("🔍 Checking Clerk key...", PUBLISHABLE_KEY ? "✓ Found" : "✗ Missing");
+
 if (!PUBLISHABLE_KEY) {
-  console.error("Missing VITE_CLERK_PUBLISHABLE_KEY in .env");
-  console.error("Available env vars:", Object.keys(import.meta.env).filter(k => k.startsWith('VITE_')));
-  throw new Error("Missing VITE_CLERK_PUBLISHABLE_KEY in .env");
-}
+  console.warn("⚠️ VITE_CLERK_PUBLISHABLE_KEY is not set. Using guest mode.");
 
 const LoadingFallback = () => (
   <div className="min-h-screen flex items-center justify-center bg-white">
@@ -35,21 +34,31 @@ ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <HelmetProvider>
       <Suspense fallback={<LoadingFallback />}>
-        <ClerkProvider
-          publishableKey={PUBLISHABLE_KEY}
-          afterSignOutUrl="/"
-          appearance={{
-            layout: {
-              termsPageUrl: "/terms",
-              privacyPageUrl: "/privacy",
-            },
-          }}
-        >
-          <App />
-        </ClerkProvider>
+        {PUBLISHABLE_KEY ? (
+          <ClerkProvider
+            publishableKey={PUBLISHABLE_KEY}
+            afterSignOutUrl="/"
+            appearance={{
+              layout: {
+                termsPageUrl: "/terms",
+                privacyPageUrl: "/privacy",
+              },
+            }}
+          >
+            <App />
+          </ClerkProvider>
+        ) : (
+          <div className="min-h-screen flex items-center justify-center bg-white">
+            <div className="text-center">
+              <p className="text-red-500 font-semibold mb-2">⚠️ Configuration Error</p>
+              <p className="text-zinc-600 text-sm">VITE_CLERK_PUBLISHABLE_KEY is not configured</p>
+              <p className="text-zinc-500 text-xs mt-2">Check your .env.local file</p>
+            </div>
+          </div>
+        )}
       </Suspense>
     </HelmetProvider>
   </React.StrictMode>
 );
 
-console.log("✓ App rendered successfully");
+console.log("✓ App mounted");
