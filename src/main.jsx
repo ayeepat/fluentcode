@@ -7,11 +7,14 @@ import { inject } from "@vercel/analytics";
 import { ClerkProvider } from "@clerk/clerk-react";
 import { HelmetProvider } from "react-helmet-async";
 
+console.log("✓ main.jsx loaded successfully");
 inject();
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
 if (!PUBLISHABLE_KEY) {
+  console.error("Missing VITE_CLERK_PUBLISHABLE_KEY in .env");
+  console.error("Available env vars:", Object.keys(import.meta.env).filter(k => k.startsWith('VITE_')));
   throw new Error("Missing VITE_CLERK_PUBLISHABLE_KEY in .env");
 }
 
@@ -21,7 +24,14 @@ const LoadingFallback = () => (
   </div>
 );
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+const rootElement = document.getElementById("root");
+if (!rootElement) {
+  console.error("❌ Root element not found!");
+} else {
+  console.log("✓ Root element found, mounting React");
+}
+
+ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <HelmetProvider>
       <Suspense fallback={<LoadingFallback />}>
@@ -41,3 +51,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     </HelmetProvider>
   </React.StrictMode>
 );
+
+console.log("✓ App rendered successfully");
