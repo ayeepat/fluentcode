@@ -1,10 +1,10 @@
 // src/pages/Lesson.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
-import { getLessonById } from "@/lib/curriculum";
-import { isGuestAccessible, shouldPromptSignup, isExerciseFirst } from "@/lib/guestAccess";
+import { getLessonById, hasVersion2 } from "@/lib/curriculum";
+import { isGuestAccessible, shouldPromptSignup, isExerciseFirst, getGuestLessonIds } from "@/lib/guestAccess";
 import { localProgressDb } from "@/lib/localProgressDb";
 import { Play, Lightbulb, HelpCircle } from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
@@ -35,16 +35,26 @@ export default function Lesson() {
   const [isLoading, setIsLoading] = useState(true);
   const [streak, setStreak] = useState(0);
   const [showSignupPrompt, setShowSignupPrompt] = useState(false);
+  const [curriculumVersion, setCurriculumVersion] = useState(1);
   const isMobile = useIsMobile();
 
   const isGuest = !isSignedIn;
   const guestAllowed = isGuestAccessible(language, lessonId);
-  const exerciseFirst = isExerciseFirst(language, lessonId);
+  const exerciseFirst = useMemo(
+    () => isExerciseFirst(language, lessonId, curriculumVersion),
+    [language, lessonId, curriculumVersion]
+  );
 
   // Redirect guests trying to access non-guest lessons
   useEffect(() => {
     if (isLoaded && isGuest && !guestAllowed) {
-      navigate(`/lesson/${language}/${language}-phase0-m1-l1`);
+      // Redirect to first guest lesson (v2 for Python, v1 for other languages)
+      const guestLessonIds = getGuestLessonIds(language);
+      if (guestLessonIds.length > 0) {
+        navigate(`/lesson/${language}/${guestLessonIds[0]}`);
+      } else {
+        navigate("/courses");
+      }
     }
   }, [isLoaded, isGuest, guestAllowed, language, navigate]);
 
@@ -55,16 +65,22 @@ export default function Lesson() {
     }
   }, [isLoading, result, exerciseFirst, language, lessonId, navigate]);
 
+  // Load progress and curriculum version
   useEffect(() => {
-    setIsLoading(true);
-    const data = getLessonById(language, lessonId);
-    setResult(data);
-    setIsLoading(false);
-  }, [language, lessonId]);
-
-  useEffect(() => {
-    if (!isLoaded || !isSignedIn || !supabaseClient) return;
-    const loadStreak = async () => {
+    const load = async () => {
+      if (!isLoaded) return;
+      if (isGuest) {
+        const guestData = localProgressDb.getProgress();
+        setStreak(guestData.streak_days || 0);
+        // Guests use version 2 only if the language has it, otherwise version 1
+        setCurriculumVersion(hasVersion2(language) ? 2 : 1);
+        setIsLoading(false);
+        return;
+      }
+      if (!supabaseClient || !user) {
+        setIsLoading(false);
+        return;
+      }
       try {
         const data = await progressDb.getProgress(
           supabaseClient,
@@ -72,12 +88,23 @@ export default function Lesson() {
           user.primaryEmailAddress?.emailAddress
         );
         setStreak(data?.streak_days || 0);
+        setCurriculumVersion(data?.curriculum_version || 1);
       } catch (err) {
-        console.error("Failed to load streak:", err);
+        console.error("Failed to load progress:", err);
+      } finally {
+        setIsLoading(false);
       }
     };
-    loadStreak();
-  }, [isLoaded, isSignedIn, user, supabaseClient]);
+    load();
+  }, [isLoaded, isGuest, supabaseClient, user, language]);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    setIsLoading(true);
+    const data = getLessonById(language, lessonId, curriculumVersion);
+    setResult(data);
+    setIsLoading(false);
+  }, [language, lessonId, curriculumVersion, isLoaded]);
 
   useEffect(() => {
     if (!isGuest) return;
@@ -113,7 +140,7 @@ export default function Lesson() {
     );
   }
 
-  // Exercise-first lessons redirect — show spinner while redirecting
+  // Exercise-first lessons redirect – show spinner while redirecting
   if (exerciseFirst) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">

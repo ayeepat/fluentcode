@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
-import { curriculum, getAllLessons } from "@/lib/curriculum";
+import { getAllLessons } from "@/lib/curriculum";
 import { ArrowRight, Flame, Target, BookOpen, Sparkles } from "lucide-react";
 import { progressDb } from "@/lib/progressDb";
 import { useAuth } from "@/lib/AuthContext";
@@ -24,32 +24,28 @@ export default function Dashboard() {
   const [progress, setProgress] = useState(null);
   const [loading, setLoading] = useState(true);
   const [aiRemaining, setAiRemaining] = useState(null);
+  const [curriculumVersion, setCurriculumVersion] = useState(1);
 
   useEffect(() => {
-    // Wait for auth to load
     if (!isLoaded) return;
-    // If not signed in, stop loading
     if (!isSignedIn) {
       setLoading(false);
       return;
     }
-    // Wait for supabase client (max ~5 seconds then give up)
     if (!supabaseClient) return;
 
     const loadProgress = async () => {
       try {
-        const clerkUserId = user.id;
-        const email = user.primaryEmailAddress?.emailAddress;
         const data = await progressDb.getProgress(
           supabaseClient,
-          clerkUserId,
-          email
+          user.id,
+          user.primaryEmailAddress?.emailAddress
         );
         setProgress(data);
-
+        setCurriculumVersion(data?.curriculum_version || 1);
         const remaining = await progressDb.getAiRequestsRemaining(
           supabaseClient,
-          clerkUserId,
+          user.id,
           data?.is_pro
         );
         setAiRemaining(remaining);
@@ -59,17 +55,15 @@ export default function Dashboard() {
         setLoading(false);
       }
     };
-
     loadProgress();
   }, [isLoaded, isSignedIn, user, supabaseClient]);
 
-  // Safety timeout — if still loading after 8 seconds, show error state
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (loading) {
-        console.warn("Loading timeout hit — showing error state");
+        console.warn("Loading timeout – showing error state");
         setLoading(false);
-        setProgress({ error: "Failed to load progress. Please refresh the page." });
+        setProgress({ error: "Failed to load progress. Please refresh." });
       }
     }, 8000);
     return () => clearTimeout(timeout);
@@ -85,7 +79,6 @@ export default function Dashboard() {
 
   if (!isSignedIn) return null;
 
-  // Show error if timeout occurred
   if (progress?.error) {
     return (
       <div className="min-h-screen bg-white">
@@ -107,7 +100,7 @@ export default function Dashboard() {
   }
 
   const lang = progress?.language || "python";
-  const allLessons = getAllLessons(lang);
+  const allLessons = getAllLessons(lang, curriculumVersion);
   const completed = progress?.completed_lessons || [];
   const nextLesson = allLessons.find((l) => !completed.includes(l.id));
   const accuracy =
@@ -152,8 +145,6 @@ export default function Dashboard() {
       <Helmet>
         <title>Dashboard | Your Learning Progress</title>
         <meta name="description" content="Track your learning progress. View your streak, completed exercises, and continue your coding journey with FluentCode." />
-        <meta property="og:title" content="Dashboard - FluentCode" />
-        <meta property="og:description" content="Monitor your learning progress and continue practicing." />
       </Helmet>
       <Navbar streak={streak} />
 
@@ -226,7 +217,7 @@ export default function Dashboard() {
 
         <motion.div {...stagger(2)} className="mb-10">
           <div className="flex justify-between text-xs text-zinc-400 mb-2">
-            <span>{curriculum[lang]?.label} progress</span>
+            <span>{lang.toUpperCase()} progress</span>
             <span className="tabular-nums font-medium text-zinc-600">
               {progressPct}%
             </span>
@@ -272,55 +263,6 @@ export default function Dashboard() {
               <p className="text-sm text-zinc-400">More content coming soon.</p>
             </div>
           )}
-        </motion.div>
-
-        <motion.div {...stagger(4)} className="mt-12">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
-              All modules
-            </p>
-            <Link
-              to="/courses"
-              className="text-xs text-zinc-500 hover:text-zinc-900 transition-colors"
-            >
-              View all →
-            </Link>
-          </div>
-          <div className="space-y-1.5">
-            {curriculum[lang]?.modules.slice(0, 4).map((mod) => {
-              const modLessons = mod.lessons;
-              const modCompleted = modLessons.filter((l) =>
-                completed.includes(l.id)
-              ).length;
-              const pct = Math.round(
-                (modCompleted / modLessons.length) * 100
-              );
-              return (
-                <Link
-                  key={mod.id}
-                  to="/courses"
-                  className="flex items-center gap-4 px-4 py-3.5 border border-zinc-100 rounded-xl hover:border-zinc-300 transition-all duration-200 group"
-                >
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-zinc-700 truncate">
-                      {mod.title}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-3 shrink-0">
-                    <div className="w-16 h-1 bg-zinc-100 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-zinc-900 rounded-full transition-all duration-500"
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                    <span className="text-xs text-zinc-400 tabular-nums w-8 text-right">
-                      {modCompleted}/{modLessons.length}
-                    </span>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
         </motion.div>
       </div>
     </div>

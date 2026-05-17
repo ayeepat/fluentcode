@@ -5,7 +5,6 @@ const FREE_DAILY_LIMIT = 10;
 // ─── Streak helpers ───────────────────────────────────────────────────────────
 
 function getTodayStr() {
-  // Use UTC to ensure consistent date across all timezones
   const d = new Date();
   const utcYear = d.getUTCFullYear();
   const utcMonth = String(d.getUTCMonth() + 1).padStart(2, "0");
@@ -14,7 +13,6 @@ function getTodayStr() {
 }
 
 function getYesterdayStr() {
-  // Use UTC to ensure consistent date across all timezones
   const d = new Date();
   d.setUTCDate(d.getUTCDate() - 1);
   const utcYear = d.getUTCFullYear();
@@ -72,10 +70,13 @@ export const progressDb = {
       }
     }
 
-    return data;
+    // Ensure curriculum_version exists (default to 1)
+    return { ...data, curriculum_version: data.curriculum_version || 1 };
   },
 
   async createProgress(supabaseClient, clerkUserId, email) {
+    // New users default to v1. If they choose Python, they get v2 through version logic.
+    // Only Python has v2; other languages have v1 only.
     const { data, error } = await supabaseClient
       .from("user_progress")
       .insert({
@@ -91,6 +92,7 @@ export const progressDb = {
         mistake_patterns: [],
         daily_ai_count: 0,
         last_ai_date: null,
+        curriculum_version: 1,   // <-- defaults to v1; pages will load v2 for Python
       })
       .select()
       .single();
@@ -219,11 +221,9 @@ export const progressDb = {
 
     const guestData = localProgressDb.getProgress();
 
-    // Get or create server progress
     let serverProgress = await this.getProgress(supabaseClient, clerkUserId, email);
     if (!serverProgress) return null;
 
-    // Merge: union of completed lessons and quizzes
     const mergedLessons = [
       ...new Set([
         ...(serverProgress.completed_lessons || []),
@@ -297,7 +297,6 @@ export const progressDb = {
 
     if (error) {
       console.error("Failed to check AI count:", error);
-      // Deny access on error instead of allowing - fail securely
       return { allowed: false, remaining: 0 };
     }
 

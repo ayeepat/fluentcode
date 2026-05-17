@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
-import { getLessonById, getAllLessons } from "@/lib/curriculum";
+import { getLessonById, getAllLessons, hasVersion2 } from "@/lib/curriculum";
 import { generateQuizQuestions } from "@/lib/quizGenerator";
 import { isGuestAccessible } from "@/lib/guestAccess";
 import { localProgressDb } from "@/lib/localProgressDb";
@@ -42,16 +42,33 @@ export default function Quiz() {
   const [notFound, setNotFound] = useState(false);
   const [savedProgress, setSavedProgress] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [curriculumVersion, setCurriculumVersion] = useState(1);
 
-  // Redirect guests on non-guest lessons
   useEffect(() => {
     if (isLoaded && isGuest && !guestAllowed) {
       navigate("/courses");
     }
   }, [isLoaded, isGuest, guestAllowed, navigate]);
 
-  const initQuiz = useCallback(() => {
-    const result = getLessonById(language, lessonId);
+  const loadVersionAndLesson = useCallback(async () => {
+    let version = 1;
+    if (isGuest) {
+      // Guests use v2 only if language has it, otherwise v1
+      version = hasVersion2(language) ? 2 : 1;
+    } else if (supabaseClient && user) {
+      try {
+        const data = await progressDb.getProgress(
+          supabaseClient,
+          user.id,
+          user.primaryEmailAddress?.emailAddress
+        );
+        version = data?.curriculum_version || 1;
+      } catch (err) {
+        console.error("Failed to load curriculum version:", err);
+      }
+    }
+    setCurriculumVersion(version);
+    const result = getLessonById(language, lessonId, version);
     if (!result) {
       setNotFound(true);
       setLesson(null);
@@ -73,11 +90,11 @@ export default function Quiz() {
     setFinished(false);
     setSavedProgress(false);
     setSaving(false);
-  }, [language, lessonId]);
+  }, [language, lessonId, isGuest, supabaseClient, user]);
 
   useEffect(() => {
-    initQuiz();
-  }, [initQuiz]);
+    loadVersionAndLesson();
+  }, [loadVersionAndLesson]);
 
   const shuffleOptions = (q) => {
     const indexed = q.options.map((opt, i) => ({
@@ -123,20 +140,16 @@ export default function Quiz() {
 
   const handleFinish = async (finalScore) => {
     setFinished(true);
-
     const passed = finalScore >= Math.ceil(questions.length / 2);
     if (!passed) return;
 
-    // Guest — save to localStorage
     if (isGuest) {
       localProgressDb.completeQuiz(lessonId);
       setSavedProgress(true);
       return;
     }
 
-    // Logged in — save to Supabase
     if (!supabaseClient || !user) return;
-
     setSaving(true);
     try {
       const result = await progressDb.completeQuiz(
@@ -144,24 +157,20 @@ export default function Quiz() {
         user.id,
         lessonId
       );
-      if (result) {
-        setSavedProgress(true);
-      } else {
-        throw new Error("Failed to save quiz progress");
-      }
+      if (result) setSavedProgress(true);
+      else throw new Error("Failed to save quiz progress");
     } catch (err) {
       console.error("Failed to save quiz progress:", err);
-      alert("Error saving your quiz progress. Please try again or contact support.");
+      alert("Error saving your quiz progress. Please try again.");
     } finally {
       setSaving(false);
     }
   };
 
-  const allLessons = getAllLessons(language);
+  const allLessons = getAllLessons(language, curriculumVersion);
   const currentIdx = allLessons.findIndex((l) => l.id === lessonId);
   const nextLesson = allLessons[currentIdx + 1];
   const passed = score >= Math.ceil(questions.length / 2);
-
   const nextRequiresLogin =
     nextLesson && isGuest && !isGuestAccessible(language, nextLesson.id);
 
@@ -187,7 +196,6 @@ export default function Quiz() {
     );
   }
 
-  // ─── Results screen ───────────────────────────────────────────────────────
   if (finished) {
     return (
       <div className="min-h-screen bg-white flex flex-col">
@@ -249,9 +257,7 @@ export default function Quiz() {
                 ) : savedProgress ? (
                   <span className="text-emerald-600">✓ Progress saved</span>
                 ) : (
-                  <span className="text-red-400">
-                    Could not save — try again
-                  </span>
+                  <span className="text-red-400">Could not save — try again</span>
                 )}
               </motion.p>
             )}
@@ -268,15 +274,13 @@ export default function Quiz() {
                 </button>
               )}
               <button
-                onClick={() =>
-                  navigate(`/lesson/${language}/${lessonId}`)
-                }
+                onClick={() => navigate(`/lesson/${language}/${lessonId}`)}
                 className="w-full flex items-center justify-center gap-2 border border-zinc-200 text-zinc-700 py-3.5 rounded-full text-sm font-semibold hover:border-zinc-900 transition-all"
               >
                 Go to lesson
               </button>
               <button
-                onClick={initQuiz}
+                onClick={() => loadVersionAndLesson()}
                 className="w-full flex items-center justify-center gap-2 border border-zinc-200 text-zinc-700 py-3.5 rounded-full text-sm font-semibold hover:border-zinc-400 transition-all"
               >
                 Try again
@@ -289,7 +293,6 @@ export default function Quiz() {
               </button>
             </div>
 
-            {/* Signup prompt for guests who finished all free lessons */}
             {isGuest && nextRequiresLogin && passed && (
               <div className="mt-8">
                 <SignupPrompt />
@@ -301,7 +304,6 @@ export default function Quiz() {
     );
   }
 
-  // ─── Quiz screen ──────────────────────────────────────────────────────────
   const q = questions[currentQ];
   const isCorrect = confirmed && selectedOption === q.correctIndex;
 
@@ -310,8 +312,6 @@ export default function Quiz() {
       <Helmet>
         <title>Take a Quiz | Test Your Python Knowledge</title>
         <meta name="description" content="Test your Python coding knowledge with interactive quizzes. Multiple choice questions to reinforce your learning." />
-        <meta property="og:title" content="Quiz - FluentCode" />
-        <meta property="og:description" content="Interactive programming quizzes to test and reinforce your learning." />
       </Helmet>
       <nav className="flex items-center justify-between px-6 py-4 border-b border-zinc-100">
         <button

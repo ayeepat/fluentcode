@@ -4,7 +4,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
-import { getLessonById, getAllLessons } from "@/lib/curriculum";
+import { getLessonById, getAllLessons, hasVersion2 } from "@/lib/curriculum";
 import { isGuestAccessible, shouldPromptSignup, isExerciseFirst } from "@/lib/guestAccess";
 import { localProgressDb } from "@/lib/localProgressDb";
 import CodeEditor from "@/components/editor/CodeEditor";
@@ -30,7 +30,7 @@ function runLocalTests(code, tests) {
   return true;
 }
 
-// ========== Output predictors ==========
+// ========== Output predictors (full) ==========
 function predictOutputPython(code) {
   const lines = code.split("\n");
   const outputs = [];
@@ -40,7 +40,6 @@ function predictOutputPython(code) {
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith("#")) continue;
 
-    // Variable assignment
     const assignMatch = trimmed.match(/^(\w+)\s*=\s*(.+)$/);
     if (assignMatch) {
       let val = assignMatch[2].trim();
@@ -51,17 +50,14 @@ function predictOutputPython(code) {
       continue;
     }
 
-    // print('...') / print("...")
     let m = trimmed.match(/^print\(\s*'([^']*)'\s*\)$/);
     if (m) { outputs.push(m[1]); continue; }
     m = trimmed.match(/^print\(\s*"([^"]*)"\s*\)$/);
     if (m) { outputs.push(m[1]); continue; }
 
-    // print(variable)
     m = trimmed.match(/^print\(\s*(\w+)\s*\)$/);
     if (m) { outputs.push(vars[m[1]] ?? m[1]); continue; }
 
-    // f-string
     m = trimmed.match(/^print\(\s*f(['"])(.*?)\1\s*\)$/);
     if (m) {
       let s = m[2];
@@ -70,11 +66,6 @@ function predictOutputPython(code) {
       }
       outputs.push(s);
       continue;
-    }
-
-    // Concatenation: print(...) with + (simple case)
-    if (trimmed.startsWith("print(") && trimmed.includes("+")) {
-      // crude but ok
     }
   }
 
@@ -106,7 +97,6 @@ function predictOutputJavaScript(code) {
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith("//")) continue;
 
-    // Variable assignment: let/var/const name = value;
     const assignMatch = trimmed.match(/(?:let|var|const)\s+(\w+)\s*=\s*(.+?);?\s*$/);
     if (assignMatch) {
       let val = assignMatch[2].trim();
@@ -117,13 +107,11 @@ function predictOutputJavaScript(code) {
       continue;
     }
 
-    // console.log("...") or console.log('...')
     let m = trimmed.match(/console\.log\(\s*'([^']*)'\s*\)/);
     if (m) { outputs.push(m[1]); continue; }
     m = trimmed.match(/console\.log\(\s*"([^"]*)"\s*\)/);
     if (m) { outputs.push(m[1]); continue; }
 
-    // console.log(`template literal with ${var}`)
     m = trimmed.match(/console\.log\(\s*`([^`]*)`\s*\)/);
     if (m) {
       let s = m[1];
@@ -134,7 +122,6 @@ function predictOutputJavaScript(code) {
       continue;
     }
 
-    // console.log(variable)
     m = trimmed.match(/console\.log\(\s*(\w+)\s*\)/);
     if (m) { outputs.push(vars[m[1]] ?? m[1]); continue; }
   }
@@ -152,7 +139,6 @@ function predictOutputRuby(code) {
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith("#")) continue;
 
-    // Variable assignment: name = value
     const assignMatch = trimmed.match(/^(\w+)\s*=\s*(.+)$/);
     if (assignMatch && !trimmed.includes("puts") && !trimmed.includes("print")) {
       let val = assignMatch[2].trim();
@@ -163,7 +149,6 @@ function predictOutputRuby(code) {
       continue;
     }
 
-    // puts "..." or puts '...'
     let m = trimmed.match(/puts\s+'([^']*)'/);
     if (m) { outputs.push(m[1]); continue; }
     m = trimmed.match(/puts\s+"([^"]*)"/);
@@ -176,7 +161,6 @@ function predictOutputRuby(code) {
       continue;
     }
 
-    // print "..."
     m = trimmed.match(/print\s+'([^']*)'/);
     if (m) { outputs.push(m[1]); continue; }
     m = trimmed.match(/print\s+"([^"]*)"/);
@@ -215,8 +199,6 @@ export default function CodingPage() {
   
   const isGuest = !isSignedIn;
   const guestAllowed = isGuestAccessible(language, lessonId);
-  const exerciseFirst = isExerciseFirst(language, lessonId);
-
   const [code, setCode] = useState("");
   const [output, setOutput] = useState("");
   const [feedback, setFeedback] = useState(null);
@@ -231,8 +213,16 @@ export default function CodingPage() {
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showTheoryModal, setShowTheoryModal] = useState(false);
   const [failCount, setFailCount] = useState(0);
+  const [curriculumVersion, setCurriculumVersion] = useState(1);
 
-  const result = useMemo(() => getLessonById(language, lessonId), [language, lessonId]);
+  const exerciseFirst = useMemo(
+    () => isExerciseFirst(language, lessonId, curriculumVersion),
+    [language, lessonId, curriculumVersion]
+  );
+
+  const result = useMemo(() => {
+    return curriculumVersion ? getLessonById(language, lessonId, curriculumVersion) : null;
+  }, [language, lessonId, curriculumVersion]);
 
   useEffect(() => {
     if (isUserLoaded && isGuest && !guestAllowed) {
@@ -263,22 +253,20 @@ export default function CodingPage() {
   }, [result, isGuest, lessonId]);
 
   useEffect(() => {
-    if (!result || !isUserLoaded) {
-      if (isUserLoaded) setIsLoading(false);
-      return;
-    }
-    if (isGuest) {
-      const guestData = localProgressDb.getProgress();
-      setProgress(guestData);
-      setAiRemaining(null);
-      setIsLoading(false);
-      return;
-    }
-    if (!supabaseClient) {
-      setIsLoading(false);
-      return;
-    }
-    const load = async () => {
+    const loadVersionAndProgress = async () => {
+      if (!isUserLoaded) return;
+      if (isGuest) {
+        const guestData = localProgressDb.getProgress();
+        setProgress(guestData);
+        // Guests use version 2 only if the language has it, otherwise version 1
+        setCurriculumVersion(hasVersion2(language) ? 2 : 1);
+        setIsLoading(false);
+        return;
+      }
+      if (!supabaseClient) {
+        setIsLoading(false);
+        return;
+      }
       try {
         const data = await progressDb.getProgress(
           supabaseClient,
@@ -286,6 +274,7 @@ export default function CodingPage() {
           user.primaryEmailAddress?.emailAddress
         );
         setProgress(data);
+        setCurriculumVersion(data?.curriculum_version || 1);
         const remaining = await progressDb.getAiRequestsRemaining(
           supabaseClient,
           user.id,
@@ -298,8 +287,8 @@ export default function CodingPage() {
         setIsLoading(false);
       }
     };
-    load();
-  }, [result, isUserLoaded, isSignedIn, user, supabaseClient, isGuest]);
+    loadVersionAndProgress();
+  }, [isUserLoaded, isSignedIn, user, supabaseClient, isGuest, language]);
 
   useEffect(() => {
     if (!isGuest || !lessonId) return;
@@ -326,7 +315,7 @@ export default function CodingPage() {
   }
 
   const { lesson } = result;
-  const allLessons = getAllLessons(language);
+  const allLessons = getAllLessons(language, curriculumVersion);
   const currentIdx = allLessons.findIndex((l) => l.id === lessonId);
   const nextLesson = allLessons[currentIdx + 1];
   const canProceed = submitted && feedback?.isCorrect;
@@ -365,12 +354,8 @@ export default function CodingPage() {
       };
       setFeedback(successFeedback);
       setSubmitted(true);
-      
-      // Also show the output
       const predicted = predictOutput(code, language);
       setOutput(predicted);
-
-      // Trigger feedback widget after a short delay
       setTimeout(() => openFeedbackWidget(true), 1200);
 
       if (isGuest) {
@@ -380,7 +365,6 @@ export default function CodingPage() {
         });
         setProgress(localProgressDb.getProgress());
         const updatedProgress = localProgressDb.getProgress();
-        
         if (
           shouldPromptSignup(language, updatedProgress.completed_lessons) &&
           !localProgressDb.hasSeenSignupPrompt()
@@ -414,7 +398,6 @@ export default function CodingPage() {
       return;
     }
 
-    // INCORRECT
     const newFailCount = failCount + 1;
     setFailCount(newFailCount);
 
@@ -441,7 +424,6 @@ export default function CodingPage() {
 
     try {
       const aiResponse = await evaluateCode(code, language, lesson);
-      // Guard against double-submit during async evaluation
       if (!submitting) return;
       setFeedback(aiResponse);
       setSubmitted(true);
@@ -471,7 +453,6 @@ export default function CodingPage() {
       }
     } catch (err) {
       console.error("Submit error:", err);
-      // Guard against double-submit during async evaluation
       if (!submitting) return;
       setFeedback({
         isCorrect: false,
@@ -493,8 +474,6 @@ export default function CodingPage() {
       <Helmet>
         <title>AI-Powered Code Editor | {lesson.title} - FluentCode</title>
         <meta name="description" content="Write code and get instant AI-powered feedback. Practice Python with interactive exercises and AI guidance from FluentCode." />
-        <meta property="og:title" content="Practice Coding with AI Feedback | FluentCode" />
-        <meta property="og:description" content="Interactive code editor with instant AI feedback to help you learn faster." />
       </Helmet>
 
       {showSignupModal && (

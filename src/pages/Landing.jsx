@@ -5,6 +5,7 @@ import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { ArrowRight, Check, Heart, Menu, X, Mail, Code2, HelpCircle } from "lucide-react";
 import { curriculum } from "@/lib/curriculum";
+import { getGuestLessonIds } from "@/lib/guestAccess";
 import { useUser, SignUpButton, SignInButton, useClerk } from "@clerk/clerk-react";
 
 const ease = [0.16, 1, 0.3, 1];
@@ -50,8 +51,14 @@ export default function Landing() {
       navigate("/dashboard");
       return;
     }
-    // Send guests directly to first lesson — quiz on mobile, lesson on desktop
-    const firstLessonId = "python-phase0-m1-l1";
+    // Send guests directly to first lesson (uses v2 for Python) — quiz on mobile, lesson on desktop
+    const guestLessonIds = getGuestLessonIds("python");
+    if (guestLessonIds.length === 0) {
+      // Fallback: shouldn't happen, but redirect to courses if no guest lessons found
+      navigate("/courses");
+      return;
+    }
+    const firstLessonId = guestLessonIds[0];
     if (isMobile) {
       navigate(`/quiz/python/${firstLessonId}`);
     } else {

@@ -22,6 +22,7 @@ function saveProgress(data) {
 
 function getDefaults() {
   return {
+    curriculum_version: 2, // Guests always use v2 (new curriculum)
     completed_lessons: [],
     completed_quizzes: [],
     total_exercises: 0,
