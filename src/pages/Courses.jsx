@@ -32,15 +32,15 @@ export default function Courses() {
 
     if (isGuest) {
       const guestData = localProgressDb.getProgress();
+      const lang = guestData.language || "python";
       setProgress({
         completed_lessons: guestData.completed_lessons,
         completed_quizzes: guestData.completed_quizzes,
         streak_days: 0,
-        language: guestData.language,
+        language: lang,
       });
-      setSelectedLang(guestData.language || "python");
-      // Use version 2 only if the selected language has it, otherwise version 1
-      setCurriculumVersion(hasVersion2(selectedLang) ? 2 : 1);
+      setSelectedLang(lang);
+      setCurriculumVersion(hasVersion2(lang) ? 2 : 1);
       setLoading(false);
       return;
     }
@@ -58,23 +58,20 @@ export default function Courses() {
       );
       if (data) {
         setProgress(data);
-        setSelectedLang(data.language || "python");
-        setCurriculumVersion(data.curriculum_version || 1);
+        const lang = data.language || "python";
+        setSelectedLang(lang);
+        setCurriculumVersion(data.curriculum_version || (hasVersion2(lang) ? 2 : 1));
       }
     } catch (err) {
       console.error("Failed to load progress:", err);
     } finally {
       setLoading(false);
     }
-  }, [isLoaded, isGuest, supabaseClient, user, selectedLang]);
+  }, [isLoaded, isGuest, supabaseClient, user]);
 
   useEffect(() => {
     loadProgress();
   }, [loadProgress, location.key]);
-
-  // ... (rest of the component unchanged, except the version is already used correctly)
-  // The rest of the file is identical to your current version – no further changes needed.
-  // I'll include the full component for completeness, but the only difference is in loadProgress above.
 
   if (loading) {
     return (
@@ -334,18 +331,14 @@ export default function Courses() {
                             )}
                             <span
                               className={`text-sm font-medium flex-1 ${
-                                quizDone
-                                  ? "text-emerald-700"
-                                  : "text-zinc-700"
+                                quizDone ? "text-emerald-700" : "text-zinc-700"
                               }`}
                             >
                               {lesson.title}
                             </span>
                             <span
                               className={`text-xs ${
-                                quizDone
-                                  ? "text-emerald-500"
-                                  : "text-zinc-400"
+                                quizDone ? "text-emerald-500" : "text-zinc-400"
                               }`}
                             >
                               {quizDone ? "Completed" : "7 questions"}
@@ -415,17 +408,13 @@ function LessonRow({ lesson, done, unlocked, lang, isGuest }) {
       )}
       <span
         className={`text-sm flex-1 ${
-          done
-            ? "text-emerald-700 font-medium"
-            : "text-zinc-700 font-medium"
+          done ? "text-emerald-700 font-medium" : "text-zinc-700 font-medium"
         }`}
       >
         {lesson.title}
       </span>
       {done ? (
-        <span className="text-xs text-emerald-500 font-medium">
-          Completed
-        </span>
+        <span className="text-xs text-emerald-500 font-medium">Completed</span>
       ) : (
         <ArrowRight
           size={13}
