@@ -1,4 +1,3 @@
-// src/App.jsx
 import { Toaster } from "@/components/ui/toaster";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClientInstance } from "@/lib/query-client";
@@ -23,6 +22,7 @@ import SignUpPage from "./pages/SignUp";
 import Quiz from "./pages/Quiz";
 import QuizHub from "./pages/QuizHub";
 import QuizIntro from "./pages/QuizIntro";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 const ProtectedRoute = ({ children }) => {
   return (
@@ -36,40 +36,43 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function App() {
+  console.log("✅ App rendering started");
   return (
-    <AuthProvider>
-      <FeedbackProvider>
-        <QueryClientProvider client={queryClientInstance}>
-          <Router>
-            <Routes>
-              <Route path="/" element={<Landing />} />
-              <Route path="/sign-in/*" element={<SignInPage />} />
-              <Route path="/sign-up/*" element={<SignUpPage />} />
-              <Route path="/upgrade" element={<Upgrade />} />
-              <Route path="/courses" element={<Courses />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/subscription" element={<Subscription />} />
+    <ErrorBoundary>
+      <AuthProvider>
+        <FeedbackProvider>
+          <QueryClientProvider client={queryClientInstance}>
+            <Router>
+              <Routes>
+                <Route path="/" element={<Landing />} />
+                <Route path="/sign-in/*" element={<SignInPage />} />
+                <Route path="/sign-up/*" element={<SignUpPage />} />
+                <Route path="/upgrade" element={<Upgrade />} />
+                <Route path="/courses" element={<Courses />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/subscription" element={<Subscription />} />
 
-              {/* These routes work for BOTH guests and logged-in users */}
-              <Route path="/lesson/:language/:lessonId" element={<Lesson />} />
-              <Route path="/code/:language/:lessonId" element={<CodingPage />} />
-              <Route path="/quiz/:language/:lessonId" element={<QuizIntro />} />
-              <Route path="/quiz/:language/:lessonId/start" element={<Quiz />} />
+                {/* Guest routes */}
+                <Route path="/lesson/:language/:lessonId" element={<Lesson />} />
+                <Route path="/code/:language/:lessonId" element={<CodingPage />} />
+                <Route path="/quiz/:language/:lessonId" element={<QuizIntro />} />
+                <Route path="/quiz/:language/:lessonId/start" element={<Quiz />} />
 
-              {/* Protected routes */}
-              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-              <Route path="/quiz" element={<ProtectedRoute><QuizHub /></ProtectedRoute>} />
-              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                {/* Protected routes */}
+                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                <Route path="/quiz" element={<ProtectedRoute><QuizHub /></ProtectedRoute>} />
+                <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
-              <Route path="*" element={<PageNotFound />} />
-            </Routes>
-            <FeedbackWidget />
-          </Router>
-          <Toaster />
-        </QueryClientProvider>
-      </FeedbackProvider>
-    </AuthProvider>
+                <Route path="*" element={<PageNotFound />} />
+              </Routes>
+              <FeedbackWidget />
+            </Router>
+            <Toaster />
+          </QueryClientProvider>
+        </FeedbackProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 
