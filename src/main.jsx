@@ -1,4 +1,3 @@
-// src/main.jsx
 import React, { Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
@@ -16,6 +15,7 @@ console.log("🔍 Checking Clerk key...", PUBLISHABLE_KEY ? "✓ Found" : "✗ M
 
 if (!PUBLISHABLE_KEY) {
   console.warn("⚠️ VITE_CLERK_PUBLISHABLE_KEY is not set. Using guest mode.");
+}
 
 const LoadingFallback = () => (
   <div className="min-h-screen flex items-center justify-center bg-white">
