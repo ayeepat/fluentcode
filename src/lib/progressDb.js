@@ -2,8 +2,6 @@ import { localProgressDb } from "./localProgressDb";
 
 const FREE_DAILY_LIMIT = 10;
 
-// ─── Streak helpers ───────────────────────────────────────────────────────────
-
 function getTodayStr() {
   const d = new Date();
   const utcYear = d.getUTCFullYear();
@@ -24,17 +22,10 @@ function getYesterdayStr() {
 function computeNewStreak(lastStudyDate, currentStreak) {
   const today = getTodayStr();
   const yesterday = getYesterdayStr();
-
-  if (lastStudyDate === today) {
-    return currentStreak;
-  }
-  if (lastStudyDate === yesterday) {
-    return currentStreak + 1;
-  }
+  if (lastStudyDate === today) return currentStreak;
+  if (lastStudyDate === yesterday) return currentStreak + 1;
   return 1;
 }
-
-// ─── Main export ──────────────────────────────────────────────────────────────
 
 export const progressDb = {
   async getProgress(supabaseClient, clerkUserId, email) {
@@ -57,7 +48,10 @@ export const progressDb = {
     if (data && data.last_study_date) {
       const today = getTodayStr();
       const yesterday = getYesterdayStr();
-      if (data.last_study_date !== today && data.last_study_date !== yesterday) {
+      if (
+        data.last_study_date !== today &&
+        data.last_study_date !== yesterday
+      ) {
         if (data.streak_days > 0) {
           const { data: fixed } = await supabaseClient
             .from("user_progress")
@@ -70,13 +64,16 @@ export const progressDb = {
       }
     }
 
-    // Ensure curriculum_version exists (default to 1)
-    return { ...data, curriculum_version: data.curriculum_version || 1 };
+    // Always use v2 for Python users, v1 for others
+    const lang = data.language || "python";
+    const version =
+      data.curriculum_version ||
+      (lang === "python" ? 2 : 1);
+
+    return { ...data, curriculum_version: version };
   },
 
   async createProgress(supabaseClient, clerkUserId, email) {
-    // New users default to v1. If they choose Python, they get v2 through version logic.
-    // Only Python has v2; other languages have v1 only.
     const { data, error } = await supabaseClient
       .from("user_progress")
       .insert({
@@ -92,7 +89,7 @@ export const progressDb = {
         mistake_patterns: [],
         daily_ai_count: 0,
         last_ai_date: null,
-        curriculum_version: 1,   // <-- defaults to v1; pages will load v2 for Python
+        curriculum_version: 2,
       })
       .select()
       .single();
@@ -120,8 +117,6 @@ export const progressDb = {
 
     return data;
   },
-
-  // ─── Lesson completion ──────────────────────────────────────────────────
 
   async completeLesson(supabaseClient, clerkUserId, lessonId, extraUpdates = {}) {
     const { data, error } = await supabaseClient
@@ -168,8 +163,6 @@ export const progressDb = {
     return updated;
   },
 
-  // ─── Quiz completion ────────────────────────────────────────────────────
-
   async completeQuiz(supabaseClient, clerkUserId, lessonId) {
     const { data, error } = await supabaseClient
       .from("user_progress")
@@ -214,13 +207,10 @@ export const progressDb = {
     return updated;
   },
 
-  // ─── Sync guest progress on login ─────────────────────────────────────
-
   async syncGuestProgress(supabaseClient, clerkUserId, email) {
     if (!localProgressDb.hasProgress()) return null;
 
     const guestData = localProgressDb.getProgress();
-
     let serverProgress = await this.getProgress(supabaseClient, clerkUserId, email);
     if (!serverProgress) return null;
 
@@ -257,7 +247,11 @@ export const progressDb = {
       mistake_patterns: mergedMistakes,
     };
 
-    const result = await this.updateProgress(supabaseClient, clerkUserId, updates);
+    const result = await this.updateProgress(
+      supabaseClient,
+      clerkUserId,
+      updates
+    );
 
     if (result) {
       localProgressDb.clearProgress();
@@ -266,8 +260,6 @@ export const progressDb = {
 
     return result;
   },
-
-  // ─── Analytics ──────────────────────────────────────────────────────────
 
   async trackEvent(supabaseClient, eventName, data = {}) {
     try {
@@ -283,8 +275,6 @@ export const progressDb = {
       console.error("Analytics error:", err);
     }
   },
-
-  // ─── AI rate limiting ─────────────────────────────────────────────────────
 
   async checkAndIncrementAiCount(supabaseClient, clerkUserId, isPro) {
     if (isPro) return { allowed: true, remaining: null };
@@ -302,8 +292,7 @@ export const progressDb = {
 
     const today = getTodayStr();
     const lastDate = data?.last_ai_date;
-    const currentCount =
-      lastDate === today ? data?.daily_ai_count || 0 : 0;
+    const currentCount = lastDate === today ? data?.daily_ai_count || 0 : 0;
 
     if (currentCount >= FREE_DAILY_LIMIT) {
       return { allowed: false, remaining: 0, limit: FREE_DAILY_LIMIT };
@@ -338,8 +327,7 @@ export const progressDb = {
 
     const today = getTodayStr();
     const lastDate = data?.last_ai_date;
-    const currentCount =
-      lastDate === today ? data?.daily_ai_count || 0 : 0;
+    const currentCount = lastDate === today ? data?.daily_ai_count || 0 : 0;
 
     return Math.max(0, FREE_DAILY_LIMIT - currentCount);
   },

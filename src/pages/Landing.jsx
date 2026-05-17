@@ -322,7 +322,7 @@ export default function Landing() {
             Curriculum
           </p>
           <h2 className="text-4xl font-bold tracking-tight">
-            Two languages.
+            Five languages.
             <br />
             Optimised for learning.
           </h2>
