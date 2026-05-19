@@ -8,7 +8,6 @@ import {
   getCurriculumByVersion,
   hasVersion2,
   loadCurriculum,
-  LANGUAGE_META,
 } from "@/lib/curriculum";
 import { progressDb } from "@/lib/progressDb";
 import { useAuth } from "@/lib/AuthContext";
@@ -17,23 +16,26 @@ import { HelpCircle, Check, Loader2 } from "lucide-react";
 
 const ease = [0.16, 1, 0.3, 1];
 
-// Derived once from LANGUAGE_META — no curriculum data required
-const LANGUAGES = Object.entries(LANGUAGE_META).map(([key, { label }]) => ({
-  key,
-  label,
-}));
+// ---------------------------------------------------------------------------
+// Language list — inlined so this component never depends on an async
+// export from curriculum.js. If you add a language, update this array too.
+// ---------------------------------------------------------------------------
+const LANGUAGES = [
+  { key: "python",     label: "Python"     },
+  { key: "javascript", label: "JavaScript" },
+  { key: "typescript", label: "TypeScript" },
+  { key: "java",       label: "Java"       },
+  { key: "ruby",       label: "Ruby"       },
+];
 
 export default function QuizHub() {
   const { user, isLoaded, isSignedIn } = useUser();
   const { supabaseClient } = useAuth();
-  const [progress, setProgress] = useState(null);
-  const [selectedLang, setSelectedLang] = useState("python");
+  const [progress, setProgress]                   = useState(null);
+  const [selectedLang, setSelectedLang]           = useState("python");
   const [curriculumVersion, setCurriculumVersion] = useState(2);
-
-  // Two loading flags – same pattern as Courses.jsx
-  const [loading, setLoading] = useState(true);
-  const [langLoading, setLangLoading] = useState(false);
-
+  const [loading, setLoading]                     = useState(true);
+  const [langLoading, setLangLoading]             = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -49,7 +51,7 @@ export default function QuizHub() {
   );
 
   // ------------------------------------------------------------------
-  // Load progress + ensure the user's default curriculum is cached
+  // Load progress + ensure the default curriculum chunk is ready
   // ------------------------------------------------------------------
   const loadProgress = useCallback(async () => {
     if (!isLoaded) return;
@@ -70,7 +72,7 @@ export default function QuizHub() {
         user.primaryEmailAddress?.emailAddress
       );
       if (data) {
-        const lang = data.language || "python";
+        const lang    = data.language || "python";
         const version = resolveVersion(lang, data);
         await loadCurriculum(lang, version);
         setProgress(data);
@@ -96,14 +98,12 @@ export default function QuizHub() {
   }, [loadProgress, location.key]);
 
   // ------------------------------------------------------------------
-  // Language switch – lazy-load the new chunk then swap
+  // Language switch
   // ------------------------------------------------------------------
   const handleLangChange = useCallback(
     async (newLang) => {
       if (newLang === selectedLang) return;
-
       const newVersion = resolveVersion(newLang, progress);
-
       setLangLoading(true);
       try {
         await loadCurriculum(newLang, newVersion);
@@ -112,7 +112,6 @@ export default function QuizHub() {
       } finally {
         setLangLoading(false);
       }
-
       setSelectedLang(newLang);
       setCurriculumVersion(newVersion);
     },
@@ -131,10 +130,8 @@ export default function QuizHub() {
   }
 
   const completedQuizzes = progress?.completed_quizzes || [];
-  const streak = progress?.streak_days || 0;
-
-  // Safe: loadCurriculum has resolved for selectedLang before we reach here
-  const lang = getCurriculumByVersion(curriculumVersion, selectedLang);
+  const streak           = progress?.streak_days || 0;
+  const lang             = getCurriculumByVersion(curriculumVersion, selectedLang);
 
   // ------------------------------------------------------------------
   // Render
@@ -143,15 +140,9 @@ export default function QuizHub() {
     <div className="min-h-screen bg-white">
       <Helmet>
         <title>Quiz Hub | Practice Python Quizzes</title>
-        <meta
-          name="description"
-          content="Access all Python quizzes. Test your knowledge with interactive questions after each lesson. No prerequisites needed."
-        />
+        <meta name="description" content="Access all Python quizzes. Test your knowledge with interactive questions after each lesson. No prerequisites needed." />
         <meta property="og:title" content="Quiz Hub - FluentCode" />
-        <meta
-          property="og:description"
-          content="Interactive quizzes covering all Python lessons."
-        />
+        <meta property="og:description" content="Interactive quizzes covering all Python lessons." />
       </Helmet>
       <Navbar streak={streak} />
 
@@ -172,7 +163,7 @@ export default function QuizHub() {
           </p>
         </motion.div>
 
-        {/* Language selector – uses LANGUAGE_META, no curriculum data needed */}
+        {/* Language selector */}
         <div className="flex gap-2 mb-10">
           {LANGUAGES.map(({ key, label }) => (
             <button
@@ -186,7 +177,6 @@ export default function QuizHub() {
               }`}
             >
               {langLoading && selectedLang !== key ? (
-                // The button being switched TO shows a spinner
                 label
               ) : langLoading && selectedLang === key ? (
                 <span className="flex items-center gap-1.5">
@@ -220,7 +210,6 @@ export default function QuizHub() {
                 <div className="space-y-1.5">
                   {module.lessons.map((lesson) => {
                     const done = completedQuizzes.includes(lesson.id);
-
                     return (
                       <button
                         key={lesson.id}
@@ -234,30 +223,15 @@ export default function QuizHub() {
                         }`}
                       >
                         {done ? (
-                          <Check
-                            size={13}
-                            strokeWidth={3}
-                            className="text-emerald-500 shrink-0"
-                          />
+                          <Check size={13} strokeWidth={3} className="text-emerald-500 shrink-0" />
                         ) : (
-                          <HelpCircle
-                            size={13}
-                            className="text-zinc-300 group-hover:text-zinc-500 transition-colors shrink-0"
-                          />
+                          <HelpCircle size={13} className="text-zinc-300 group-hover:text-zinc-500 transition-colors shrink-0" />
                         )}
-                        <span
-                          className={`text-sm font-medium flex-1 ${
-                            done ? "text-emerald-700" : "text-zinc-700"
-                          }`}
-                        >
+                        <span className={`text-sm font-medium flex-1 ${done ? "text-emerald-700" : "text-zinc-700"}`}>
                           {lesson.title}
                         </span>
-                        <span
-                          className={`text-xs ${
-                            done ? "text-emerald-500" : "text-zinc-400"
-                          }`}
-                        >
-                          {done ? "Completed" : "7 questions"}
+                        <span className={`text-xs ${done ? "text-emerald-500" : "text-zinc-400"}`}>
+                          {done ? "Completed" : "5 questions"}
                         </span>
                       </button>
                     );

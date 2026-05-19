@@ -8,7 +8,6 @@ import {
   getModulesByLanguage,
   hasVersion2,
   loadCurriculum,
-  LANGUAGE_META,
 } from "@/lib/curriculum";
 import { isGuestAccessible } from "@/lib/guestAccess";
 import { localProgressDb } from "@/lib/localProgressDb";
@@ -29,22 +28,29 @@ import Navbar from "@/components/Navbar";
 
 const ease = [0.16, 1, 0.3, 1];
 
-const LANGUAGES = Object.entries(LANGUAGE_META).map(([key, { label }]) => ({
-  key,
-  label,
-}));
+// ---------------------------------------------------------------------------
+// Language list — inlined here so this component never depends on an async
+// export from curriculum.js. If you add a language, update this array too.
+// ---------------------------------------------------------------------------
+const LANGUAGES = [
+  { key: "python",     label: "Python"     },
+  { key: "javascript", label: "JavaScript" },
+  { key: "typescript", label: "TypeScript" },
+  { key: "java",       label: "Java"       },
+  { key: "ruby",       label: "Ruby"       },
+];
 
 export default function Courses() {
   const { user, isSignedIn, isLoaded } = useUser();
   const { supabaseClient } = useAuth();
-  const [progress, setProgress] = useState(null);
-  const [selectedLang, setSelectedLang] = useState("python");
-  const [mode, setMode] = useState("lessons");
-  const [loading, setLoading] = useState(true);
-  const [langLoading, setLangLoading] = useState(false);
+  const [progress, setProgress]               = useState(null);
+  const [selectedLang, setSelectedLang]       = useState("python");
+  const [mode, setMode]                       = useState("lessons");
+  const [loading, setLoading]                 = useState(true);
+  const [langLoading, setLangLoading]         = useState(false);
   const [curriculumVersion, setCurriculumVersion] = useState(2);
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate  = useNavigate();
+  const location  = useLocation();
 
   const isGuest = !isSignedIn;
 
@@ -56,14 +62,14 @@ export default function Courses() {
 
     if (isGuest) {
       const guestData = localProgressDb.getProgress();
-      const lang = guestData.language || "python";
-      const version = hasVersion2(lang) ? 2 : 1;
+      const lang      = guestData.language || "python";
+      const version   = hasVersion2(lang) ? 2 : 1;
       await loadCurriculum(lang, version);
       setProgress({
-        completed_lessons: guestData.completed_lessons,
-        completed_quizzes: guestData.completed_quizzes,
-        streak_days: 0,
-        language: lang,
+        completed_lessons:        guestData.completed_lessons,
+        completed_quizzes:        guestData.completed_quizzes,
+        streak_days:              0,
+        language:                 lang,
         v1_python_completed_count: 0,
       });
       setSelectedLang(lang);
@@ -85,9 +91,8 @@ export default function Courses() {
         user.primaryEmailAddress?.emailAddress
       );
       if (data) {
-        const lang = data.language || "python";
-        const version =
-          data.curriculum_version || (hasVersion2(lang) ? 2 : 1);
+        const lang    = data.language || "python";
+        const version = data.curriculum_version || (hasVersion2(lang) ? 2 : 1);
         await loadCurriculum(lang, version);
         setProgress(data);
         setSelectedLang(lang);
@@ -129,7 +134,7 @@ export default function Courses() {
   );
 
   // ------------------------------------------------------------------
-  // Loading
+  // Full-screen initial loading
   // ------------------------------------------------------------------
   if (loading) {
     return (
@@ -142,13 +147,12 @@ export default function Courses() {
   // ------------------------------------------------------------------
   // Derived data
   // ------------------------------------------------------------------
-  const completedLessons = progress?.completed_lessons || [];
-  const completedQuizzes = progress?.completed_quizzes || [];
-  const streak = progress?.streak_days || 0;
-  const allFlat = getAllLessons(selectedLang, curriculumVersion);
-  const totalLessons = allFlat.length;
+  const completedLessons  = progress?.completed_lessons || [];
+  const completedQuizzes  = progress?.completed_quizzes || [];
+  const streak            = progress?.streak_days || 0;
+  const allFlat           = getAllLessons(selectedLang, curriculumVersion);
+  const totalLessons      = allFlat.length;
 
-  // Count how many V2 lesson IDs appear in completed_lessons
   const completedLessonCount = completedLessons.filter((id) =>
     allFlat.some((l) => l.id === id)
   ).length;
@@ -156,9 +160,6 @@ export default function Courses() {
     allFlat.some((l) => l.id === id)
   ).length;
 
-  // V1 migration: how many V1 Python lessons did this user complete?
-  // This comes from progressDb.getProgress which counts V1 IDs in the
-  // completed_lessons array and attaches the count.
   const v1CompletedCount = progress?.v1_python_completed_count || 0;
 
   const progressPct =
@@ -172,34 +173,22 @@ export default function Courses() {
 
   // ------------------------------------------------------------------
   // Unlock logic
-  //
-  // Standard rule: a lesson is unlocked if it's the first lesson, or
-  // the previous lesson in the flat list has been completed.
-  //
-  // V1→V2 migration exception: if the user completed N lessons in the
-  // V1 Python curriculum, the first N lessons in V2 are auto-unlocked
-  // (plus the N+1th, since that's the one they should work on next).
-  // This only applies to signed-in users on the Python V2 curriculum.
   // ------------------------------------------------------------------
   const isUnlocked = (lessonId) => {
-    if (isGuest) {
-      return isGuestAccessible(selectedLang, lessonId);
-    }
+    if (isGuest) return isGuestAccessible(selectedLang, lessonId);
 
     const idx = allFlat.findIndex((l) => l.id === lessonId);
     if (idx === 0) return true;
     if (idx === -1) return false;
 
-    // Standard sequential check: previous lesson completed?
-    if (completedLessons.includes(allFlat[idx - 1]?.id)) return true;
-
-    // This specific V2 lesson is already completed (maybe out of order)
+    // Already completed this exact lesson
     if (completedLessons.includes(lessonId)) return true;
 
-    // V1→V2 migration exception: auto-unlock first N+1 V2 lessons
-    // when user completed N V1 lessons.
-    // N+1 because: if they finished 15 lessons, lessons 0–14 are "done"
-    // and lesson 15 (index 15) should be unlocked as their next one.
+    // Standard sequential: previous lesson done
+    if (completedLessons.includes(allFlat[idx - 1]?.id)) return true;
+
+    // V1→V2 migration: auto-unlock first (N+1) V2 lessons for users
+    // who completed N lessons in the old V1 Python curriculum
     if (
       selectedLang === "python" &&
       curriculumVersion === 2 &&
@@ -221,19 +210,14 @@ export default function Courses() {
     <div className="min-h-screen bg-white">
       <Helmet>
         <title>Courses & Lessons | Learn Python Coding</title>
-        <meta
-          name="description"
-          content="Browse Python courses with interactive lessons, quizzes, and AI-powered code feedback. Progress tracking and structured learning paths."
-        />
+        <meta name="description" content="Browse Python courses with interactive lessons, quizzes, and AI-powered code feedback. Progress tracking and structured learning paths." />
         <meta property="og:title" content="Courses & Lessons | FluentCode" />
-        <meta
-          property="og:description"
-          content="Interactive Python curriculum with hands-on coding lessons and instant feedback."
-        />
+        <meta property="og:description" content="Interactive Python curriculum with hands-on coding lessons and instant feedback." />
       </Helmet>
       <Navbar streak={streak} />
 
       <div className="max-w-2xl mx-auto px-6 py-14">
+
         {/* Header + progress bar */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -256,7 +240,7 @@ export default function Courses() {
             />
           </div>
 
-          {/* V1 migration notice — only shown if they have V1 progress */}
+          {/* V1→V2 migration notice */}
           {v1CompletedCount > 0 &&
             selectedLang === "python" &&
             curriculumVersion === 2 &&
@@ -316,8 +300,7 @@ export default function Courses() {
               <div className="flex items-center gap-2.5 px-4 py-3 bg-blue-50 border border-blue-100 rounded-xl mb-6 text-sm text-blue-700">
                 <Smartphone size={14} className="text-blue-400 shrink-0" />
                 <span>
-                  Quiz mode works great on mobile — no typing needed, just tap
-                  your answers.
+                  Quiz mode works great on mobile — no typing needed, just tap your answers.
                 </span>
               </div>
             </motion.div>
@@ -378,7 +361,7 @@ export default function Courses() {
               className="space-y-10"
             >
               {modules.map((module) => {
-                const modLessons = module.lessons;
+                const modLessons          = module.lessons;
                 const modCompletedLessons = modLessons.filter((l) =>
                   completedLessons.includes(l.id)
                 ).length;
@@ -421,7 +404,7 @@ export default function Courses() {
                     <div className="space-y-1.5">
                       {modLessons.map((lesson) => {
                         if (mode === "quiz") {
-                          const quizDone = completedQuizzes.includes(lesson.id);
+                          const quizDone      = completedQuizzes.includes(lesson.id);
                           const quizAccessible = isGuest
                             ? isGuestAccessible(selectedLang, lesson.id)
                             : true;
@@ -432,10 +415,7 @@ export default function Courses() {
                                 key={lesson.id}
                                 className="flex items-center gap-3 px-4 py-3.5 rounded-xl border border-zinc-100 opacity-40 cursor-not-allowed select-none"
                               >
-                                <Lock
-                                  size={14}
-                                  className="text-zinc-300 shrink-0"
-                                />
+                                <Lock size={14} className="text-zinc-300 shrink-0" />
                                 <span className="text-sm text-zinc-400 flex-1">
                                   {lesson.title}
                                 </span>
@@ -459,40 +439,21 @@ export default function Courses() {
                               }`}
                             >
                               {quizDone ? (
-                                <Check
-                                  size={13}
-                                  strokeWidth={3}
-                                  className="text-emerald-500 shrink-0"
-                                />
+                                <Check size={13} strokeWidth={3} className="text-emerald-500 shrink-0" />
                               ) : (
-                                <HelpCircle
-                                  size={14}
-                                  className="text-zinc-300 group-hover:text-zinc-600 transition-colors shrink-0"
-                                />
+                                <HelpCircle size={14} className="text-zinc-300 group-hover:text-zinc-600 transition-colors shrink-0" />
                               )}
-                              <span
-                                className={`text-sm font-medium flex-1 ${
-                                  quizDone
-                                    ? "text-emerald-700"
-                                    : "text-zinc-700"
-                                }`}
-                              >
+                              <span className={`text-sm font-medium flex-1 ${quizDone ? "text-emerald-700" : "text-zinc-700"}`}>
                                 {lesson.title}
                               </span>
-                              <span
-                                className={`text-xs ${
-                                  quizDone
-                                    ? "text-emerald-500"
-                                    : "text-zinc-400"
-                                }`}
-                              >
+                              <span className={`text-xs ${quizDone ? "text-emerald-500" : "text-zinc-400"}`}>
                                 {quizDone ? "Completed" : "5 questions"}
                               </span>
                             </button>
                           );
                         }
 
-                        const done = completedLessons.includes(lesson.id);
+                        const done     = completedLessons.includes(lesson.id);
                         const unlocked = isUnlocked(lesson.id);
 
                         return (
@@ -541,31 +502,17 @@ function LessonRow({ lesson, done, unlocked, lang, isGuest }) {
       }`}
     >
       {done ? (
-        <Check
-          size={15}
-          strokeWidth={3}
-          className="text-emerald-500 shrink-0"
-        />
+        <Check size={15} strokeWidth={3} className="text-emerald-500 shrink-0" />
       ) : (
-        <Circle
-          size={15}
-          className="text-zinc-300 group-hover:text-zinc-500 transition-colors shrink-0"
-        />
+        <Circle size={15} className="text-zinc-300 group-hover:text-zinc-500 transition-colors shrink-0" />
       )}
-      <span
-        className={`text-sm flex-1 ${
-          done ? "text-emerald-700 font-medium" : "text-zinc-700 font-medium"
-        }`}
-      >
+      <span className={`text-sm flex-1 ${done ? "text-emerald-700 font-medium" : "text-zinc-700 font-medium"}`}>
         {lesson.title}
       </span>
       {done ? (
         <span className="text-xs text-emerald-500 font-medium">Completed</span>
       ) : (
-        <ArrowRight
-          size={13}
-          className="text-zinc-300 group-hover:text-zinc-900 group-hover:translate-x-0.5 transition-all duration-200"
-        />
+        <ArrowRight size={13} className="text-zinc-300 group-hover:text-zinc-900 group-hover:translate-x-0.5 transition-all duration-200" />
       )}
     </Link>
   );
