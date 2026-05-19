@@ -34,6 +34,7 @@ export default function AIFeedbackPanel({
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
+  // Initialise the displayed remaining count on mount
   useEffect(() => {
     if (!userId || !supabaseClient || isGuest) return;
     const checkRemaining = async () => {
@@ -70,14 +71,40 @@ export default function AIFeedbackPanel({
       return;
     }
 
-    // Optimistically add the user message and start loading
+    // ── Step 1: read-only limit check — no DB write yet ──────────────
+    if (userId && supabaseClient) {
+      const limitCheck = await progressDb.checkAiLimit(
+        supabaseClient,
+        userId,
+        isPro
+      );
+
+      if (!limitCheck.allowed) {
+        setLimitReached(true);
+        setRemaining(0);
+        setMessages((prev) => [
+          ...prev,
+          { role: "user", content: q },
+          {
+            role: "assistant",
+            content:
+              "You've used all your AI requests for today. Come back tomorrow to ask more questions.",
+            isLimit: true,
+          },
+        ]);
+        setInput("");
+        return;
+      }
+    }
+
+    // Optimistically render the user message and start the spinner
     setMessages((prev) => [...prev, { role: "user", content: q }]);
     setInput("");
     setLoading(true);
 
+    // ── Step 2: AI network call — quota not touched yet ───────────────
     let reply;
     try {
-      // ── Step 1: Call the AI — quota not touched yet ─────────────────
       const prompt = `You are a calm, precise coding assistant helping a student learn ${language}.
 
 Current lesson: "${lesson.title}"
@@ -102,9 +129,11 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
       });
 
       const data = await res.json();
-      reply = data?.reply || "Sorry, I'm having trouble right now. Please try again.";
+      reply =
+        data?.reply ||
+        "Sorry, I'm having trouble right now. Please try again.";
     } catch (err) {
-      // Network / server error — do NOT decrement quota
+      // Network / server error — quota is NOT decremented
       console.error("AI Assistant error:", err);
       setMessages((prev) => [
         ...prev,
@@ -117,48 +146,34 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
       return;
     }
 
-    // ── Step 2: AI responded — now check + increment quota ─────────────
+    // ── Step 3: AI responded — now safely increment the quota ─────────
     if (userId && supabaseClient) {
-      const countResult = await progressDb.incrementAiCountIfNotExceeded(
+      const incrementResult = await progressDb.incrementAiCount(
         supabaseClient,
         userId,
         isPro
       );
 
-      if (!countResult.allowed) {
-        // Edge case: limit was hit by another tab/device between the
-        // fetch starting and finishing. Show the reply we already have
-        // but mark the limit as reached so the next message is blocked.
-        setLimitReached(true);
-        setRemaining(0);
-        // Still show the reply — the AI already answered and we didn't
-        // charge them, so discarding it would be worse UX.
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: reply },
-          {
-            role: "assistant",
-            content:
-              "You've now used all your AI requests for today. Come back tomorrow to ask more questions.",
-            isLimit: true,
-          },
-        ]);
-        setLoading(false);
-        return;
+      if (incrementResult.remaining !== null) {
+        setRemaining(incrementResult.remaining);
+        if (incrementResult.remaining === 0) setLimitReached(true);
       }
 
-      if (countResult.remaining !== null) {
-        setRemaining(countResult.remaining);
-        if (countResult.remaining === 0) setLimitReached(true);
+      // Edge case: another tab used the last slot between step 1 and 3.
+      // We still show the reply (the AI already answered) but mark the
+      // limit so the next message is blocked immediately.
+      if (!incrementResult.allowed) {
+        setLimitReached(true);
+        setRemaining(0);
       }
     }
 
-    // ── Step 3: Show the reply ──────────────────────────────────────────
+    // ── Step 4: render the reply ──────────────────────────────────────
     setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
     setLoading(false);
   };
 
-  // ── Guest state ────────────────────────────────────────────────────
+  // ── Guest state ───────────────────────────────────────────────────
   if (isGuest) {
     return (
       <div className="flex flex-col h-full bg-white">
@@ -191,7 +206,7 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
     );
   }
 
-  // ── Logged-in empty state ──────────────────────────────────────────
+  // ── Logged-in empty state ─────────────────────────────────────────
   const EmptyState = () => (
     <>
       <div className="flex-1 flex flex-col items-center justify-center text-center gap-3 p-6">
@@ -226,7 +241,7 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
     </>
   );
 
-  // ── Logged-in with messages ────────────────────────────────────────
+  // ── Logged-in with messages ───────────────────────────────────────
   return (
     <div className="flex flex-col h-full bg-white">
       <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between shrink-0">

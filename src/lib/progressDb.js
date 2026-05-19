@@ -28,7 +28,40 @@ function computeNewStreak(lastStudyDate, currentStreak) {
   return 1;
 }
 
+/**
+ * Read the user's current daily AI count from the DB row.
+ * Returns { currentCount, today } – a pure read, no writes.
+ * Falls back to { currentCount: 0, today } on any DB error so callers
+ * can still fail-open rather than silently blocking the user.
+ */
+async function readAiCount(supabaseClient, clerkUserId) {
+  const today = getTodayStr();
+
+  const { data, error } = await supabaseClient
+    .from("user_progress")
+    .select("daily_ai_count, last_ai_date")
+    .eq("clerk_user_id", clerkUserId)
+    .single();
+
+  if (error) {
+    console.error("Failed to read AI count:", error);
+    // Fail open – a Supabase hiccup should not silently block the user
+    return { currentCount: 0, today };
+  }
+
+  const lastDate = data?.last_ai_date;
+  // If last_ai_date is a different calendar day the counter resets to 0
+  const currentCount =
+    lastDate === today ? data?.daily_ai_count || 0 : 0;
+
+  return { currentCount, today };
+}
+
 export const progressDb = {
+  // ─────────────────────────────────────────────────────────────────────────
+  // Core progress helpers
+  // ─────────────────────────────────────────────────────────────────────────
+
   async getProgress(supabaseClient, clerkUserId, email) {
     const { data, error } = await supabaseClient
       .from("user_progress")
@@ -78,7 +111,7 @@ export const progressDb = {
       .from("user_progress")
       .insert({
         clerk_user_id: clerkUserId,
-        email: email,
+        email,
         language: "python",
         completed_lessons: [],
         completed_quizzes: [],
@@ -118,7 +151,12 @@ export const progressDb = {
     return data;
   },
 
-  async completeLesson(supabaseClient, clerkUserId, lessonId, extraUpdates = {}) {
+  async completeLesson(
+    supabaseClient,
+    clerkUserId,
+    lessonId,
+    extraUpdates = {}
+  ) {
     const { data, error } = await supabaseClient
       .from("user_progress")
       .select("completed_lessons, streak_days, last_study_date")
@@ -211,7 +249,11 @@ export const progressDb = {
     if (!localProgressDb.hasProgress()) return null;
 
     const guestData = localProgressDb.getProgress();
-    let serverProgress = await this.getProgress(supabaseClient, clerkUserId, email);
+    const serverProgress = await this.getProgress(
+      supabaseClient,
+      clerkUserId,
+      email
+    );
     if (!serverProgress) return null;
 
     const mergedLessons = [
@@ -239,14 +281,19 @@ export const progressDb = {
       completed_lessons: mergedLessons,
       completed_quizzes: mergedQuizzes,
       total_exercises:
-        (serverProgress.total_exercises || 0) + (guestData.total_exercises || 0),
+        (serverProgress.total_exercises || 0) +
+        (guestData.total_exercises || 0),
       correct_exercises:
         (serverProgress.correct_exercises || 0) +
         (guestData.correct_exercises || 0),
       mistake_patterns: mergedMistakes,
     };
 
-    const result = await this.updateProgress(supabaseClient, clerkUserId, updates);
+    const result = await this.updateProgress(
+      supabaseClient,
+      clerkUserId,
+      updates
+    );
 
     if (result) {
       localProgressDb.clearProgress();
@@ -271,54 +318,60 @@ export const progressDb = {
     }
   },
 
-  /**
-   * DEPRECATED — kept for backward compatibility only.
-   * Increments the AI counter BEFORE the AI call, which means a failed
-   * network request still costs the user a request.
-   * Use `incrementAiCountIfNotExceeded` instead.
-   */
-  async checkAndIncrementAiCount(supabaseClient, clerkUserId, isPro) {
-    return this.incrementAiCountIfNotExceeded(supabaseClient, clerkUserId, isPro);
-  },
+  // ─────────────────────────────────────────────────────────────────────────
+  // AI quota helpers
+  // ─────────────────────────────────────────────────────────────────────────
 
   /**
-   * Check whether the user is under their daily AI limit, and if so,
-   * increment the counter by 1.
+   * READ-ONLY check: is the user allowed to make another AI request?
    *
-   * Call this AFTER a successful AI response, not before the request.
-   * That way a network failure does not cost the user a request.
+   * Does NOT modify the database. Call this BEFORE making the AI request
+   * so you can bail out early without touching the network.
    *
    * @returns {{ allowed: boolean, remaining: number | null }}
-   *   allowed   – false means the limit was already reached; do not show AI feedback.
-   *   remaining – requests left after this increment, or null for pro users.
+   *   remaining is null for pro users (unlimited).
    */
-  async incrementAiCountIfNotExceeded(supabaseClient, clerkUserId, isPro) {
-    // Pro users have no limit — skip the DB read entirely
+  async checkAiLimit(supabaseClient, clerkUserId, isPro) {
     if (isPro) return { allowed: true, remaining: null };
 
-    const { data, error } = await supabaseClient
-      .from("user_progress")
-      .select("daily_ai_count, last_ai_date")
-      .eq("clerk_user_id", clerkUserId)
-      .single();
-
-    if (error) {
-      console.error("Failed to check AI count:", error);
-      // Fail open — don't punish the user for a DB error
-      return { allowed: true, remaining: null };
-    }
-
-    const today = getTodayStr();
-    const lastDate = data?.last_ai_date;
-    // If last_ai_date is a different day, the counter resets to 0
-    const currentCount = lastDate === today ? (data?.daily_ai_count || 0) : 0;
+    const { currentCount } = await readAiCount(supabaseClient, clerkUserId);
 
     if (currentCount >= FREE_DAILY_LIMIT) {
       return { allowed: false, remaining: 0 };
     }
 
-    // Increment — we do this AFTER confirming the AI call succeeded
+    return {
+      allowed: true,
+      remaining: FREE_DAILY_LIMIT - currentCount,
+    };
+  },
+
+  /**
+   * WRITE: increment the AI counter by 1.
+   *
+   * Call this AFTER a successful AI response so that a network failure
+   * never silently consumes part of the user's daily quota.
+   *
+   * If the count has somehow reached the limit between checkAiLimit and
+   * this call (e.g. two open tabs), we still refuse to go over.
+   *
+   * @returns {{ allowed: boolean, remaining: number | null }}
+   */
+  async incrementAiCount(supabaseClient, clerkUserId, isPro) {
+    if (isPro) return { allowed: true, remaining: null };
+
+    const { currentCount, today } = await readAiCount(
+      supabaseClient,
+      clerkUserId
+    );
+
+    // Double-check the limit hasn't been hit by another tab/device
+    if (currentCount >= FREE_DAILY_LIMIT) {
+      return { allowed: false, remaining: 0 };
+    }
+
     const newCount = currentCount + 1;
+
     await supabaseClient
       .from("user_progress")
       .update({
@@ -334,21 +387,50 @@ export const progressDb = {
     };
   },
 
+  /**
+   * DEPRECATED – kept for backward compatibility only.
+   *
+   * Previously this was called BEFORE the AI request, which meant a
+   * failed network call still consumed quota. Prefer calling
+   * checkAiLimit → (AI call) → incrementAiCount instead.
+   *
+   * This shim now performs the same check-then-increment pattern but
+   * still atomically (single function) so existing callers don't break.
+   */
+  async checkAndIncrementAiCount(supabaseClient, clerkUserId, isPro) {
+    if (isPro) return { allowed: true, remaining: null };
+
+    const { currentCount, today } = await readAiCount(
+      supabaseClient,
+      clerkUserId
+    );
+
+    if (currentCount >= FREE_DAILY_LIMIT) {
+      return { allowed: false, remaining: 0, limit: FREE_DAILY_LIMIT };
+    }
+
+    const newCount = currentCount + 1;
+
+    await supabaseClient
+      .from("user_progress")
+      .update({
+        daily_ai_count: newCount,
+        last_ai_date: today,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("clerk_user_id", clerkUserId);
+
+    return {
+      allowed: true,
+      remaining: FREE_DAILY_LIMIT - newCount,
+      limit: FREE_DAILY_LIMIT,
+    };
+  },
+
   async getAiRequestsRemaining(supabaseClient, clerkUserId, isPro) {
     if (isPro) return null;
 
-    const { data, error } = await supabaseClient
-      .from("user_progress")
-      .select("daily_ai_count, last_ai_date")
-      .eq("clerk_user_id", clerkUserId)
-      .single();
-
-    if (error) return FREE_DAILY_LIMIT;
-
-    const today = getTodayStr();
-    const lastDate = data?.last_ai_date;
-    const currentCount = lastDate === today ? (data?.daily_ai_count || 0) : 0;
-
+    const { currentCount } = await readAiCount(supabaseClient, clerkUserId);
     return Math.max(0, FREE_DAILY_LIMIT - currentCount);
   },
 };

@@ -158,6 +158,7 @@ export default function CodingPage() {
   useEffect(() => {
     const loadVersionAndProgress = async () => {
       if (!isUserLoaded) return;
+
       if (isGuest) {
         const guestData = localProgressDb.getProgress();
         setProgress(guestData);
@@ -165,10 +166,12 @@ export default function CodingPage() {
         setIsLoading(false);
         return;
       }
+
       if (!supabaseClient) {
         setIsLoading(false);
         return;
       }
+
       try {
         const data = await progressDb.getProgress(
           supabaseClient,
@@ -189,6 +192,7 @@ export default function CodingPage() {
         setIsLoading(false);
       }
     };
+
     loadVersionAndProgress();
   }, [isUserLoaded, isSignedIn, user, supabaseClient, isGuest, language]);
 
@@ -231,7 +235,7 @@ export default function CodingPage() {
     nextLesson && isGuest && !isGuestAccessible(language, nextLesson.id);
 
   // ------------------------------------------------------------------
-  // Expected-output helper
+  // Expected-output helper (Pyodide, Python only)
   // ------------------------------------------------------------------
   async function getExpectedOutput(solutionCode) {
     if (
@@ -307,7 +311,7 @@ export default function CodingPage() {
     const solutionCode = lesson.exercise.solution || "";
     const passedPatterns = passesPatternTests(code, tests);
 
-    // ── Python: real execution path ───────────────────────────────────
+    // ── Python: real execution path ─────────────────────────────────
     if (isPythonLanguage(language)) {
       let userOutput = "";
       let userError = null;
@@ -320,7 +324,6 @@ export default function CodingPage() {
         userError = err.message ?? String(err);
       }
 
-      // Always update the output panel with what the code produced
       if (userError) {
         setOutput(`Error:\n${userError}`);
       } else if (userOutput.trim() === "") {
@@ -329,7 +332,6 @@ export default function CodingPage() {
         setOutput(userOutput);
       }
 
-      // Runtime error → incorrect, allow retry, never touches AI quota
       if (userError) {
         const newFailCount = failCount + 1;
         setFailCount(newFailCount);
@@ -364,7 +366,6 @@ export default function CodingPage() {
         return;
       }
 
-      // Output comparison
       const expectedOutput = await getExpectedOutput(solutionCode);
       const normalisedUser = normaliseOutput(userOutput);
 
@@ -398,7 +399,7 @@ export default function CodingPage() {
       return;
     }
 
-    // ── Non-Python: AI evaluation path ────────────────────────────────
+    // ── Non-Python: AI evaluation path ──────────────────────────────
     if (passedPatterns) {
       await handleAiEvaluation();
     } else {
@@ -415,7 +416,7 @@ export default function CodingPage() {
   };
 
   // ------------------------------------------------------------------
-  // Correct submission
+  // Correct submission (Python path, no AI quota consumed)
   // ------------------------------------------------------------------
   async function handleCorrectSubmission() {
     setFeedback({
@@ -465,7 +466,8 @@ export default function CodingPage() {
   }
 
   // ------------------------------------------------------------------
-  // Incorrect without AI
+  // Incorrect without AI (pattern mismatch or output mismatch)
+  // No AI quota is consumed here.
   // ------------------------------------------------------------------
   async function handleIncorrectSubmission(reasonMessage) {
     const newFailCount = failCount + 1;
@@ -495,20 +497,49 @@ export default function CodingPage() {
   }
 
   // ------------------------------------------------------------------
-  // AI evaluation (non-Python or fallback)
-  // Quota is checked and incremented AFTER a successful AI response.
-  // A network failure never costs the user a request.
+  // AI evaluation (non-Python languages)
+  //
+  // Order of operations:
+  //   1. checkAiLimit  – read-only, bail early if quota exhausted
+  //   2. evaluateCode  – the actual AI network call
+  //   3. incrementAiCount – write, only reached if step 2 succeeded
+  //
+  // A network failure at step 2 never reaches step 3, so the user's
+  // daily quota is never decremented on a failed request.
   // ------------------------------------------------------------------
   async function handleAiEvaluation() {
     const newFailCount = failCount + 1;
     setFailCount(newFailCount);
 
+    // ── Step 1: read-only limit check ───────────────────────────────
+    if (!isGuest && supabaseClient && user) {
+      const limitCheck = await progressDb.checkAiLimit(
+        supabaseClient,
+        user.id,
+        progress?.is_pro
+      );
+
+      if (!limitCheck.allowed) {
+        setLimitReached(true);
+        setAiRemaining(0);
+        setFeedback({
+          isCorrect: false,
+          feedback:
+            "You've used all 10 free AI reviews for today. Come back tomorrow, or support the project to unlock unlimited reviews!",
+          mistakePatterns: [],
+          suggestions: [],
+        });
+        setSubmitted(true);
+        return;
+      }
+    }
+
+    // ── Step 2: AI network call ──────────────────────────────────────
     let aiResponse;
     try {
-      // ── Step 1: Call the AI — quota not touched yet ─────────────────
       aiResponse = await evaluateCode(code, language, lesson);
     } catch (err) {
-      // Network / timeout error — do not decrement quota
+      // Network / timeout — quota is NOT touched
       console.error("AI evaluation error:", err);
       setFeedback({
         isCorrect: false,
@@ -524,38 +555,31 @@ export default function CodingPage() {
       return;
     }
 
-    // ── Step 2: AI responded — now check + increment quota ─────────────
+    // ── Step 3: AI succeeded — now increment the quota ───────────────
     if (!isGuest && supabaseClient && user) {
-      const countResult = await progressDb.incrementAiCountIfNotExceeded(
+      const incrementResult = await progressDb.incrementAiCount(
         supabaseClient,
         user.id,
         progress?.is_pro
       );
 
-      if (!countResult.allowed) {
-        // Limit was already reached; discard the AI response rather than
-        // showing it without recording a charge (keeps counts honest).
-        setLimitReached(true);
-        setAiRemaining(0);
-        setFeedback({
-          isCorrect: false,
-          feedback:
-            "You've used all 10 free AI reviews for today. Come back tomorrow, or support the project to unlock unlimited reviews!",
-          mistakePatterns: [],
-          suggestions: [],
-        });
-        setSubmitted(true);
-        return;
+      // Update the displayed remaining count
+      if (incrementResult.remaining !== null) {
+        setAiRemaining(incrementResult.remaining);
+        if (incrementResult.remaining === 0) setLimitReached(true);
       }
 
-      // Update the displayed remaining count
-      if (countResult.remaining !== null) {
-        setAiRemaining(countResult.remaining);
-        if (countResult.remaining === 0) setLimitReached(true);
+      // Edge case: two tabs used the last slot simultaneously.
+      // incrementAiCount returns allowed: false if it detects this.
+      // We still show the response (the AI already answered) but flag
+      // the limit so the next attempt is blocked immediately.
+      if (!incrementResult.allowed) {
+        setLimitReached(true);
+        setAiRemaining(0);
       }
     }
 
-    // ── Step 3: Display the AI response ────────────────────────────────
+    // ── Step 4: display the response ────────────────────────────────
     setFeedback(aiResponse);
     setSubmitted(true);
 
@@ -767,7 +791,10 @@ export default function CodingPage() {
                   className="text-emerald-500 shrink-0 mt-0.5"
                 />
               ) : (
-                <XCircle size={16} className="text-red-400 shrink-0 mt-0.5" />
+                <XCircle
+                  size={16}
+                  className="text-red-400 shrink-0 mt-0.5"
+                />
               )}
               <div className="flex-1 min-w-0">
                 <p
@@ -858,7 +885,10 @@ export default function CodingPage() {
               />
               <span className="text-xs text-zinc-500 font-mono">output</span>
               {running && (
-                <Loader2 size={11} className="text-zinc-600 animate-spin ml-1" />
+                <Loader2
+                  size={11}
+                  className="text-zinc-600 animate-spin ml-1"
+                />
               )}
             </div>
             <pre className="text-xs text-zinc-400 font-mono px-4 py-3 leading-relaxed whitespace-pre-wrap">
