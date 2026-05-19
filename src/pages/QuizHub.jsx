@@ -4,43 +4,59 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
-import { curriculum, getCurriculumByVersion, hasVersion2 } from "@/lib/curriculum";
+import {
+  getCurriculumByVersion,
+  hasVersion2,
+  loadCurriculum,
+  LANGUAGE_META,
+} from "@/lib/curriculum";
 import { progressDb } from "@/lib/progressDb";
 import { useAuth } from "@/lib/AuthContext";
 import Navbar from "@/components/Navbar";
-import { HelpCircle, Check } from "lucide-react";
+import { HelpCircle, Check, Loader2 } from "lucide-react";
 
 const ease = [0.16, 1, 0.3, 1];
+
+// Derived once from LANGUAGE_META — no curriculum data required
+const LANGUAGES = Object.entries(LANGUAGE_META).map(([key, { label }]) => ({
+  key,
+  label,
+}));
 
 export default function QuizHub() {
   const { user, isLoaded, isSignedIn } = useUser();
   const { supabaseClient } = useAuth();
   const [progress, setProgress] = useState(null);
   const [selectedLang, setSelectedLang] = useState("python");
-  const [curriculumVersion, setCurriculumVersion] = useState(1);
+  const [curriculumVersion, setCurriculumVersion] = useState(2);
+
+  // Two loading flags – same pattern as Courses.jsx
   const [loading, setLoading] = useState(true);
+  const [langLoading, setLangLoading] = useState(false);
+
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Derive the correct version for a given language and progress data
+  // ------------------------------------------------------------------
+  // Version resolver
+  // ------------------------------------------------------------------
   const resolveVersion = useCallback(
     (lang, progressData) => {
-      if (!isSignedIn) {
-        // Guest: use V2 if it exists for this language, otherwise V1
-        return hasVersion2(lang) ? 2 : 1;
-      }
-      // Signed-in: honour whatever version is stored on the user's progress row
+      if (!isSignedIn) return hasVersion2(lang) ? 2 : 1;
       return progressData?.curriculum_version || 1;
     },
     [isSignedIn]
   );
 
+  // ------------------------------------------------------------------
+  // Load progress + ensure the user's default curriculum is cached
+  // ------------------------------------------------------------------
   const loadProgress = useCallback(async () => {
-    // Guest path – no DB call needed, just resolve version and stop loading
     if (!isLoaded) return;
 
     if (!isSignedIn || !supabaseClient || !user) {
       const version = resolveVersion(selectedLang, null);
+      await loadCurriculum(selectedLang, version);
       setCurriculumVersion(version);
       setLoading(false);
       return;
@@ -54,35 +70,58 @@ export default function QuizHub() {
         user.primaryEmailAddress?.emailAddress
       );
       if (data) {
-        setProgress(data);
         const lang = data.language || "python";
+        const version = resolveVersion(lang, data);
+        await loadCurriculum(lang, version);
+        setProgress(data);
         setSelectedLang(lang);
-        setCurriculumVersion(resolveVersion(lang, data));
+        setCurriculumVersion(version);
       } else {
-        // Signed-in but no progress row yet
-        setCurriculumVersion(resolveVersion(selectedLang, null));
+        const version = resolveVersion(selectedLang, null);
+        await loadCurriculum(selectedLang, version);
+        setCurriculumVersion(version);
       }
     } catch (err) {
       console.error(err);
-      setCurriculumVersion(resolveVersion(selectedLang, null));
+      const version = resolveVersion(selectedLang, null);
+      await loadCurriculum(selectedLang, version).catch(() => {});
+      setCurriculumVersion(version);
     } finally {
       setLoading(false);
     }
   }, [isLoaded, isSignedIn, user, supabaseClient, resolveVersion, selectedLang]);
 
-  // Refetch every time the page is navigated to (location.key changes)
   useEffect(() => {
     loadProgress();
   }, [loadProgress, location.key]);
 
-  // When the user clicks a different language, recompute the version for that
-  // language immediately without waiting for a DB round-trip
-  const handleLangChange = (newLang) => {
-    setSelectedLang(newLang);
-    const newVersion = resolveVersion(newLang, progress);
-    setCurriculumVersion(newVersion);
-  };
+  // ------------------------------------------------------------------
+  // Language switch – lazy-load the new chunk then swap
+  // ------------------------------------------------------------------
+  const handleLangChange = useCallback(
+    async (newLang) => {
+      if (newLang === selectedLang) return;
 
+      const newVersion = resolveVersion(newLang, progress);
+
+      setLangLoading(true);
+      try {
+        await loadCurriculum(newLang, newVersion);
+      } catch (err) {
+        console.error("Failed to load curriculum for", newLang, err);
+      } finally {
+        setLangLoading(false);
+      }
+
+      setSelectedLang(newLang);
+      setCurriculumVersion(newVersion);
+    },
+    [selectedLang, progress, resolveVersion]
+  );
+
+  // ------------------------------------------------------------------
+  // Full-screen initial loading
+  // ------------------------------------------------------------------
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
@@ -94,9 +133,12 @@ export default function QuizHub() {
   const completedQuizzes = progress?.completed_quizzes || [];
   const streak = progress?.streak_days || 0;
 
-  // Use the version-aware curriculum for rendering modules / lessons
+  // Safe: loadCurriculum has resolved for selectedLang before we reach here
   const lang = getCurriculumByVersion(curriculumVersion, selectedLang);
 
+  // ------------------------------------------------------------------
+  // Render
+  // ------------------------------------------------------------------
   return (
     <div className="min-h-screen bg-white">
       <Helmet>
@@ -130,90 +172,101 @@ export default function QuizHub() {
           </p>
         </motion.div>
 
-        {/* Language selector
-            We still iterate over the base V1 curriculum just to get the list
-            of available languages and their labels – the actual content used
-            for rendering comes from getCurriculumByVersion below. */}
+        {/* Language selector – uses LANGUAGE_META, no curriculum data needed */}
         <div className="flex gap-2 mb-10">
-          {Object.entries(curriculum).map(([key, val]) => (
+          {LANGUAGES.map(({ key, label }) => (
             <button
               key={key}
               onClick={() => handleLangChange(key)}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+              disabled={langLoading}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 disabled:opacity-60 ${
                 selectedLang === key
                   ? "bg-zinc-900 text-white"
                   : "border border-zinc-200 text-zinc-500 hover:border-zinc-400 hover:text-zinc-900"
               }`}
             >
-              {val.label}
+              {langLoading && selectedLang !== key ? (
+                // The button being switched TO shows a spinner
+                label
+              ) : langLoading && selectedLang === key ? (
+                <span className="flex items-center gap-1.5">
+                  <Loader2 size={11} className="animate-spin" />
+                  {label}
+                </span>
+              ) : (
+                label
+              )}
             </button>
           ))}
         </div>
 
         {/* Modules and lessons */}
-        <div className="space-y-10">
-          {lang.modules.map((module, moduleIdx) => (
-            <motion.div
-              key={module.id}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: moduleIdx * 0.05, ease }}
-            >
-              <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">
-                {module.title}
-              </p>
-              <div className="space-y-1.5">
-                {module.lessons.map((lesson) => {
-                  // completedQuizzes stores lesson IDs from whichever version
-                  // was active when the user finished; matching by ID is safe
-                  // as long as V2 lesson IDs are stable (which they should be).
-                  const done = completedQuizzes.includes(lesson.id);
+        {langLoading ? (
+          <div className="flex items-center justify-center py-24">
+            <Loader2 size={20} className="animate-spin text-zinc-300" />
+          </div>
+        ) : (
+          <div className="space-y-10">
+            {lang?.modules.map((module, moduleIdx) => (
+              <motion.div
+                key={module.id}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: moduleIdx * 0.05, ease }}
+              >
+                <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">
+                  {module.title}
+                </p>
+                <div className="space-y-1.5">
+                  {module.lessons.map((lesson) => {
+                    const done = completedQuizzes.includes(lesson.id);
 
-                  return (
-                    <button
-                      key={lesson.id}
-                      onClick={() =>
-                        navigate(`/quiz/${selectedLang}/${lesson.id}`)
-                      }
-                      className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border transition-all duration-200 group text-left ${
-                        done
-                          ? "border-emerald-100 bg-emerald-50/30 hover:border-emerald-300"
-                          : "border-zinc-200 hover:border-zinc-900"
-                      }`}
-                    >
-                      {done ? (
-                        <Check
-                          size={13}
-                          strokeWidth={3}
-                          className="text-emerald-500 shrink-0"
-                        />
-                      ) : (
-                        <HelpCircle
-                          size={13}
-                          className="text-zinc-300 group-hover:text-zinc-500 transition-colors shrink-0"
-                        />
-                      )}
-                      <span
-                        className={`text-sm font-medium flex-1 ${
-                          done ? "text-emerald-700" : "text-zinc-700"
+                    return (
+                      <button
+                        key={lesson.id}
+                        onClick={() =>
+                          navigate(`/quiz/${selectedLang}/${lesson.id}`)
+                        }
+                        className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border transition-all duration-200 group text-left ${
+                          done
+                            ? "border-emerald-100 bg-emerald-50/30 hover:border-emerald-300"
+                            : "border-zinc-200 hover:border-zinc-900"
                         }`}
                       >
-                        {lesson.title}
-                      </span>
-                      <span
-                        className={`text-xs ${
-                          done ? "text-emerald-500" : "text-zinc-400"
-                        }`}
-                      >
-                        {done ? "Completed" : "7 questions"}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                        {done ? (
+                          <Check
+                            size={13}
+                            strokeWidth={3}
+                            className="text-emerald-500 shrink-0"
+                          />
+                        ) : (
+                          <HelpCircle
+                            size={13}
+                            className="text-zinc-300 group-hover:text-zinc-500 transition-colors shrink-0"
+                          />
+                        )}
+                        <span
+                          className={`text-sm font-medium flex-1 ${
+                            done ? "text-emerald-700" : "text-zinc-700"
+                          }`}
+                        >
+                          {lesson.title}
+                        </span>
+                        <span
+                          className={`text-xs ${
+                            done ? "text-emerald-500" : "text-zinc-400"
+                          }`}
+                        >
+                          {done ? "Completed" : "7 questions"}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

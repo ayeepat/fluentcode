@@ -1,527 +1,330 @@
 // src/lib/quizGenerator.js
-export function generateQuizQuestions(lesson, language) {
-  const questions = [];
-  if (lesson.concept) {
-    const q = generateConceptQuestion(lesson, language);
-    if (q) questions.push(q);
+// ---------------------------------------------------------------------------
+// Deterministic, content-driven quiz generator.
+//
+// Produces up to 5 questions per lesson sourced exclusively from static
+// lesson fields.  No random wrong-answer arrays, no regex fragility, no
+// language-specific branches.
+//
+// Question types
+// ──────────────
+//  1. Concept        – tests lesson.concept
+//  2. Example output – tests first output line of lesson.example
+//  3. Exercise       – tests first line of lesson.exercise.solution
+//  4. Explanation    – tests a key sentence from lesson.explanation
+//  5. Debugging tip  – tests lesson.exercise.debuggingTip
+//
+// Each question object
+// ────────────────────
+// {
+//   question    : string,
+//   options     : [string, string, string, string],  // always 4
+//   correctIndex: number,                             // 0–3 after shuffle
+//   hint        : string,
+//   explanation : string,
+// }
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Seeded shuffle
+// ---------------------------------------------------------------------------
+
+/**
+ * Turn a string into a 32-bit unsigned integer seed (djb2 hash).
+ */
+function seedFromString(str) {
+  let hash = 5381;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) + hash + str.charCodeAt(i)) >>> 0;
   }
-  if (lesson.example) {
-    const q = generateExampleQuestion(lesson, language);
-    if (q) questions.push(q);
-  }
-  if (lesson.exercise?.solution) {
-    const q = generateSolutionQuestion(lesson, language);
-    if (q) questions.push(q);
-  }
-  if (lesson.exercise?.debuggingTip) {
-    const q = generateDebugQuestion(lesson, language);
-    if (q) questions.push(q);
-  }
-  if (lesson.example) {
-    const q = generateFillBlankQuestion(lesson, language);
-    if (q) questions.push(q);
-  }
-  if (lesson.concept) {
-    const q = generateTrueOrFalseQuestion(lesson, language);
-    if (q) questions.push(q);
-  }
-  if (lesson.example) {
-    const q = generatePredictOutputQuestion(lesson, language);
-    if (q) questions.push(q);
-  }
-  return questions.slice(0, 7);
+  return hash;
 }
 
-// ─── Question generators ───────────────────────────────────────────────────
-function generateConceptQuestion(lesson, language) {
-  const concept = lesson.concept;
-  return {
-    question: `What is the main concept taught in "${lesson.title}"?`,
-    hint: `Think about what the lesson title "${lesson.title}" is referring to.`,
-    options: [
-      concept,
-      getWrongConceptOption(lesson, language, 0),
-      getWrongConceptOption(lesson, language, 1),
-      getWrongConceptOption(lesson, language, 2),
-    ],
-    correctIndex: 0,
-    explanation: concept,
+/**
+ * LCG pseudo-random number generator (Numerical Recipes constants).
+ * Returns a closure that produces the next float in [0, 1) each call.
+ */
+function makePrng(seed) {
+  let s = seed >>> 0;
+  return () => {
+    s = Math.imul(1664525, s) + 1013904223;
+    s = s >>> 0;
+    return s / 0x100000000;
   };
 }
 
-function generateExampleQuestion(lesson, language) {
-  const lines = lesson.example.split("\n").filter((l) => l.trim());
-  const firstMeaningfulLine =
-    lines.find(
-      (l) =>
-        !l.trim().startsWith("#") &&
-        !l.trim().startsWith("//") &&
-        l.trim().length > 0
-    ) || lines[0];
-  return {
-    question: `What does this code do?\n\`\`\`\n${firstMeaningfulLine}\n\`\`\``,
-    hint: `Look at the keywords in the code. What function or operation is being performed?`,
-    options: [
-      getCorrectExampleAnswer(lesson, firstMeaningfulLine, language),
-      getWrongExampleOption(lesson, language, 0),
-      getWrongExampleOption(lesson, language, 1),
-      getWrongExampleOption(lesson, language, 2),
-    ],
-    correctIndex: 0,
-    explanation: `This is from the "${lesson.title}" lesson. ${lesson.concept}`,
-  };
+/**
+ * Fisher-Yates shuffle using the supplied PRNG. Mutates and returns `arr`.
+ */
+function seededShuffle(arr, prng) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(prng() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
 }
 
-function generateSolutionQuestion(lesson, language) {
-  const promptText = lesson.exercise.prompt;
-  return {
-    question: `For this exercise: "${promptText}" — which approach is correct?`,
-    hint: `Re-read the exercise prompt carefully. What does it ask you to do?`,
-    options: [
-      summarizeSolution(lesson.exercise.solution, language),
-      getWrongSolutionOption(lesson, language, 0),
-      getWrongSolutionOption(lesson, language, 1),
-      getWrongSolutionOption(lesson, language, 2),
-    ],
-    correctIndex: 0,
-    explanation: `The correct solution uses: ${summarizeSolution(lesson.exercise.solution, language)}`,
-  };
-}
+// ---------------------------------------------------------------------------
+// Output extraction (Q2)
+// ---------------------------------------------------------------------------
 
-function generateDebugQuestion(lesson, language) {
-  const tip = lesson.exercise.debuggingTip;
-  return {
-    question: `Which is the best debugging advice for "${lesson.title}"?`,
-    hint: `Think about the most common mistake beginners make with this concept.`,
-    options: [
-      tip,
-      getWrongDebugOption(lesson, language, 0),
-      getWrongDebugOption(lesson, language, 1),
-      getWrongDebugOption(lesson, language, 2),
-    ],
-    correctIndex: 0,
-    explanation: tip,
-  };
-}
-
-// ✅ FIXED: generateFillBlankQuestion now never returns null
-function generateFillBlankQuestion(lesson, language) {
-  const lines = lesson.example
-    .split("\n")
-    .filter(
-      (l) =>
-        l.trim() &&
-        !l.trim().startsWith("#") &&
-        !l.trim().startsWith("//")
-    );
-  if (lines.length === 0) {
-    // Fallback: use a generic fill‑blank
-    const keywords = getKeywords(language);
-    const safeKeyword = keywords[0] || "print";
-    return {
-      question: `What is a common keyword used in ${language} programming?`,
-      hint: `Look at the example in the lesson.`,
-      options: keywords.slice(0, 4),
-      correctIndex: 0,
-      explanation: `The keyword "${safeKeyword}" is commonly used.`,
-    };
-  }
-  
-  const targetLine =
-    lines.find(
-      (l) =>
-        l.includes("(") || l.includes("=") || l.includes("return")
-    ) || lines[0];
-    
-  const keywords = getKeywords(language);
-  const foundKeyword = keywords.find((k) => targetLine.includes(k));
-  
-  // If no keyword found, create a fallback question using the first keyword
-  if (!foundKeyword) {
-    const fallbackKeyword = keywords[0];
-    const blanked = targetLine.replace(/[a-zA-Z_][a-zA-Z0-9_]*/, "______");
-    return {
-      question: `Fill in the blank:\n\`\`\`\n${blanked}\n\`\`\``,
-      hint: `The missing part is something like "${fallbackKeyword}".`,
-      options: [fallbackKeyword, "function", "variable", "loop"],
-      correctIndex: 0,
-      explanation: `The correct keyword is \`${fallbackKeyword}\`. ${lesson.concept}`,
-    };
-  }
-  
-  const blanked = targetLine.replace(foundKeyword, "______");
-  const wrongKeywords = keywords
-    .filter((k) => k !== foundKeyword)
-    .slice(0, 3);
-  
-  // If not enough wrong options, pad with generic ones
-  while (wrongKeywords.length < 3) {
-    wrongKeywords.push("function");
-  }
-  
-  return {
-    question: `Fill in the blank:\n\`\`\`\n${blanked}\n\`\`\``,
-    hint: `This keyword is one of the core building blocks of ${lesson.title}. Check the example in the lesson.`,
-    options: [foundKeyword, wrongKeywords[0], wrongKeywords[1], wrongKeywords[2]],
-    correctIndex: 0,
-    explanation: `The correct keyword is \`${foundKeyword}\`. ${lesson.concept}`,
-  };
-}
-
-function generateTrueOrFalseQuestion(lesson, language) {
-  const concept = lesson.concept;
-  const falseStatement = getFalseStatement(lesson, language);
-  const isCorrectTrue = Math.random() > 0.5;
-  
-  if (isCorrectTrue) {
-    return {
-      question: `True or False: "${concept}"`,
-      hint: `Read the key concept section of this lesson carefully.`,
-      options: ["True", "False"],
-      correctIndex: 0,
-      explanation: `TRUE. ${concept}`,
-    };
-  } else {
-    return {
-      question: `True or False: "${falseStatement}"`,
-      hint: `Think carefully — is this actually how ${lesson.title} works?`,
-      options: ["True", "False"],
-      correctIndex: 1,
-      explanation: `FALSE. ${concept}`,
-    };
-  }
-}
-
-// ✅ FIXED: generatePredictOutputQuestion now never returns null
-function generatePredictOutputQuestion(lesson, language) {
-  const lines = lesson.example.split("\n").filter((l) => l.trim());
-  let printLine;
-  if (language === "python") {
-    printLine = lines.find((l) => l.includes("print("));
-  } else if (language === "java") {
-    printLine = lines.find((l) => l.includes("System.out.println") || l.includes("System.out.print"));
-  } else if (language === "javascript") {
-    printLine = lines.find((l) => l.includes("console.log("));
-  } else if (language === "ruby") {
-    printLine = lines.find((l) => l.includes("puts") || l.includes("print "));
-  }
-  
-  // Fallback if no obvious print line
-  if (!printLine) {
-    const sampleLine = lines.find(l => l.includes("=") || l.includes("return")) || lines[0] || "print('hello')";
-    return {
-      question: `What is the expected output of this code?\n\`\`\`\n${sampleLine}\n\`\`\``,
-      hint: `Look at the example in the lesson.`,
-      options: ["Hello", "Error", "Nothing", "Undefined"],
-      correctIndex: 0,
-      explanation: `Based on the lesson, the output would be something like "Hello".`,
-    };
-  }
-  
-  const correctOutput = getPredictedOutput(printLine, lesson, language);
-  if (!correctOutput) {
-    // Provide a sensible default
-    return {
-      question: `What does this code output?\n\`\`\`\n${printLine.trim()}\n\`\`\``,
-      hint: `Run the example in your mind, or check the lesson.`,
-      options: ["Text output", "Error", "Nothing", "Undefined"],
-      correctIndex: 0,
-      explanation: `The code would output text or a value. Refer to the lesson for details.`,
-    };
-  }
-  
-  return {
-    question: `What is the output of this code?\n\`\`\`\n${printLine.trim()}\n\`\`\``,
-    hint: `Trace through the code step by step. What value is being passed to the output function?`,
-    options: [
-      correctOutput,
-      getWrongOutputOption(lesson, language, 0),
-      getWrongOutputOption(lesson, language, 1),
-      getWrongOutputOption(lesson, language, 2),
-    ],
-    correctIndex: 0,
-    explanation: `The output is "${correctOutput}". ${lesson.concept}`,
-  };
-}
-
-// ─── Helper functions (language-aware) ──────────────────────────────────────
-function getKeywords(language) {
-  switch (language) {
-    case "python": return ["print", "def", "return", "for", "if", "while", "import", "class", "append", "range"];
-    case "java": return ["System.out.println", "int", "String", "for", "if", "return", "class", "ArrayList", "static", "void"];
-    case "javascript": return ["console.log", "function", "let", "const", "var", "for", "if", "while", "return", "class"];
-    case "ruby": return ["puts", "def", "end", "if", "while", "for", "each", "do", "return", "class"];
-    default: return [];
-  }
-}
-
-function getWrongConcepts(language) {
-  switch (language) {
-    case "python": return pythonWrongConcepts;
-    case "java": return javaWrongConcepts;
-    case "javascript": return jsWrongConcepts;
-    case "ruby": return rubyWrongConcepts;
-    default: return [];
-  }
-}
-
-function getFalseStatements(language) {
-  switch (language) {
-    case "python": return pythonFalseStatements;
-    case "java": return javaFalseStatements;
-    case "javascript": return jsFalseStatements;
-    case "ruby": return rubyFalseStatements;
-    default: return [];
-  }
-}
-
-const pythonWrongConcepts = [
-  "Variables must always be declared with a type keyword before use.",
-  "Functions in Python must always return a value explicitly.",
-  "Python uses semicolons to end every statement.",
-  "Indentation in Python is optional and just for readability.",
-  "Lists in Python can only store values of the same type.",
-  "The `def` keyword is used to declare variables in Python.",
-  "Python requires a `main()` function to run any program.",
-  "Strings in Python cannot be modified once created using .upper().",
-  "The `for` loop in Python always requires a counter variable.",
-  "You must use `var` to declare variables in Python.",
+/**
+ * Patterns ordered from most- to least-specific.
+ * Each must have exactly one capture group: the printed value.
+ */
+const PRINT_PATTERNS = [
+  // Python  : print("hello")  print('hello')  print(42)
+  /print\(\s*f?["']([^"']+)["']\s*\)/,
+  /print\(\s*(\d[\d.]*)\s*\)/,
+  // Java    : System.out.println("hello")
+  /System\.out\.print(?:ln)?\(\s*"([^"]+)"\s*\)/,
+  // JS / TS : console.log("hello")
+  /console\.log\(\s*["'`]([^"'`]+)["'`]\s*\)/,
+  // Ruby    : puts "hello"  print "hello"
+  /(?:puts|print)\s+["']([^"']+)["']/,
+  /(?:puts|print)\s+(\d[\d.]*)/,
 ];
 
-const javaWrongConcepts = [
-  "Java variables do not need a type declaration.",
-  "Java methods always return void unless specified otherwise.",
-  "Java does not need semicolons at the end of statements.",
-  "In Java, you can write code outside of a class.",
-  "ArrayList is a fixed-size data structure in Java.",
-  "The `main` method in Java can be named anything.",
-  "Java is a dynamically typed language like Python.",
-  "You can use `print()` directly in Java without a class.",
-  "Java loops do not need curly braces.",
-  "Inheritance in Java is achieved using the `extends` keyword only in interfaces.",
-];
-
-const jsWrongConcepts = [
-  "JavaScript must be compiled before running.",
-  "JavaScript is the same as Java.",
-  "In JavaScript, you must declare a variable's type.",
-  "`let` variables cannot be reassigned.",
-  "`console.log()` only works in Node.js, not browsers.",
-  "JavaScript uses `print()` for output.",
-  "JavaScript requires semicolons at the end of every line (modern JS does not).",
-  "Arrow functions are exactly the same as regular functions.",
-  "JavaScript is a statically typed language.",
-  "You cannot use `if` without curly braces.",
-];
-
-const rubyWrongConcepts = [
-  "Ruby uses `console.log()` for output.",
-  "Ruby is a compiled language.",
-  "In Ruby, you must declare variables with `let`.",
-  "Ruby methods always require explicit `return`.",
-  "Ruby uses `end` only for loops, not for methods.",
-  "Double quotes and single quotes behave identically in Ruby.",
-  "Ruby does not support object-oriented programming.",
-  "You can call a method without defining it first.",
-  "Ruby arrays use zero‑based indexing but start from 1.",
-  "Ruby uses `//` for comments.",
-];
-
-const pythonFalseStatements = [
-  `Python requires you to declare variable types explicitly.`,
-  `The print() function in Python uses semicolons.`,
-  `Indentation in Python is optional and has no effect on the program.`,
-  `Python functions must always explicitly return a value.`,
-  `Lists in Python can only contain items of the same data type.`,
-  `Python requires a main() function to start execution.`,
-  `The def keyword in Python is used to declare variables.`,
-  `For loops in Python always require a numeric counter.`,
-];
-
-const javaFalseStatements = [
-  `Java variables do not need a type declaration.`,
-  `In Java, code can be written outside of a class.`,
-  `Java does not require semicolons at the end of statements.`,
-  `The main method in Java can be named anything.`,
-  `Java is a dynamically typed language.`,
-  `ArrayList in Java has a fixed size.`,
-  `Java loops do not need curly braces.`,
-  `You can use print() directly in Java without a class.`,
-];
-
-const jsFalseStatements = [
-  `JavaScript is the same as Java.`,
-  `In JavaScript, you must declare a variable's type.`,
-  `console.log() only works in Node.js.`,
-  `JavaScript uses print() for output.`,
-  `Arrow functions can have their own this context (simplified for beginners).`,
-  `JavaScript requires semicolons at the end of every line.`,
-  `You cannot use if without curly braces.`,
-  `JavaScript is a compiled language.`,
-];
-
-const rubyFalseStatements = [
-  `Ruby uses console.log() for output.`,
-  `Ruby is a compiled language.`,
-  `In Ruby, you must declare variables with let.`,
-  `Ruby methods always require an explicit return.`,
-  `Ruby uses end only for loops, not for methods.`,
-  `Double quotes and single quotes behave identically.`,
-  `Ruby arrays start at index 1.`,
-  `You can call a method without defining it first.`,
-];
-
-function getWrongConceptOption(lesson, language, index) {
-  const wrongs = getWrongConcepts(language);
-  return wrongs[(index + lesson.title.length) % wrongs.length];
-}
-
-function getCorrectExampleAnswer(lesson, codeLine, language) {
-  if (language === "javascript") {
-    if (codeLine.includes("console.log")) return "Outputs text to the console";
-    if (codeLine.includes("function")) return "Defines a function";
-    if (codeLine.includes("=>")) return "Declares an arrow function";
-    if (codeLine.includes("for")) return "Iterates with a for loop";
-    if (codeLine.includes("if")) return "Conditional branch";
-    if (codeLine.includes("let") || codeLine.includes("const")) return "Declares a variable";
-    if (codeLine.includes("return")) return "Returns a value";
-    return `Demonstrates ${lesson.title}`;
-  }
-  if (language === "ruby") {
-    if (codeLine.includes("puts") || codeLine.includes("print")) return "Outputs text";
-    if (codeLine.includes("def")) return "Defines a method";
-    if (codeLine.includes("each")) return "Iterates over a collection";
-    if (codeLine.includes("if")) return "Conditional branch";
-    if (codeLine.includes("=")) return "Assigns a value";
-    if (codeLine.includes("end")) return "Closes a block/method";
-    return `Demonstrates ${lesson.title}`;
-  }
-  if (language === "python") {
-    if (codeLine.includes("print(")) return "Outputs text to the screen";
-    if (codeLine.includes("def ")) return "Defines a new function";
-    if (codeLine.includes("for ")) return "Iterates over a sequence";
-    if (codeLine.includes("if ")) return "Checks a condition";
-    if (codeLine.includes("import ")) return "Imports a module for use";
-    if (codeLine.includes("class ")) return "Defines a new class";
-    if (codeLine.includes("=")) return "Assigns a value to a variable";
-    if (codeLine.includes("return")) return "Returns a value from a function";
-    return `Demonstrates ${lesson.title}`;
-  }
-  if (language === "java") {
-    if (codeLine.includes("System.out.println")) return "Outputs text to the screen";
-    if (codeLine.includes("int ") || codeLine.includes("String ")) return "Declares a variable with a type";
-    if (codeLine.includes("for ")) return "Iterates a fixed number of times";
-    if (codeLine.includes("if ")) return "Checks a condition";
-    if (codeLine.includes("class ")) return "Defines a new class";
-    if (codeLine.includes("return")) return "Returns a value from a method";
-    if (codeLine.includes("new ArrayList")) return "Creates a new resizable list";
-    return `Demonstrates ${lesson.title}`;
-  }
-  return `Demonstrates ${lesson.title}`;
-}
-
-const wrongExampleOptions = [
-  "Deletes a variable from memory",
-  "Stops the program from running",
-  "Converts a number to a string automatically",
-  "Declares a new class",
-  "Imports an external library",
-  "Creates an infinite loop",
-  "Throws an exception",
-  "Connects to a database",
-];
-
-function getWrongExampleOption(lesson, language, index) {
-  return wrongExampleOptions[
-    (index + lesson.id.length) % wrongExampleOptions.length
-  ];
-}
-
-function summarizeSolution(solution, language) {
-  if (!solution) return "Write the correct code as shown in the example";
-  const lines = solution
-    .split("\n")
-    .filter(
-      (l) =>
-        l.trim() &&
-        !l.trim().startsWith("#") &&
-        !l.trim().startsWith("//")
-    );
-  if (lines.length === 0) return "Follow the lesson concept";
-  return lines[0].trim();
-}
-
-const wrongSolutionOptions = [
-  "Use a while loop instead of the suggested approach",
-  "Import a third-party library to solve the problem",
-  "Hard-code the answer without using any variables",
-  "Use recursion to solve the problem",
-  "Solve it using only print statements with no logic",
-  "Use a class and object-oriented approach",
-  "Store the result in a global variable",
-  "Use string concatenation instead of f-strings",
-];
-
-function getWrongSolutionOption(lesson, language, index) {
-  return wrongSolutionOptions[
-    (index + lesson.id.length) % wrongSolutionOptions.length
-  ];
-}
-
-const wrongDebugOptions = [
-  "Always use global variables to avoid scope issues.",
-  "Never use print statements for debugging — they slow down the program.",
-  "If your code doesn't work, delete everything and start over.",
-  "Semicolons are optional in most programming languages.",
-  "Indentation doesn't matter as long as the logic is correct.",
-  "You can ignore error messages — they are usually not helpful.",
-  "Always test your entire program at once rather than in small pieces.",
-  "Comments in code slow down execution and should be avoided.",
-];
-
-function getWrongDebugOption(lesson, language, index) {
-  return wrongDebugOptions[
-    (index + lesson.id.length) % wrongDebugOptions.length
-  ];
-}
-
-function getPredictedOutput(printLine, lesson, language) {
-  if (language === "python") {
-    const match = printLine.match(/print\("([^"]+)"\)/);
-    if (match) return match[1];
-    const match2 = printLine.match(/print\('([^']+)'\)/);
-    if (match2) return match2[1];
-  } else if (language === "java") {
-    const match = printLine.match(/println\("([^"]+)"\)/);
-    if (match) return match[1];
-  } else if (language === "javascript") {
-    const match = printLine.match(/console\.log\(\s*['"`]([^'"`]+)['"`]\s*\)/);
-    if (match) return match[1];
-  } else if (language === "ruby") {
-    const match = printLine.match(/puts\s+['"]([^'"]+)['"]/);
-    if (match) return match[1];
+/**
+ * Extract the first recognisable output value from example code.
+ * Returns a trimmed string, or null when nothing safe can be found.
+ */
+function extractFirstOutput(exampleCode) {
+  if (!exampleCode || typeof exampleCode !== "string") return null;
+  for (const pattern of PRINT_PATTERNS) {
+    for (const line of exampleCode.split("\n")) {
+      const m = line.match(pattern);
+      if (m?.[1] !== undefined) {
+        const value = m[1].trim();
+        if (value.length > 0) return value;
+      }
+    }
   }
   return null;
 }
 
-const wrongOutputOptions = [
-  "Nothing — the code has a syntax error",
-  "undefined",
-  "null",
-  "An error message",
-  "True",
-  "False",
-  "0",
-  "None",
-];
+// ---------------------------------------------------------------------------
+// Explanation extraction (Q4)
+// ---------------------------------------------------------------------------
 
-function getWrongOutputOption(lesson, language, index) {
-  return wrongOutputOptions[
-    (index + lesson.id.length) % wrongOutputOptions.length
-  ];
+/**
+ * Pull the most informative sentence from lesson.explanation.
+ *
+ * Strategy:
+ *  1. Split on sentence boundaries (. ! ?)
+ *  2. Prefer sentences that contain "is", "are", "means", "allows",
+ *     "lets", "used", "called" — these tend to be definitional.
+ *  3. Fall back to the longest sentence if none match.
+ *  4. Return null if nothing useful is found.
+ */
+function extractKeySentence(explanation) {
+  if (!explanation || typeof explanation !== "string") return null;
+
+  const sentences = explanation
+    .split(/(?<=[.!?])\s+/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 20); // discard very short fragments
+
+  if (sentences.length === 0) return null;
+
+  const DEFINITIONAL = /\b(is|are|means|allows|lets|used|called|makes)\b/i;
+  const definitional = sentences.filter((s) => DEFINITIONAL.test(s));
+
+  const pool = definitional.length > 0 ? definitional : sentences;
+
+  // Pick the longest from the pool — tends to be the most content-rich
+  const best = pool.reduce((a, b) => (b.length > a.length ? b : a));
+
+  // Cap at 160 chars so it fits comfortably as a quiz option
+  return best.length > 160 ? best.slice(0, 160).trimEnd() + "…" : best;
 }
 
-function getFalseStatement(lesson, language) {
-  const arr = getFalseStatements(language);
-  return arr[(lesson.title.length + lesson.id.length) % arr.length];
+// ---------------------------------------------------------------------------
+// Shared option truncation helper
+// ---------------------------------------------------------------------------
+
+function truncate(str, max = 120) {
+  if (!str || typeof str !== "string") return str;
+  const trimmed = str.trim();
+  return trimmed.length > max ? trimmed.slice(0, max).trimEnd() + "…" : trimmed;
+}
+
+// ---------------------------------------------------------------------------
+// Question builders
+// Each returns a raw question object with the correct answer at options[0],
+// plus a `_correctAnswer` sentinel used by shuffleAndFinish.
+// Returns null when the required lesson field is absent / too short.
+// ---------------------------------------------------------------------------
+
+/** Q1 – Core concept */
+function buildConceptQuestion(lesson) {
+  const concept = lesson?.concept?.trim();
+  if (!concept || concept.length < 10) return null;
+
+  const correctAnswer = truncate(concept);
+
+  return {
+    question: "What is the main concept covered in this lesson?",
+    options: [
+      correctAnswer,
+      "Incorrect syntax that causes a runtime error",
+      "A concept from a different programming topic",
+      "An advanced feature not covered in this course",
+    ],
+    _correctAnswer: correctAnswer,
+    hint: "Re-read the concept summary at the top of the lesson.",
+    explanation: `The lesson explains: ${correctAnswer}`,
+  };
+}
+
+/** Q2 – Example output */
+function buildExampleQuestion(lesson) {
+  const exampleCode = lesson?.example?.trim();
+  if (!exampleCode) return null;
+
+  const output = extractFirstOutput(exampleCode);
+  if (!output) return null;
+
+  return {
+    question:
+      "What is the output of the first print statement in the example code?",
+    options: [
+      output,
+      "Error: invalid syntax",
+      "Nothing – the code produces no output",
+      "undefined",
+    ],
+    _correctAnswer: output,
+    hint: "Look at the first print / log / puts statement in the example.",
+    explanation: `Running the example code prints: ${output}`,
+  };
+}
+
+/** Q3 – Exercise solution */
+function buildExerciseQuestion(lesson) {
+  const prompt = lesson?.exercise?.prompt?.trim();
+  const solution = lesson?.exercise?.solution?.trim();
+  if (!prompt || !solution) return null;
+
+  const firstLine = solution
+    .split("\n")
+    .map((l) => l.trim())
+    .find((l) => l.length > 0);
+  if (!firstLine) return null;
+
+  const correctAnswer = truncate(firstLine, 100);
+
+  return {
+    question: `Which of the following correctly completes this exercise?\n\n"${prompt}"`,
+    options: [
+      correctAnswer,
+      "# This line contains a syntax error",
+      "pass  # Missing required code",
+      "undefined_variable",
+    ],
+    _correctAnswer: correctAnswer,
+    hint: "Think about the exact syntax shown in the lesson example.",
+    explanation: `The correct solution starts with: ${correctAnswer}`,
+  };
+}
+
+/** Q4 – Explanation comprehension */
+function buildExplanationQuestion(lesson) {
+  const explanation = lesson?.explanation?.trim();
+  if (!explanation || explanation.length < 30) return null;
+
+  const keySentence = extractKeySentence(explanation);
+  if (!keySentence) return null;
+
+  return {
+    question:
+      "Which of the following best describes what this lesson is about?",
+    options: [
+      keySentence,
+      "This lesson covers how to handle exceptions and runtime errors.",
+      "This lesson explains how to import external libraries.",
+      "This lesson focuses on optimising code for performance.",
+    ],
+    _correctAnswer: keySentence,
+    hint: "Read the lesson explanation section carefully.",
+    explanation: `The lesson explains: ${keySentence}`,
+  };
+}
+
+/** Q5 – Debugging tip */
+function buildDebuggingTipQuestion(lesson) {
+  const tip = lesson?.exercise?.debuggingTip?.trim();
+  if (!tip || tip.length < 10) return null;
+
+  const correctAnswer = truncate(tip);
+
+  return {
+    question:
+      "Which tip would best help you debug a mistake in this exercise?",
+    options: [
+      correctAnswer,
+      "Add more variables to track the program state.",
+      "Restart the interpreter and try a different approach.",
+      "Check your internet connection and reload the page.",
+    ],
+    _correctAnswer: correctAnswer,
+    hint: "Think about the specific mistake this exercise is designed to catch.",
+    explanation: `The debugging tip for this exercise: ${correctAnswer}`,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Shuffle and finalise
+// ---------------------------------------------------------------------------
+
+/**
+ * Shuffle options using the shared PRNG, then compute correctIndex.
+ * Strips the internal `_correctAnswer` sentinel before returning.
+ */
+function shuffleAndFinish(raw, prng) {
+  const { _correctAnswer, ...rest } = raw;
+  const options = seededShuffle([...raw.options], prng);
+  const correctIndex = options.indexOf(_correctAnswer);
+  return { ...rest, options, correctIndex };
+}
+
+// ---------------------------------------------------------------------------
+// Public API
+// ---------------------------------------------------------------------------
+
+/**
+ * Generate up to 5 deterministic quiz questions for `lesson`.
+ *
+ * Questions are skipped (not faked) when the required lesson field is
+ * absent, so the returned array may have fewer than 5 items.
+ *
+ * @param {object} lesson     – a single lesson object from the curriculum
+ * @param {string} [language] – reserved for future display tweaks, unused
+ * @returns {Array<{
+ *   question    : string,
+ *   options     : string[],   // 4 items
+ *   correctIndex: number,     // 0–3
+ *   hint        : string,
+ *   explanation : string,
+ * }>}
+ */
+export function generateQuizQuestions(lesson, _language) {
+  if (!lesson) return [];
+
+  // Stable seed from lesson ID ensures identical shuffle on every render
+  const seed = seedFromString(lesson.id ?? lesson.title ?? "default");
+  const prng = makePrng(seed);
+
+  const builders = [
+    buildConceptQuestion,
+    buildExampleQuestion,
+    buildExerciseQuestion,
+    buildExplanationQuestion,
+    buildDebuggingTipQuestion,
+  ];
+
+  return builders
+    .map((build) => build(lesson))
+    .filter(Boolean)
+    .map((raw) => shuffleAndFinish(raw, prng));
 }

@@ -30,9 +30,6 @@ function computeNewStreak(lastStudyDate, currentStreak) {
 
 /**
  * Read the user's current daily AI count from the DB row.
- * Returns { currentCount, today } – a pure read, no writes.
- * Falls back to { currentCount: 0, today } on any DB error so callers
- * can still fail-open rather than silently blocking the user.
  */
 async function readAiCount(supabaseClient, clerkUserId) {
   const today = getTodayStr();
@@ -45,22 +42,93 @@ async function readAiCount(supabaseClient, clerkUserId) {
 
   if (error) {
     console.error("Failed to read AI count:", error);
-    // Fail open – a Supabase hiccup should not silently block the user
     return { currentCount: 0, today };
   }
 
   const lastDate = data?.last_ai_date;
-  // If last_ai_date is a different calendar day the counter resets to 0
   const currentCount =
     lastDate === today ? data?.daily_ai_count || 0 : 0;
 
   return { currentCount, today };
 }
 
+// ---------------------------------------------------------------------------
+// V1 → V2 migration helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * All Python V1 lesson IDs in curriculum order.
+ * Used to count how many V1 lessons a migrated user had completed,
+ * so we can auto-unlock the equivalent number of V2 lessons.
+ *
+ * This list is static and will never change (V1 is frozen).
+ */
+const PYTHON_V1_LESSON_IDS = [
+  "python-phase0-m1-l1",
+  "python-phase1-m1-l1",
+  "python-phase1-m1-l2",
+  "python-phase1-m1-l3",
+  "python-phase1-m1-l4",
+  "python-phase1-m1-l5",
+  "python-phase1-m1-l6",
+  "python-phase1-m1-l7",
+  "python-phase1-m1-l8",
+  "python-phase1-m1-l9",
+  "python-phase1-m1-l10",
+  "python-phase1-m2-l1",
+  "python-phase1-m2-l2",
+  "python-phase1-m2-l3",
+  "python-phase1-m2-l4",
+  "python-phase1-m2-l5",
+  "python-phase1-m2-l6",
+  "python-phase1-m2-l7",
+  "python-phase1-m2-l8",
+  "python-phase1-m2-l9",
+  "python-phase1-m2-l10",
+  "python-phase2-m1-l1",
+  "python-phase2-m1-l2",
+  "python-phase2-m1-l3",
+  "python-phase2-m1-l4",
+  "python-phase2-m1-l5",
+  "python-phase2-m1-l6",
+  "python-phase2-m1-l7",
+  "python-phase2-m1-l8",
+  "python-phase2-m1-l9",
+  "python-phase2-m1-l10",
+  "python-phase3-m1-l1",
+  "python-phase3-m1-l2",
+  "python-phase3-m1-l3",
+  "python-phase3-m1-l4",
+  "python-phase3-m1-l5",
+  "python-phase3-m1-l6",
+  "python-phase3-m1-l7",
+  "python-phase3-m1-l8",
+  "python-phase3-m1-l9",
+  "python-phase3-m1-l10",
+  "python-phase3-m2-l1",
+  "python-phase3-m2-l2",
+  "python-phase3-m2-l3",
+];
+
+const PYTHON_V1_ID_SET = new Set(PYTHON_V1_LESSON_IDS);
+
+/**
+ * Count how many V1 Python lessons appear in a completed_lessons array.
+ *
+ * @param {string[]} completedLessons
+ * @returns {number}
+ */
+export function countV1PythonCompletions(completedLessons) {
+  if (!completedLessons || !Array.isArray(completedLessons)) return 0;
+  return completedLessons.filter((id) => PYTHON_V1_ID_SET.has(id)).length;
+}
+
+// ---------------------------------------------------------------------------
+
 export const progressDb = {
-  // ─────────────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────
   // Core progress helpers
-  // ─────────────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────
 
   async getProgress(supabaseClient, clerkUserId, email) {
     const { data, error } = await supabaseClient
@@ -98,12 +166,18 @@ export const progressDb = {
       }
     }
 
-    // Always use v2 for Python users, v1 for others
     const lang = data.language || "python";
     const version =
       data.curriculum_version || (lang === "python" ? 2 : 1);
 
-    return { ...data, curriculum_version: version };
+    // Attach V1 completion count so the UI can use it for unlocking
+    const v1PythonCount = countV1PythonCompletions(data.completed_lessons);
+
+    return {
+      ...data,
+      curriculum_version: version,
+      v1_python_completed_count: v1PythonCount,
+    };
   },
 
   async createProgress(supabaseClient, clerkUserId, email) {
@@ -132,7 +206,7 @@ export const progressDb = {
       return null;
     }
 
-    return data;
+    return { ...data, v1_python_completed_count: 0 };
   },
 
   async updateProgress(supabaseClient, clerkUserId, updates) {
@@ -151,12 +225,7 @@ export const progressDb = {
     return data;
   },
 
-  async completeLesson(
-    supabaseClient,
-    clerkUserId,
-    lessonId,
-    extraUpdates = {}
-  ) {
+  async completeLesson(supabaseClient, clerkUserId, lessonId, extraUpdates = {}) {
     const { data, error } = await supabaseClient
       .from("user_progress")
       .select("completed_lessons, streak_days, last_study_date")
@@ -198,7 +267,9 @@ export const progressDb = {
       return null;
     }
 
-    return updated;
+    // Recompute the V1 count on the returned object
+    const v1Count = countV1PythonCompletions(updated.completed_lessons);
+    return { ...updated, v1_python_completed_count: v1Count };
   },
 
   async completeQuiz(supabaseClient, clerkUserId, lessonId) {
@@ -318,60 +389,29 @@ export const progressDb = {
     }
   },
 
-  // ─────────────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────
   // AI quota helpers
-  // ─────────────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────
 
-  /**
-   * READ-ONLY check: is the user allowed to make another AI request?
-   *
-   * Does NOT modify the database. Call this BEFORE making the AI request
-   * so you can bail out early without touching the network.
-   *
-   * @returns {{ allowed: boolean, remaining: number | null }}
-   *   remaining is null for pro users (unlimited).
-   */
   async checkAiLimit(supabaseClient, clerkUserId, isPro) {
     if (isPro) return { allowed: true, remaining: null };
-
     const { currentCount } = await readAiCount(supabaseClient, clerkUserId);
-
     if (currentCount >= FREE_DAILY_LIMIT) {
       return { allowed: false, remaining: 0 };
     }
-
-    return {
-      allowed: true,
-      remaining: FREE_DAILY_LIMIT - currentCount,
-    };
+    return { allowed: true, remaining: FREE_DAILY_LIMIT - currentCount };
   },
 
-  /**
-   * WRITE: increment the AI counter by 1.
-   *
-   * Call this AFTER a successful AI response so that a network failure
-   * never silently consumes part of the user's daily quota.
-   *
-   * If the count has somehow reached the limit between checkAiLimit and
-   * this call (e.g. two open tabs), we still refuse to go over.
-   *
-   * @returns {{ allowed: boolean, remaining: number | null }}
-   */
   async incrementAiCount(supabaseClient, clerkUserId, isPro) {
     if (isPro) return { allowed: true, remaining: null };
-
     const { currentCount, today } = await readAiCount(
       supabaseClient,
       clerkUserId
     );
-
-    // Double-check the limit hasn't been hit by another tab/device
     if (currentCount >= FREE_DAILY_LIMIT) {
       return { allowed: false, remaining: 0 };
     }
-
     const newCount = currentCount + 1;
-
     await supabaseClient
       .from("user_progress")
       .update({
@@ -380,37 +420,22 @@ export const progressDb = {
         updated_at: new Date().toISOString(),
       })
       .eq("clerk_user_id", clerkUserId);
-
-    return {
-      allowed: true,
-      remaining: FREE_DAILY_LIMIT - newCount,
-    };
+    return { allowed: true, remaining: FREE_DAILY_LIMIT - newCount };
   },
 
   /**
-   * DEPRECATED – kept for backward compatibility only.
-   *
-   * Previously this was called BEFORE the AI request, which meant a
-   * failed network call still consumed quota. Prefer calling
-   * checkAiLimit → (AI call) → incrementAiCount instead.
-   *
-   * This shim now performs the same check-then-increment pattern but
-   * still atomically (single function) so existing callers don't break.
+   * DEPRECATED – kept for backward compatibility.
    */
   async checkAndIncrementAiCount(supabaseClient, clerkUserId, isPro) {
     if (isPro) return { allowed: true, remaining: null };
-
     const { currentCount, today } = await readAiCount(
       supabaseClient,
       clerkUserId
     );
-
     if (currentCount >= FREE_DAILY_LIMIT) {
       return { allowed: false, remaining: 0, limit: FREE_DAILY_LIMIT };
     }
-
     const newCount = currentCount + 1;
-
     await supabaseClient
       .from("user_progress")
       .update({
@@ -419,7 +444,6 @@ export const progressDb = {
         updated_at: new Date().toISOString(),
       })
       .eq("clerk_user_id", clerkUserId);
-
     return {
       allowed: true,
       remaining: FREE_DAILY_LIMIT - newCount,
@@ -429,7 +453,6 @@ export const progressDb = {
 
   async getAiRequestsRemaining(supabaseClient, clerkUserId, isPro) {
     if (isPro) return null;
-
     const { currentCount } = await readAiCount(supabaseClient, clerkUserId);
     return Math.max(0, FREE_DAILY_LIMIT - currentCount);
   },

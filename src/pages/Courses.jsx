@@ -3,16 +3,36 @@ import { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
-import { getAllLessons, getModulesByLanguage, hasVersion2 } from "@/lib/curriculum";
+import {
+  getAllLessons,
+  getModulesByLanguage,
+  hasVersion2,
+  loadCurriculum,
+  LANGUAGE_META,
+} from "@/lib/curriculum";
 import { isGuestAccessible } from "@/lib/guestAccess";
 import { localProgressDb } from "@/lib/localProgressDb";
-import { Check, Lock, Circle, ArrowRight, HelpCircle, Smartphone, Code2 } from "lucide-react";
+import {
+  Check,
+  Lock,
+  Circle,
+  ArrowRight,
+  HelpCircle,
+  Smartphone,
+  Code2,
+  Loader2,
+} from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
 import { progressDb } from "@/lib/progressDb";
 import { useAuth } from "@/lib/AuthContext";
 import Navbar from "@/components/Navbar";
 
 const ease = [0.16, 1, 0.3, 1];
+
+const LANGUAGES = Object.entries(LANGUAGE_META).map(([key, { label }]) => ({
+  key,
+  label,
+}));
 
 export default function Courses() {
   const { user, isSignedIn, isLoaded } = useUser();
@@ -21,31 +41,39 @@ export default function Courses() {
   const [selectedLang, setSelectedLang] = useState("python");
   const [mode, setMode] = useState("lessons");
   const [loading, setLoading] = useState(true);
-  const [curriculumVersion, setCurriculumVersion] = useState(1);
+  const [langLoading, setLangLoading] = useState(false);
+  const [curriculumVersion, setCurriculumVersion] = useState(2);
   const navigate = useNavigate();
   const location = useLocation();
 
   const isGuest = !isSignedIn;
 
+  // ------------------------------------------------------------------
+  // Load progress + ensure the default curriculum chunk is ready
+  // ------------------------------------------------------------------
   const loadProgress = useCallback(async () => {
     if (!isLoaded) return;
 
     if (isGuest) {
       const guestData = localProgressDb.getProgress();
       const lang = guestData.language || "python";
+      const version = hasVersion2(lang) ? 2 : 1;
+      await loadCurriculum(lang, version);
       setProgress({
         completed_lessons: guestData.completed_lessons,
         completed_quizzes: guestData.completed_quizzes,
         streak_days: 0,
         language: lang,
+        v1_python_completed_count: 0,
       });
       setSelectedLang(lang);
-      setCurriculumVersion(hasVersion2(lang) ? 2 : 1);
+      setCurriculumVersion(version);
       setLoading(false);
       return;
     }
 
     if (!supabaseClient || !user) {
+      await loadCurriculum("python", 2);
       setLoading(false);
       return;
     }
@@ -57,13 +85,19 @@ export default function Courses() {
         user.primaryEmailAddress?.emailAddress
       );
       if (data) {
-        setProgress(data);
         const lang = data.language || "python";
+        const version =
+          data.curriculum_version || (hasVersion2(lang) ? 2 : 1);
+        await loadCurriculum(lang, version);
+        setProgress(data);
         setSelectedLang(lang);
-        setCurriculumVersion(data.curriculum_version || (hasVersion2(lang) ? 2 : 1));
+        setCurriculumVersion(version);
+      } else {
+        await loadCurriculum("python", 2);
       }
     } catch (err) {
       console.error("Failed to load progress:", err);
+      await loadCurriculum("python", 2);
     } finally {
       setLoading(false);
     }
@@ -73,6 +107,30 @@ export default function Courses() {
     loadProgress();
   }, [loadProgress, location.key]);
 
+  // ------------------------------------------------------------------
+  // Language switch
+  // ------------------------------------------------------------------
+  const handleLangChange = useCallback(
+    async (key) => {
+      if (key === selectedLang) return;
+      const version = hasVersion2(key) ? 2 : 1;
+      setLangLoading(true);
+      try {
+        await loadCurriculum(key, version);
+      } catch (err) {
+        console.error("Failed to load curriculum for", key, err);
+      } finally {
+        setLangLoading(false);
+      }
+      setSelectedLang(key);
+      setCurriculumVersion(version);
+    },
+    [selectedLang]
+  );
+
+  // ------------------------------------------------------------------
+  // Loading
+  // ------------------------------------------------------------------
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
@@ -81,17 +139,27 @@ export default function Courses() {
     );
   }
 
+  // ------------------------------------------------------------------
+  // Derived data
+  // ------------------------------------------------------------------
   const completedLessons = progress?.completed_lessons || [];
   const completedQuizzes = progress?.completed_quizzes || [];
   const streak = progress?.streak_days || 0;
   const allFlat = getAllLessons(selectedLang, curriculumVersion);
   const totalLessons = allFlat.length;
+
+  // Count how many V2 lesson IDs appear in completed_lessons
   const completedLessonCount = completedLessons.filter((id) =>
     allFlat.some((l) => l.id === id)
   ).length;
   const completedQuizCount = completedQuizzes.filter((id) =>
     allFlat.some((l) => l.id === id)
   ).length;
+
+  // V1 migration: how many V1 Python lessons did this user complete?
+  // This comes from progressDb.getProgress which counts V1 IDs in the
+  // completed_lessons array and attaches the count.
+  const v1CompletedCount = progress?.v1_python_completed_count || 0;
 
   const progressPct =
     totalLessons > 0
@@ -102,29 +170,71 @@ export default function Courses() {
         )
       : 0;
 
+  // ------------------------------------------------------------------
+  // Unlock logic
+  //
+  // Standard rule: a lesson is unlocked if it's the first lesson, or
+  // the previous lesson in the flat list has been completed.
+  //
+  // V1→V2 migration exception: if the user completed N lessons in the
+  // V1 Python curriculum, the first N lessons in V2 are auto-unlocked
+  // (plus the N+1th, since that's the one they should work on next).
+  // This only applies to signed-in users on the Python V2 curriculum.
+  // ------------------------------------------------------------------
   const isUnlocked = (lessonId) => {
     if (isGuest) {
       return isGuestAccessible(selectedLang, lessonId);
     }
+
     const idx = allFlat.findIndex((l) => l.id === lessonId);
     if (idx === 0) return true;
     if (idx === -1) return false;
-    return completedLessons.includes(allFlat[idx - 1]?.id);
+
+    // Standard sequential check: previous lesson completed?
+    if (completedLessons.includes(allFlat[idx - 1]?.id)) return true;
+
+    // This specific V2 lesson is already completed (maybe out of order)
+    if (completedLessons.includes(lessonId)) return true;
+
+    // V1→V2 migration exception: auto-unlock first N+1 V2 lessons
+    // when user completed N V1 lessons.
+    // N+1 because: if they finished 15 lessons, lessons 0–14 are "done"
+    // and lesson 15 (index 15) should be unlocked as their next one.
+    if (
+      selectedLang === "python" &&
+      curriculumVersion === 2 &&
+      v1CompletedCount > 0 &&
+      idx <= v1CompletedCount
+    ) {
+      return true;
+    }
+
+    return false;
   };
 
   const modules = getModulesByLanguage(selectedLang, curriculumVersion);
 
+  // ------------------------------------------------------------------
+  // Render
+  // ------------------------------------------------------------------
   return (
     <div className="min-h-screen bg-white">
       <Helmet>
         <title>Courses & Lessons | Learn Python Coding</title>
-        <meta name="description" content="Browse Python courses with interactive lessons, quizzes, and AI-powered code feedback. Progress tracking and structured learning paths." />
+        <meta
+          name="description"
+          content="Browse Python courses with interactive lessons, quizzes, and AI-powered code feedback. Progress tracking and structured learning paths."
+        />
         <meta property="og:title" content="Courses & Lessons | FluentCode" />
-        <meta property="og:description" content="Interactive Python curriculum with hands-on coding lessons and instant feedback." />
+        <meta
+          property="og:description"
+          content="Interactive Python curriculum with hands-on coding lessons and instant feedback."
+        />
       </Helmet>
       <Navbar streak={streak} />
 
       <div className="max-w-2xl mx-auto px-6 py-14">
+        {/* Header + progress bar */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -145,8 +255,21 @@ export default function Courses() {
               className="h-full bg-zinc-900 rounded-full"
             />
           </div>
+
+          {/* V1 migration notice — only shown if they have V1 progress */}
+          {v1CompletedCount > 0 &&
+            selectedLang === "python" &&
+            curriculumVersion === 2 &&
+            completedLessonCount < v1CompletedCount && (
+              <p className="text-xs text-blue-500 mt-3">
+                ✨ You completed {v1CompletedCount} lessons in the previous
+                curriculum — the first {v1CompletedCount} lessons here are
+                unlocked for you.
+              </p>
+            )}
         </motion.div>
 
+        {/* Lessons / Quiz toggle */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -180,6 +303,7 @@ export default function Courses() {
           </button>
         </motion.div>
 
+        {/* Quiz tip banner */}
         <AnimatePresence>
           {mode === "quiz" && (
             <motion.div
@@ -200,172 +324,194 @@ export default function Courses() {
           )}
         </AnimatePresence>
 
+        {/* Language selector */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1, ease }}
           className="flex gap-2 mb-10 flex-wrap"
         >
-          {[
-            { key: "python", label: "Python" },
-            { key: "javascript", label: "JavaScript" },
-            { key: "typescript", label: "TypeScript" },
-            { key: "java", label: "Java" },
-            { key: "ruby", label: "Ruby" },
-          ].map(({ key, label }) => (
+          {LANGUAGES.map(({ key, label }) => (
             <button
               key={key}
-              onClick={() => {
-                setSelectedLang(key);
-                setCurriculumVersion(hasVersion2(key) ? 2 : 1);
-              }}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+              onClick={() => handleLangChange(key)}
+              disabled={langLoading}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 disabled:opacity-60 ${
                 selectedLang === key
                   ? "bg-zinc-900 text-white"
                   : "border border-zinc-200 text-zinc-500 hover:border-zinc-400 hover:text-zinc-900"
               }`}
             >
-              {label}
+              {langLoading && selectedLang !== key ? (
+                label
+              ) : langLoading && selectedLang === key ? (
+                <span className="flex items-center gap-1.5">
+                  <Loader2 size={11} className="animate-spin" />
+                  {label}
+                </span>
+              ) : (
+                label
+              )}
             </button>
           ))}
         </motion.div>
 
+        {/* Curriculum content */}
         <AnimatePresence mode="wait">
-          <motion.div
-            key={`${selectedLang}-${mode}`}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.25, ease }}
-            className="space-y-10"
-          >
-            {modules.map((module) => {
-              const modLessons = module.lessons;
-              const modCompletedLessons = modLessons.filter((l) =>
-                completedLessons.includes(l.id)
-              ).length;
-              const modCompletedQuizzes = modLessons.filter((l) =>
-                completedQuizzes.includes(l.id)
-              ).length;
+          {langLoading ? (
+            <motion.div
+              key="lang-loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex items-center justify-center py-24"
+            >
+              <Loader2 size={20} className="animate-spin text-zinc-300" />
+            </motion.div>
+          ) : (
+            <motion.div
+              key={`${selectedLang}-${mode}`}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25, ease }}
+              className="space-y-10"
+            >
+              {modules.map((module) => {
+                const modLessons = module.lessons;
+                const modCompletedLessons = modLessons.filter((l) =>
+                  completedLessons.includes(l.id)
+                ).length;
+                const modCompletedQuizzes = modLessons.filter((l) =>
+                  completedQuizzes.includes(l.id)
+                ).length;
 
-              return (
-                <div key={module.id}>
-                  <div className="flex items-center justify-between mb-3">
-                    <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
-                      {module.title}
-                    </p>
-                    <span className="text-xs text-zinc-300 tabular-nums">
-                      {mode === "quiz"
-                        ? `${modCompletedQuizzes}/${modLessons.length}`
-                        : `${modCompletedLessons}/${modLessons.length}`}
-                    </span>
-                  </div>
+                return (
+                  <div key={module.id}>
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
+                        {module.title}
+                      </p>
+                      <span className="text-xs text-zinc-300 tabular-nums">
+                        {mode === "quiz"
+                          ? `${modCompletedQuizzes}/${modLessons.length}`
+                          : `${modCompletedLessons}/${modLessons.length}`}
+                      </span>
+                    </div>
 
-                  <div className="h-0.5 bg-zinc-100 rounded-full overflow-hidden mb-3">
-                    <div
-                      className="h-full bg-emerald-500 rounded-full transition-all duration-500"
-                      style={{
-                        width: `${
-                          modLessons.length > 0
-                            ? Math.round(
-                                ((mode === "quiz"
-                                  ? modCompletedQuizzes
-                                  : modCompletedLessons) /
-                                  modLessons.length) *
-                                  100
-                              )
-                            : 0
-                        }%`,
-                      }}
-                    />
-                  </div>
+                    <div className="h-0.5 bg-zinc-100 rounded-full overflow-hidden mb-3">
+                      <div
+                        className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                        style={{
+                          width: `${
+                            modLessons.length > 0
+                              ? Math.round(
+                                  ((mode === "quiz"
+                                    ? modCompletedQuizzes
+                                    : modCompletedLessons) /
+                                    modLessons.length) *
+                                    100
+                                )
+                              : 0
+                          }%`,
+                        }}
+                      />
+                    </div>
 
-                  <div className="space-y-1.5">
-                    {modLessons.map((lesson) => {
-                      if (mode === "quiz") {
-                        const quizDone = completedQuizzes.includes(lesson.id);
-                        const quizAccessible = isGuest
-                          ? isGuestAccessible(selectedLang, lesson.id)
-                          : true;
+                    <div className="space-y-1.5">
+                      {modLessons.map((lesson) => {
+                        if (mode === "quiz") {
+                          const quizDone = completedQuizzes.includes(lesson.id);
+                          const quizAccessible = isGuest
+                            ? isGuestAccessible(selectedLang, lesson.id)
+                            : true;
 
-                        if (!quizAccessible) {
+                          if (!quizAccessible) {
+                            return (
+                              <div
+                                key={lesson.id}
+                                className="flex items-center gap-3 px-4 py-3.5 rounded-xl border border-zinc-100 opacity-40 cursor-not-allowed select-none"
+                              >
+                                <Lock
+                                  size={14}
+                                  className="text-zinc-300 shrink-0"
+                                />
+                                <span className="text-sm text-zinc-400 flex-1">
+                                  {lesson.title}
+                                </span>
+                                <span className="text-xs text-zinc-300">
+                                  Sign up to unlock
+                                </span>
+                              </div>
+                            );
+                          }
+
                           return (
-                            <div
+                            <button
                               key={lesson.id}
-                              className="flex items-center gap-3 px-4 py-3.5 rounded-xl border border-zinc-100 opacity-40 cursor-not-allowed select-none"
+                              onClick={() =>
+                                navigate(`/quiz/${selectedLang}/${lesson.id}`)
+                              }
+                              className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border transition-all duration-200 group text-left ${
+                                quizDone
+                                  ? "border-emerald-100 bg-emerald-50/30 hover:border-emerald-300"
+                                  : "border-zinc-200 hover:border-zinc-900"
+                              }`}
                             >
-                              <Lock size={14} className="text-zinc-300 shrink-0" />
-                              <span className="text-sm text-zinc-400 flex-1">
+                              {quizDone ? (
+                                <Check
+                                  size={13}
+                                  strokeWidth={3}
+                                  className="text-emerald-500 shrink-0"
+                                />
+                              ) : (
+                                <HelpCircle
+                                  size={14}
+                                  className="text-zinc-300 group-hover:text-zinc-600 transition-colors shrink-0"
+                                />
+                              )}
+                              <span
+                                className={`text-sm font-medium flex-1 ${
+                                  quizDone
+                                    ? "text-emerald-700"
+                                    : "text-zinc-700"
+                                }`}
+                              >
                                 {lesson.title}
                               </span>
-                              <span className="text-xs text-zinc-300">
-                                Sign up to unlock
+                              <span
+                                className={`text-xs ${
+                                  quizDone
+                                    ? "text-emerald-500"
+                                    : "text-zinc-400"
+                                }`}
+                              >
+                                {quizDone ? "Completed" : "5 questions"}
                               </span>
-                            </div>
+                            </button>
                           );
                         }
 
+                        const done = completedLessons.includes(lesson.id);
+                        const unlocked = isUnlocked(lesson.id);
+
                         return (
-                          <button
+                          <LessonRow
                             key={lesson.id}
-                            onClick={() =>
-                              navigate(`/quiz/${selectedLang}/${lesson.id}`)
-                            }
-                            className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border transition-all duration-200 group text-left ${
-                              quizDone
-                                ? "border-emerald-100 bg-emerald-50/30 hover:border-emerald-300"
-                                : "border-zinc-200 hover:border-zinc-900"
-                            }`}
-                          >
-                            {quizDone ? (
-                              <Check
-                                size={13}
-                                strokeWidth={3}
-                                className="text-emerald-500 shrink-0"
-                              />
-                            ) : (
-                              <HelpCircle
-                                size={14}
-                                className="text-zinc-300 group-hover:text-zinc-600 transition-colors shrink-0"
-                              />
-                            )}
-                            <span
-                              className={`text-sm font-medium flex-1 ${
-                                quizDone ? "text-emerald-700" : "text-zinc-700"
-                              }`}
-                            >
-                              {lesson.title}
-                            </span>
-                            <span
-                              className={`text-xs ${
-                                quizDone ? "text-emerald-500" : "text-zinc-400"
-                              }`}
-                            >
-                              {quizDone ? "Completed" : "7 questions"}
-                            </span>
-                          </button>
+                            lesson={lesson}
+                            done={done}
+                            unlocked={unlocked}
+                            lang={selectedLang}
+                            isGuest={isGuest}
+                          />
                         );
-                      }
-
-                      const done = completedLessons.includes(lesson.id);
-                      const unlocked = isUnlocked(lesson.id);
-
-                      return (
-                        <LessonRow
-                          key={lesson.id}
-                          lesson={lesson}
-                          done={done}
-                          unlocked={unlocked}
-                          lang={selectedLang}
-                          isGuest={isGuest}
-                        />
-                      );
-                    })}
+                      })}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </motion.div>
+                );
+              })}
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
     </div>
