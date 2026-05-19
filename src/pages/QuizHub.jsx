@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
-import { curriculum } from "@/lib/curriculum";
+import { curriculum, getCurriculumByVersion, hasVersion2 } from "@/lib/curriculum";
 import { progressDb } from "@/lib/progressDb";
 import { useAuth } from "@/lib/AuthContext";
 import Navbar from "@/components/Navbar";
@@ -17,12 +17,35 @@ export default function QuizHub() {
   const { supabaseClient } = useAuth();
   const [progress, setProgress] = useState(null);
   const [selectedLang, setSelectedLang] = useState("python");
+  const [curriculumVersion, setCurriculumVersion] = useState(1);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Derive the correct version for a given language and progress data
+  const resolveVersion = useCallback(
+    (lang, progressData) => {
+      if (!isSignedIn) {
+        // Guest: use V2 if it exists for this language, otherwise V1
+        return hasVersion2(lang) ? 2 : 1;
+      }
+      // Signed-in: honour whatever version is stored on the user's progress row
+      return progressData?.curriculum_version || 1;
+    },
+    [isSignedIn]
+  );
+
   const loadProgress = useCallback(async () => {
-    if (!isLoaded || !isSignedIn || !supabaseClient || !user) return;
+    // Guest path – no DB call needed, just resolve version and stop loading
+    if (!isLoaded) return;
+
+    if (!isSignedIn || !supabaseClient || !user) {
+      const version = resolveVersion(selectedLang, null);
+      setCurriculumVersion(version);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     try {
       const data = await progressDb.getProgress(
@@ -32,19 +55,33 @@ export default function QuizHub() {
       );
       if (data) {
         setProgress(data);
-        setSelectedLang(data.language || "python");
+        const lang = data.language || "python";
+        setSelectedLang(lang);
+        setCurriculumVersion(resolveVersion(lang, data));
+      } else {
+        // Signed-in but no progress row yet
+        setCurriculumVersion(resolveVersion(selectedLang, null));
       }
     } catch (err) {
       console.error(err);
+      setCurriculumVersion(resolveVersion(selectedLang, null));
     } finally {
       setLoading(false);
     }
-  }, [isLoaded, isSignedIn, user, supabaseClient]);
+  }, [isLoaded, isSignedIn, user, supabaseClient, resolveVersion, selectedLang]);
 
   // Refetch every time the page is navigated to (location.key changes)
   useEffect(() => {
     loadProgress();
   }, [loadProgress, location.key]);
+
+  // When the user clicks a different language, recompute the version for that
+  // language immediately without waiting for a DB round-trip
+  const handleLangChange = (newLang) => {
+    setSelectedLang(newLang);
+    const newVersion = resolveVersion(newLang, progress);
+    setCurriculumVersion(newVersion);
+  };
 
   if (loading) {
     return (
@@ -56,15 +93,23 @@ export default function QuizHub() {
 
   const completedQuizzes = progress?.completed_quizzes || [];
   const streak = progress?.streak_days || 0;
-  const lang = curriculum[selectedLang];
+
+  // Use the version-aware curriculum for rendering modules / lessons
+  const lang = getCurriculumByVersion(curriculumVersion, selectedLang);
 
   return (
     <div className="min-h-screen bg-white">
       <Helmet>
         <title>Quiz Hub | Practice Python Quizzes</title>
-        <meta name="description" content="Access all Python quizzes. Test your knowledge with interactive questions after each lesson. No prerequisites needed." />
+        <meta
+          name="description"
+          content="Access all Python quizzes. Test your knowledge with interactive questions after each lesson. No prerequisites needed."
+        />
         <meta property="og:title" content="Quiz Hub - FluentCode" />
-        <meta property="og:description" content="Interactive quizzes covering all Python lessons." />
+        <meta
+          property="og:description"
+          content="Interactive quizzes covering all Python lessons."
+        />
       </Helmet>
       <Navbar streak={streak} />
 
@@ -85,12 +130,15 @@ export default function QuizHub() {
           </p>
         </motion.div>
 
-        {/* Language selector */}
+        {/* Language selector
+            We still iterate over the base V1 curriculum just to get the list
+            of available languages and their labels – the actual content used
+            for rendering comes from getCurriculumByVersion below. */}
         <div className="flex gap-2 mb-10">
           {Object.entries(curriculum).map(([key, val]) => (
             <button
               key={key}
-              onClick={() => setSelectedLang(key)}
+              onClick={() => handleLangChange(key)}
               className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
                 selectedLang === key
                   ? "bg-zinc-900 text-white"
@@ -116,6 +164,9 @@ export default function QuizHub() {
               </p>
               <div className="space-y-1.5">
                 {module.lessons.map((lesson) => {
+                  // completedQuizzes stores lesson IDs from whichever version
+                  // was active when the user finished; matching by ID is safe
+                  // as long as V2 lesson IDs are stable (which they should be).
                   const done = completedQuizzes.includes(lesson.id);
 
                   return (
