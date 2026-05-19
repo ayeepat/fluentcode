@@ -11,7 +11,7 @@ import {
   isExerciseFirst,
 } from "@/lib/guestAccess";
 import { localProgressDb } from "@/lib/localProgressDb";
-import { runPython, runPythonSilent } from "@/lib/pyodideRunner";
+import { runPython } from "@/lib/pyodideRunner";
 import CodeEditor from "@/components/editor/CodeEditor";
 import AIFeedbackPanel from "@/components/editor/AIFeedbackPanel";
 import TheoryModal from "@/components/TheoryModal";
@@ -40,12 +40,6 @@ import SignupPrompt from "@/components/SignupPrompt";
 // Helpers
 // ---------------------------------------------------------------------------
 
-/**
- * Normalise output for comparison:
- *  - trim leading/trailing whitespace from the whole string
- *  - trim trailing whitespace from each line (Python sometimes adds spaces)
- *  - collapse \r\n → \n
- */
 function normaliseOutput(raw) {
   return (raw ?? "")
     .replace(/\r\n/g, "\n")
@@ -55,12 +49,6 @@ function normaliseOutput(raw) {
     .trim();
 }
 
-/**
- * Code-pattern tests (type: "contains").
- * These are NOT output tests – they verify that the user actually used
- * a required construct (e.g., "sep=", "print(language)").
- * We keep them as a lightweight pre-check before output comparison.
- */
 function passesPatternTests(code, tests) {
   if (!tests || tests.length === 0) return true;
   for (const test of tests) {
@@ -71,9 +59,6 @@ function passesPatternTests(code, tests) {
   return true;
 }
 
-/**
- * Return true if `language` is Python (handles "python" only for now).
- */
 function isPythonLanguage(lang) {
   return lang === "python";
 }
@@ -99,8 +84,7 @@ export default function CodingPage() {
   const [output, setOutput] = useState("");
   const [feedback, setFeedback] = useState(null);
   const [submitting, setSubmitting] = useState(false);
-  const [running, setRunning] = useState(false);       // Run button spinner
-  const [pyodideLoading, setPyodideLoading] = useState(false); // first-load notice
+  const [running, setRunning] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
   const [showHint, setShowHint] = useState(false);
   const [progress, setProgress] = useState(null);
@@ -113,10 +97,8 @@ export default function CodingPage() {
   const [failCount, setFailCount] = useState(0);
   const [curriculumVersion, setCurriculumVersion] = useState(1);
 
-  // Cache the expected output (solution output) per lesson so we only
-  // run the solution through Pyodide once per lesson visit.
   const expectedOutputCache = useRef(null);
-  const expectedOutputLessonRef = useRef(null); // which lessonId the cache is for
+  const expectedOutputLessonRef = useRef(null);
 
   // ------------------------------------------------------------------
   // Derived values
@@ -126,11 +108,13 @@ export default function CodingPage() {
     [language, lessonId, curriculumVersion]
   );
 
-  const result = useMemo(() => {
-    return curriculumVersion
-      ? getLessonById(language, lessonId, curriculumVersion)
-      : null;
-  }, [language, lessonId, curriculumVersion]);
+  const result = useMemo(
+    () =>
+      curriculumVersion
+        ? getLessonById(language, lessonId, curriculumVersion)
+        : null,
+    [language, lessonId, curriculumVersion]
+  );
 
   // ------------------------------------------------------------------
   // Guards
@@ -164,7 +148,6 @@ export default function CodingPage() {
     setShowSignupModal(false);
     setShowTheoryModal(false);
     setFailCount(0);
-    // Invalidate the expected-output cache for the new lesson
     expectedOutputCache.current = null;
     expectedOutputLessonRef.current = null;
   }, [result, isGuest, lessonId]);
@@ -250,12 +233,7 @@ export default function CodingPage() {
   // ------------------------------------------------------------------
   // Expected-output helper
   // ------------------------------------------------------------------
-  /**
-   * Run the lesson's solution code through Pyodide and cache the result.
-   * Returns the normalised expected stdout, or null if execution fails.
-   */
   async function getExpectedOutput(solutionCode) {
-    // Return cached value if it's for the same lesson
     if (
       expectedOutputLessonRef.current === lessonId &&
       expectedOutputCache.current !== null
@@ -265,7 +243,6 @@ export default function CodingPage() {
 
     const { output: solOutput, error } = await runPython(solutionCode);
     if (error) {
-      // Solution itself errored — cannot use output comparison
       console.warn("Solution code errored in Pyodide:", error);
       expectedOutputCache.current = null;
     } else {
@@ -276,12 +253,11 @@ export default function CodingPage() {
   }
 
   // ------------------------------------------------------------------
-  // Run button handler
+  // Run button
   // ------------------------------------------------------------------
   const handleRun = async () => {
     if (running) return;
 
-    // Non-Python languages: show friendly "coming soon" message
     if (!isPythonLanguage(language)) {
       setOutput(
         `Live execution for ${language} is coming soon.\n` +
@@ -296,12 +272,9 @@ export default function CodingPage() {
     const { output: stdout, error } = await runPython(code);
 
     if (error) {
-      // Show the error in the output panel — formatted nicely
       setOutput(`Error:\n${error}`);
     } else if (stdout.trim() === "") {
-      setOutput(
-        "$ (no output)\nTip: Use print() to display results."
-      );
+      setOutput("$ (no output)\nTip: Use print() to display results.");
     } else {
       setOutput(stdout);
     }
@@ -310,7 +283,7 @@ export default function CodingPage() {
   };
 
   // ------------------------------------------------------------------
-  // Navigation helper
+  // Navigation
   // ------------------------------------------------------------------
   const handleNext = () => {
     if (nextRequiresLogin) {
@@ -323,7 +296,7 @@ export default function CodingPage() {
   };
 
   // ------------------------------------------------------------------
-  // Submit handler — the core of the real-execution integration
+  // Submit
   // ------------------------------------------------------------------
   const handleSubmit = async () => {
     if (submitting) return;
@@ -332,27 +305,22 @@ export default function CodingPage() {
 
     const tests = lesson.exercise.tests || [];
     const solutionCode = lesson.exercise.solution || "";
-
-    // ── Step 1: Pattern tests (fast, synchronous) ────────────────────
-    // These check that the user actually used required constructs.
-    // A failure here is immediately surfaced as incorrect — no need to
-    // run Pyodide if they haven't even written a print() call.
     const passedPatterns = passesPatternTests(code, tests);
 
-    // ── Step 2: Real execution for Python ────────────────────────────
+    // ── Python: real execution path ───────────────────────────────────
     if (isPythonLanguage(language)) {
       let userOutput = "";
       let userError = null;
 
       try {
-        const result = await runPython(code);
-        userOutput = result.output;
-        userError = result.error;
+        const execResult = await runPython(code);
+        userOutput = execResult.output;
+        userError = execResult.error;
       } catch (err) {
         userError = err.message ?? String(err);
       }
 
-      // Update the output panel with what the user's code actually produced
+      // Always update the output panel with what the code produced
       if (userError) {
         setOutput(`Error:\n${userError}`);
       } else if (userOutput.trim() === "") {
@@ -361,11 +329,10 @@ export default function CodingPage() {
         setOutput(userOutput);
       }
 
-      // ── Step 2a: Runtime error → incorrect, allow retry ────────────
+      // Runtime error → incorrect, allow retry, never touches AI quota
       if (userError) {
         const newFailCount = failCount + 1;
         setFailCount(newFailCount);
-
         setFeedback({
           isCorrect: false,
           feedback: `Your code has a runtime error:\n\n${userError}\n\nFix the error and try again.`,
@@ -381,7 +348,10 @@ export default function CodingPage() {
           await progressDb.updateProgress(supabaseClient, user.id, {
             total_exercises: (progress?.total_exercises || 0) + 1,
             mistake_patterns: [
-              ...new Set([...(progress?.mistake_patterns || []), "runtime_error"]),
+              ...new Set([
+                ...(progress?.mistake_patterns || []),
+                "runtime_error",
+              ]),
             ].slice(-5),
           });
         }
@@ -394,19 +364,13 @@ export default function CodingPage() {
         return;
       }
 
-      // ── Step 2b: Compare output to expected ────────────────────────
-      // We run the solution code once and cache the result.
+      // Output comparison
       const expectedOutput = await getExpectedOutput(solutionCode);
       const normalisedUser = normaliseOutput(userOutput);
 
-      // An exercise is correct if:
-      //   - Pattern tests pass (used required constructs), AND
-      //   - Output matches the solution's output (when solution has output), OR
-      //   - The solution itself produces no output but pattern tests pass
-      //     (some exercises are structure-only, e.g., "use sep=")
       const outputMatches =
-        expectedOutput === null ||        // can't compare — skip output check
-        expectedOutput === "" ||           // solution has no output — pattern-only
+        expectedOutput === null ||
+        expectedOutput === "" ||
         normalisedUser === expectedOutput;
 
       const isCorrect = passedPatterns && outputMatches;
@@ -414,10 +378,8 @@ export default function CodingPage() {
       if (isCorrect) {
         await handleCorrectSubmission();
       } else {
-        // Build a helpful diff message
         let diffMessage = "Your output doesn't match the expected output yet.";
         if (!passedPatterns) {
-          // Find the first failing pattern to give a specific hint
           const failing = tests.find(
             (t) => t.type === "contains" && !code.includes(t.value)
           );
@@ -429,7 +391,6 @@ export default function CodingPage() {
             `Expected output:\n${expectedOutput}\n\n` +
             `Your output:\n${normalisedUser || "(empty)"}`;
         }
-
         await handleIncorrectSubmission(diffMessage);
       }
 
@@ -437,10 +398,8 @@ export default function CodingPage() {
       return;
     }
 
-    // ── Non-Python path: fall through to AI evaluation ───────────────
-    // Pattern tests act as a lightweight gate; AI does the real check.
+    // ── Non-Python: AI evaluation path ────────────────────────────────
     if (passedPatterns) {
-      // Fast-path: patterns pass, trust the AI for quality
       await handleAiEvaluation();
     } else {
       const failing = tests.find(
@@ -456,19 +415,15 @@ export default function CodingPage() {
   };
 
   // ------------------------------------------------------------------
-  // Shared sub-handlers (extracted to avoid duplication)
+  // Correct submission
   // ------------------------------------------------------------------
-
-  /** Called when we've determined the submission is definitively correct. */
   async function handleCorrectSubmission() {
-    const successFeedback = {
+    setFeedback({
       isCorrect: true,
-      feedback:
-        "Your code produces the correct output. Great work!",
+      feedback: "Your code produces the correct output. Great work!",
       mistakePatterns: [],
       suggestions: [],
-    };
-    setFeedback(successFeedback);
+    });
     setSubmitted(true);
     setTimeout(() => openFeedbackWidget(true), 1200);
 
@@ -492,16 +447,15 @@ export default function CodingPage() {
         setTimeout(() => setShowTheoryModal(true), 600);
       }
     } else if (supabaseClient && user) {
-      const extraUpdates = {
-        total_exercises: (progress?.total_exercises || 0) + 1,
-        correct_exercises: (progress?.correct_exercises || 0) + 1,
-        mistake_patterns: progress?.mistake_patterns || [],
-      };
       const updated = await progressDb.completeLesson(
         supabaseClient,
         user.id,
         lessonId,
-        extraUpdates
+        {
+          total_exercises: (progress?.total_exercises || 0) + 1,
+          correct_exercises: (progress?.correct_exercises || 0) + 1,
+          mistake_patterns: progress?.mistake_patterns || [],
+        }
       );
       if (updated) setProgress(updated);
       if (exerciseFirst) {
@@ -510,10 +464,9 @@ export default function CodingPage() {
     }
   }
 
-  /**
-   * Called when we've determined the submission is wrong without needing AI.
-   * Shows the diff/hint message and optionally reveals theory after 3 fails.
-   */
+  // ------------------------------------------------------------------
+  // Incorrect without AI
+  // ------------------------------------------------------------------
   async function handleIncorrectSubmission(reasonMessage) {
     const newFailCount = failCount + 1;
     setFailCount(newFailCount);
@@ -541,23 +494,49 @@ export default function CodingPage() {
     }
   }
 
-  /**
-   * Full AI evaluation path — used for non-Python languages and as a
-   * fallback. Respects the daily AI limit.
-   */
+  // ------------------------------------------------------------------
+  // AI evaluation (non-Python or fallback)
+  // Quota is checked and incremented AFTER a successful AI response.
+  // A network failure never costs the user a request.
+  // ------------------------------------------------------------------
   async function handleAiEvaluation() {
     const newFailCount = failCount + 1;
     setFailCount(newFailCount);
 
-    // Check + decrement AI quota
+    let aiResponse;
+    try {
+      // ── Step 1: Call the AI — quota not touched yet ─────────────────
+      aiResponse = await evaluateCode(code, language, lesson);
+    } catch (err) {
+      // Network / timeout error — do not decrement quota
+      console.error("AI evaluation error:", err);
+      setFeedback({
+        isCorrect: false,
+        feedback:
+          "Something doesn't look right. Check the exercise prompt and compare your code with the example.",
+        mistakePatterns: [],
+        suggestions: ["Review the example code", "Check for typos"],
+      });
+      setSubmitted(true);
+      if (exerciseFirst && newFailCount >= 3) {
+        setTimeout(() => setShowTheoryModal(true), 800);
+      }
+      return;
+    }
+
+    // ── Step 2: AI responded — now check + increment quota ─────────────
     if (!isGuest && supabaseClient && user) {
-      const check = await progressDb.checkAndIncrementAiCount(
+      const countResult = await progressDb.incrementAiCountIfNotExceeded(
         supabaseClient,
         user.id,
         progress?.is_pro
       );
-      if (!check.allowed) {
+
+      if (!countResult.allowed) {
+        // Limit was already reached; discard the AI response rather than
+        // showing it without recording a charge (keeps counts honest).
         setLimitReached(true);
+        setAiRemaining(0);
         setFeedback({
           isCorrect: false,
           feedback:
@@ -568,87 +547,73 @@ export default function CodingPage() {
         setSubmitted(true);
         return;
       }
-      setAiRemaining(check.remaining);
+
+      // Update the displayed remaining count
+      if (countResult.remaining !== null) {
+        setAiRemaining(countResult.remaining);
+        if (countResult.remaining === 0) setLimitReached(true);
+      }
     }
 
-    try {
-      const aiResponse = await evaluateCode(code, language, lesson);
-      setFeedback(aiResponse);
-      setSubmitted(true);
+    // ── Step 3: Display the AI response ────────────────────────────────
+    setFeedback(aiResponse);
+    setSubmitted(true);
 
-      if (!aiResponse.isCorrect && exerciseFirst && newFailCount >= 3) {
-        setTimeout(() => setShowTheoryModal(true), 800);
-      }
+    if (!aiResponse.isCorrect && exerciseFirst && newFailCount >= 3) {
+      setTimeout(() => setShowTheoryModal(true), 800);
+    }
 
-      if (aiResponse.isCorrect) {
-        // Mirror the correct-submission DB writes
-        if (isGuest) {
-          localProgressDb.completeLesson(lessonId, {
-            total_exercises: (progress?.total_exercises || 0) + 1,
-            correct_exercises: (progress?.correct_exercises || 0) + 1,
-          });
-          setProgress(localProgressDb.getProgress());
-          const updatedProgress = localProgressDb.getProgress();
-          if (
-            shouldPromptSignup(language, updatedProgress.completed_lessons) &&
-            !localProgressDb.hasSeenSignupPrompt()
-          ) {
-            setTimeout(() => setShowSignupModal(true), 1500);
-          } else if (exerciseFirst) {
-            setTimeout(() => setShowTheoryModal(true), 600);
-          }
-        } else if (supabaseClient && user) {
-          const updated = await progressDb.completeLesson(
-            supabaseClient,
-            user.id,
-            lessonId,
-            {
-              total_exercises: (progress?.total_exercises || 0) + 1,
-              correct_exercises: (progress?.correct_exercises || 0) + 1,
-              mistake_patterns: progress?.mistake_patterns || [],
-            }
-          );
-          if (updated) setProgress(updated);
-          if (exerciseFirst) {
-            setTimeout(() => setShowTheoryModal(true), 600);
-          }
+    if (aiResponse.isCorrect) {
+      if (isGuest) {
+        localProgressDb.completeLesson(lessonId, {
+          total_exercises: (progress?.total_exercises || 0) + 1,
+          correct_exercises: (progress?.correct_exercises || 0) + 1,
+        });
+        setProgress(localProgressDb.getProgress());
+        const updatedProgress = localProgressDb.getProgress();
+        if (
+          shouldPromptSignup(language, updatedProgress.completed_lessons) &&
+          !localProgressDb.hasSeenSignupPrompt()
+        ) {
+          setTimeout(() => setShowSignupModal(true), 1500);
+        } else if (exerciseFirst) {
+          setTimeout(() => setShowTheoryModal(true), 600);
         }
-        setTimeout(() => openFeedbackWidget(true), 1200);
-      } else if (!isGuest && supabaseClient && user) {
-        const updatedMistakes = aiResponse.mistakePatterns
-          ? [
-              ...new Set([
-                ...(progress?.mistake_patterns || []),
-                ...aiResponse.mistakePatterns,
-              ]),
-            ].slice(-5)
-          : progress?.mistake_patterns || [];
-        const updated = await progressDb.updateProgress(
+      } else if (supabaseClient && user) {
+        const updated = await progressDb.completeLesson(
           supabaseClient,
           user.id,
+          lessonId,
           {
             total_exercises: (progress?.total_exercises || 0) + 1,
-            mistake_patterns: updatedMistakes,
+            correct_exercises: (progress?.correct_exercises || 0) + 1,
+            mistake_patterns: progress?.mistake_patterns || [],
           }
         );
         if (updated) setProgress(updated);
+        if (exerciseFirst) {
+          setTimeout(() => setShowTheoryModal(true), 600);
+        }
       }
-    } catch (err) {
-      console.error("Submit error:", err);
-      setFeedback({
-        isCorrect: false,
-        feedback:
-          "Something doesn't look right. Check the exercise prompt and compare your code with the example.",
-        mistakePatterns: [],
-        suggestions: [
-          "Review the example code",
-          "Check for typos",
-        ],
-      });
-      setSubmitted(true);
-      if (exerciseFirst && newFailCount >= 3) {
-        setTimeout(() => setShowTheoryModal(true), 800);
-      }
+      setTimeout(() => openFeedbackWidget(true), 1200);
+    } else if (!isGuest && supabaseClient && user) {
+      const updatedMistakes = aiResponse.mistakePatterns
+        ? [
+            ...new Set([
+              ...(progress?.mistake_patterns || []),
+              ...aiResponse.mistakePatterns,
+            ]),
+          ].slice(-5)
+        : progress?.mistake_patterns || [];
+      const updated = await progressDb.updateProgress(
+        supabaseClient,
+        user.id,
+        {
+          total_exercises: (progress?.total_exercises || 0) + 1,
+          mistake_patterns: updatedMistakes,
+        }
+      );
+      if (updated) setProgress(updated);
     }
   }
 
@@ -802,10 +767,7 @@ export default function CodingPage() {
                   className="text-emerald-500 shrink-0 mt-0.5"
                 />
               ) : (
-                <XCircle
-                  size={16}
-                  className="text-red-400 shrink-0 mt-0.5"
-                />
+                <XCircle size={16} className="text-red-400 shrink-0 mt-0.5" />
               )}
               <div className="flex-1 min-w-0">
                 <p
@@ -819,7 +781,6 @@ export default function CodingPage() {
                     ? "Not quite — the theory below might help!"
                     : "Not quite right — here's what to check:"}
                 </p>
-                {/* Preserve newlines in error/diff messages */}
                 <p
                   className={`text-xs leading-relaxed whitespace-pre-wrap ${
                     feedback.isCorrect ? "text-emerald-600" : "text-red-600"
@@ -878,11 +839,11 @@ export default function CodingPage() {
         </div>
       )}
 
-      {/* ── Main split: editor + AI panel ── */}
+      {/* ── Main split ── */}
       <div className="flex-1 flex overflow-hidden">
         <div className="flex-1 flex flex-col overflow-hidden">
 
-          {/* Code editor */}
+          {/* Editor */}
           <div className="flex-1 overflow-hidden p-2">
             <CodeEditor value={code} onChange={setCode} language={language} />
           </div>
@@ -896,11 +857,8 @@ export default function CodingPage() {
                 }`}
               />
               <span className="text-xs text-zinc-500 font-mono">output</span>
-              {(running || pyodideLoading) && (
-                <Loader2
-                  size={11}
-                  className="text-zinc-600 animate-spin ml-1"
-                />
+              {running && (
+                <Loader2 size={11} className="text-zinc-600 animate-spin ml-1" />
               )}
             </div>
             <pre className="text-xs text-zinc-400 font-mono px-4 py-3 leading-relaxed whitespace-pre-wrap">
@@ -910,7 +868,6 @@ export default function CodingPage() {
 
           {/* Action bar */}
           <div className="flex items-center gap-2 px-3 py-2.5 border-t border-zinc-100 shrink-0">
-            {/* Run button */}
             {isPythonLanguage(language) ? (
               <button
                 onClick={handleRun}
@@ -925,7 +882,6 @@ export default function CodingPage() {
                 {running ? "Running…" : "Run"}
               </button>
             ) : (
-              // Non-Python: Run is disabled with a tooltip-style label
               <button
                 disabled
                 title={`Live execution for ${language} coming soon`}
@@ -936,7 +892,6 @@ export default function CodingPage() {
               </button>
             )}
 
-            {/* Submit button */}
             <button
               onClick={handleSubmit}
               disabled={submitting || (limitReached && !isGuest)}
@@ -954,7 +909,6 @@ export default function CodingPage() {
                 : "Submit"}
             </button>
 
-            {/* Hint button */}
             {lesson.exercise?.debuggingTip && (
               <button
                 onClick={() => setShowHint((h) => !h)}
@@ -969,7 +923,6 @@ export default function CodingPage() {
               </button>
             )}
 
-            {/* Show solution */}
             <button
               onClick={() => setShowSolution((p) => !p)}
               className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-all duration-200 ml-auto ${
@@ -1034,7 +987,7 @@ export default function CodingPage() {
           </AnimatePresence>
         </div>
 
-        {/* AI feedback panel */}
+        {/* AI panel */}
         <div className="w-72 shrink-0 overflow-hidden border-l border-zinc-100 hidden md:block">
           <AIFeedbackPanel
             lesson={lesson}

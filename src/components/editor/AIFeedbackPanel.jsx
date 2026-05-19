@@ -6,11 +6,22 @@ import { SignUpButton } from "@clerk/clerk-react";
 import { progressDb } from "@/lib/progressDb";
 import { useAuth } from "@/lib/AuthContext";
 
-const QUICK_PROMPTS = ["Give me a hint", "Why is this wrong?", "Explain the concept"];
+const QUICK_PROMPTS = [
+  "Give me a hint",
+  "Why is this wrong?",
+  "Explain the concept",
+];
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export default function AIFeedbackPanel({ lesson, userCode, language, userId, isPro, isGuest = false }) {
+export default function AIFeedbackPanel({
+  lesson,
+  userCode,
+  language,
+  userId,
+  isPro,
+  isGuest = false,
+}) {
   const { supabaseClient } = useAuth();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -26,7 +37,11 @@ export default function AIFeedbackPanel({ lesson, userCode, language, userId, is
   useEffect(() => {
     if (!userId || !supabaseClient || isGuest) return;
     const checkRemaining = async () => {
-      const r = await progressDb.getAiRequestsRemaining(supabaseClient, userId, isPro);
+      const r = await progressDb.getAiRequestsRemaining(
+        supabaseClient,
+        userId,
+        isPro
+      );
       setRemaining(r);
       setLimitReached(r === 0);
     };
@@ -39,32 +54,30 @@ export default function AIFeedbackPanel({ lesson, userCode, language, userId, is
     const q = text || input;
     if (!q.trim()) return;
 
-    if (userId && supabaseClient) {
-      const check = await progressDb.checkAndIncrementAiCount(supabaseClient, userId, isPro);
-      if (!check.allowed) {
-        setLimitReached(true);
-        setRemaining(0);
-        setMessages((prev) => [
-          ...prev,
-          { role: "user", content: q },
-          {
-            role: "assistant",
-            content: "You've used all your AI requests for today. Come back tomorrow to ask more questions.",
-            isLimit: true,
-          },
-        ]);
-        setInput("");
-        return;
-      }
-      setRemaining(check.remaining);
-      if (check.remaining === 0) setLimitReached(true);
+    // Block immediately if we already know the limit is reached
+    if (limitReached) {
+      setMessages((prev) => [
+        ...prev,
+        { role: "user", content: q },
+        {
+          role: "assistant",
+          content:
+            "You've used all your AI requests for today. Come back tomorrow to ask more questions.",
+          isLimit: true,
+        },
+      ]);
+      setInput("");
+      return;
     }
 
+    // Optimistically add the user message and start loading
     setMessages((prev) => [...prev, { role: "user", content: q }]);
     setInput("");
     setLoading(true);
 
+    let reply;
     try {
+      // ── Step 1: Call the AI — quota not touched yet ─────────────────
       const prompt = `You are a calm, precise coding assistant helping a student learn ${language}.
 
 Current lesson: "${lesson.title}"
@@ -79,34 +92,73 @@ Student's question: "${q}"
 
 Be concise, warm, and clear. Never reveal the full solution — guide instead. 2–4 sentences max unless the concept truly requires more.`;
 
-      const res = await fetch(
-        `${SUPABASE_URL}/functions/v1/ai-chat`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-          },
-          body: JSON.stringify({ prompt }),
-        }
-      );
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/ai-chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({ prompt }),
+      });
 
       const data = await res.json();
-      const reply = data?.reply || "Sorry, I'm having trouble right now. Please try again.";
-
-      setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
+      reply = data?.reply || "Sorry, I'm having trouble right now. Please try again.";
     } catch (err) {
+      // Network / server error — do NOT decrement quota
       console.error("AI Assistant error:", err);
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "Sorry, I couldn't process that. Please try again." },
+        {
+          role: "assistant",
+          content: "Sorry, I couldn't process that. Please try again.",
+        },
       ]);
-    } finally {
       setLoading(false);
+      return;
     }
+
+    // ── Step 2: AI responded — now check + increment quota ─────────────
+    if (userId && supabaseClient) {
+      const countResult = await progressDb.incrementAiCountIfNotExceeded(
+        supabaseClient,
+        userId,
+        isPro
+      );
+
+      if (!countResult.allowed) {
+        // Edge case: limit was hit by another tab/device between the
+        // fetch starting and finishing. Show the reply we already have
+        // but mark the limit as reached so the next message is blocked.
+        setLimitReached(true);
+        setRemaining(0);
+        // Still show the reply — the AI already answered and we didn't
+        // charge them, so discarding it would be worse UX.
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: reply },
+          {
+            role: "assistant",
+            content:
+              "You've now used all your AI requests for today. Come back tomorrow to ask more questions.",
+            isLimit: true,
+          },
+        ]);
+        setLoading(false);
+        return;
+      }
+
+      if (countResult.remaining !== null) {
+        setRemaining(countResult.remaining);
+        if (countResult.remaining === 0) setLimitReached(true);
+      }
+    }
+
+    // ── Step 3: Show the reply ──────────────────────────────────────────
+    setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
+    setLoading(false);
   };
 
-  // Guest state — show sign-in prompt only, no feedback cards
+  // ── Guest state ────────────────────────────────────────────────────
   if (isGuest) {
     return (
       <div className="flex flex-col h-full bg-white">
@@ -116,7 +168,6 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
             AI Assistant
           </span>
         </div>
-
         <div className="flex-1 flex flex-col items-center justify-center text-center gap-4 p-6">
           <div className="w-12 h-12 rounded-full bg-zinc-50 border border-zinc-100 flex items-center justify-center">
             <Lock size={18} className="text-zinc-300" />
@@ -140,7 +191,7 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
     );
   }
 
-  // Logged-in state
+  // ── Logged-in empty state ──────────────────────────────────────────
   const EmptyState = () => (
     <>
       <div className="flex-1 flex flex-col items-center justify-center text-center gap-3 p-6">
@@ -149,9 +200,13 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
           Ask anything about this lesson or your code
         </p>
         {remaining !== null && !isPro && (
-          <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-            remaining <= 2 ? "bg-amber-50 text-amber-500" : "bg-zinc-100 text-zinc-400"
-          }`}>
+          <span
+            className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+              remaining <= 2
+                ? "bg-amber-50 text-amber-500"
+                : "bg-zinc-100 text-zinc-400"
+            }`}
+          >
             {remaining} requests left today
           </span>
         )}
@@ -171,6 +226,7 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
     </>
   );
 
+  // ── Logged-in with messages ────────────────────────────────────────
   return (
     <div className="flex flex-col h-full bg-white">
       <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between shrink-0">
@@ -181,9 +237,13 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
           </span>
         </div>
         {remaining !== null && !isPro && (
-          <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-            remaining <= 2 ? "bg-amber-50 text-amber-500" : "bg-zinc-100 text-zinc-400"
-          }`}>
+          <span
+            className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+              remaining <= 2
+                ? "bg-amber-50 text-amber-500"
+                : "bg-zinc-100 text-zinc-400"
+            }`}
+          >
             {remaining} left
           </span>
         )}
@@ -192,7 +252,8 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
       {limitReached && (
         <div className="mx-4 mt-4 bg-amber-50 border border-amber-200 rounded-2xl p-4 shrink-0">
           <p className="text-xs text-amber-700 leading-relaxed">
-            You've reached your daily AI request limit. Come back tomorrow to continue asking questions.
+            You've reached your daily AI request limit. Come back tomorrow to
+            continue asking questions.
           </p>
         </div>
       )}
@@ -208,7 +269,9 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2 }}
-                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                className={`flex ${
+                  msg.role === "user" ? "justify-end" : "justify-start"
+                }`}
               >
                 {msg.role === "assistant" && (
                   <div className="flex gap-2.5 max-w-[90%]">
@@ -216,7 +279,13 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
                       <Sparkles size={9} className="text-zinc-400" />
                     </div>
                     <div>
-                      <p className="text-sm text-zinc-700 leading-relaxed">{msg.content}</p>
+                      <p
+                        className={`text-sm leading-relaxed ${
+                          msg.isLimit ? "text-amber-600" : "text-zinc-700"
+                        }`}
+                      >
+                        {msg.content}
+                      </p>
                     </div>
                   </div>
                 )}
@@ -278,7 +347,9 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && sendMessage()}
+              onKeyDown={(e) =>
+                e.key === "Enter" && !e.shiftKey && sendMessage()
+              }
               placeholder="Ask the AI assistant…"
               className="flex-1 text-sm outline-none bg-transparent text-zinc-800 placeholder-zinc-300"
             />
