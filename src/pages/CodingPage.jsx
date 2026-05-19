@@ -11,7 +11,12 @@ import {
   isExerciseFirst,
 } from "@/lib/guestAccess";
 import { localProgressDb } from "@/lib/localProgressDb";
-import { runPython } from "@/lib/pyodideRunner";
+// ─── Pyodide is NOT imported statically. ────────────────────────────────────
+// Importing it statically pulls the Pyodide chunk into the shared bundle,
+// which means the Courses page (and every other page) pays the download
+// cost even though they never run code. The lazy loader below ensures
+// Pyodide is only fetched the first time the user presses Run or Submit
+// on a Python lesson.
 import CodeEditor from "@/components/editor/CodeEditor";
 import AIFeedbackPanel from "@/components/editor/AIFeedbackPanel";
 import TheoryModal from "@/components/TheoryModal";
@@ -35,6 +40,23 @@ import { evaluateCode } from "@/lib/groqClient";
 import { useAuth } from "@/lib/AuthContext";
 import { useFeedbackWidget } from "@/lib/FeedbackContext";
 import SignupPrompt from "@/components/SignupPrompt";
+
+// ---------------------------------------------------------------------------
+// Lazy Pyodide loader
+//
+// The import() call is deferred until the user first runs or submits code.
+// Once the module is loaded the Promise is reused for all subsequent calls
+// (same singleton behaviour as before, just deferred).
+// ---------------------------------------------------------------------------
+let _pyodideRunnerPromise = null;
+
+async function getRunPython() {
+  if (!_pyodideRunnerPromise) {
+    _pyodideRunnerPromise = import("@/lib/pyodideRunner");
+  }
+  const mod = await _pyodideRunnerPromise;
+  return mod.runPython;
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -74,30 +96,30 @@ export default function CodingPage() {
   const { supabaseClient } = useAuth();
   const { openFeedbackWidget } = useFeedbackWidget();
 
-  const isGuest = !isSignedIn;
+  const isGuest    = !isSignedIn;
   const guestAllowed = isGuestAccessible(language, lessonId);
 
   // ------------------------------------------------------------------
   // State
   // ------------------------------------------------------------------
-  const [code, setCode] = useState("");
-  const [output, setOutput] = useState("");
-  const [feedback, setFeedback] = useState(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [running, setRunning] = useState(false);
-  const [showSolution, setShowSolution] = useState(false);
-  const [showHint, setShowHint] = useState(false);
-  const [progress, setProgress] = useState(null);
-  const [submitted, setSubmitted] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [aiRemaining, setAiRemaining] = useState(null);
-  const [limitReached, setLimitReached] = useState(false);
-  const [showSignupModal, setShowSignupModal] = useState(false);
-  const [showTheoryModal, setShowTheoryModal] = useState(false);
-  const [failCount, setFailCount] = useState(0);
+  const [code, setCode]                   = useState("");
+  const [output, setOutput]               = useState("");
+  const [feedback, setFeedback]           = useState(null);
+  const [submitting, setSubmitting]       = useState(false);
+  const [running, setRunning]             = useState(false);
+  const [showSolution, setShowSolution]   = useState(false);
+  const [showHint, setShowHint]           = useState(false);
+  const [progress, setProgress]           = useState(null);
+  const [submitted, setSubmitted]         = useState(false);
+  const [isLoading, setIsLoading]         = useState(true);
+  const [aiRemaining, setAiRemaining]     = useState(null);
+  const [limitReached, setLimitReached]   = useState(false);
+  const [showSignupModal, setShowSignupModal]   = useState(false);
+  const [showTheoryModal, setShowTheoryModal]   = useState(false);
+  const [failCount, setFailCount]         = useState(0);
   const [curriculumVersion, setCurriculumVersion] = useState(1);
 
-  const expectedOutputCache = useRef(null);
+  const expectedOutputCache    = useRef(null);
   const expectedOutputLessonRef = useRef(null);
 
   // ------------------------------------------------------------------
@@ -126,7 +148,7 @@ export default function CodingPage() {
   }, [isUserLoaded, isGuest, guestAllowed, navigate]);
 
   // ------------------------------------------------------------------
-  // Reset lesson state when the lesson changes
+  // Reset lesson state when lesson changes
   // ------------------------------------------------------------------
   useEffect(() => {
     if (!result) {
@@ -148,7 +170,7 @@ export default function CodingPage() {
     setShowSignupModal(false);
     setShowTheoryModal(false);
     setFailCount(0);
-    expectedOutputCache.current = null;
+    expectedOutputCache.current     = null;
     expectedOutputLessonRef.current = null;
   }, [result, isGuest, lessonId]);
 
@@ -226,16 +248,16 @@ export default function CodingPage() {
     );
   }
 
-  const { lesson } = result;
-  const allLessons = getAllLessons(language, curriculumVersion);
-  const currentIdx = allLessons.findIndex((l) => l.id === lessonId);
-  const nextLesson = allLessons[currentIdx + 1];
-  const canProceed = submitted && feedback?.isCorrect;
+  const { lesson }    = result;
+  const allLessons    = getAllLessons(language, curriculumVersion);
+  const currentIdx    = allLessons.findIndex((l) => l.id === lessonId);
+  const nextLesson    = allLessons[currentIdx + 1];
+  const canProceed    = submitted && feedback?.isCorrect;
   const nextRequiresLogin =
     nextLesson && isGuest && !isGuestAccessible(language, nextLesson.id);
 
   // ------------------------------------------------------------------
-  // Expected-output helper (Pyodide, Python only)
+  // Expected-output helper
   // ------------------------------------------------------------------
   async function getExpectedOutput(solutionCode) {
     if (
@@ -245,7 +267,9 @@ export default function CodingPage() {
       return expectedOutputCache.current;
     }
 
+    const runPython = await getRunPython();
     const { output: solOutput, error } = await runPython(solutionCode);
+
     if (error) {
       console.warn("Solution code errored in Pyodide:", error);
       expectedOutputCache.current = null;
@@ -271,19 +295,24 @@ export default function CodingPage() {
     }
 
     setRunning(true);
-    setOutput("Running…");
+    setOutput("Loading Python runtime…");
 
-    const { output: stdout, error } = await runPython(code);
+    try {
+      const runPython = await getRunPython();
+      const { output: stdout, error } = await runPython(code);
 
-    if (error) {
-      setOutput(`Error:\n${error}`);
-    } else if (stdout.trim() === "") {
-      setOutput("$ (no output)\nTip: Use print() to display results.");
-    } else {
-      setOutput(stdout);
+      if (error) {
+        setOutput(`Error:\n${error}`);
+      } else if (stdout.trim() === "") {
+        setOutput("$ (no output)\nTip: Use print() to display results.");
+      } else {
+        setOutput(stdout);
+      }
+    } catch (err) {
+      setOutput(`Error:\n${err.message ?? String(err)}`);
+    } finally {
+      setRunning(false);
     }
-
-    setRunning(false);
   };
 
   // ------------------------------------------------------------------
@@ -307,19 +336,20 @@ export default function CodingPage() {
     setSubmitting(true);
     setFeedback(null);
 
-    const tests = lesson.exercise.tests || [];
+    const tests        = lesson.exercise.tests || [];
     const solutionCode = lesson.exercise.solution || "";
     const passedPatterns = passesPatternTests(code, tests);
 
-    // ── Python: real execution path ─────────────────────────────────
+    // ── Python: real execution path ──────────────────────────────────
     if (isPythonLanguage(language)) {
       let userOutput = "";
-      let userError = null;
+      let userError  = null;
 
       try {
+        const runPython = await getRunPython();
         const execResult = await runPython(code);
         userOutput = execResult.output;
-        userError = execResult.error;
+        userError  = execResult.error;
       } catch (err) {
         userError = err.message ?? String(err);
       }
@@ -332,6 +362,7 @@ export default function CodingPage() {
         setOutput(userOutput);
       }
 
+      // Runtime error → show feedback, never touch AI quota
       if (userError) {
         const newFailCount = failCount + 1;
         setFailCount(newFailCount);
@@ -366,12 +397,13 @@ export default function CodingPage() {
         return;
       }
 
-      const expectedOutput = await getExpectedOutput(solutionCode);
-      const normalisedUser = normaliseOutput(userOutput);
+      // Output comparison
+      const expectedOutput  = await getExpectedOutput(solutionCode);
+      const normalisedUser  = normaliseOutput(userOutput);
 
       const outputMatches =
         expectedOutput === null ||
-        expectedOutput === "" ||
+        expectedOutput === ""   ||
         normalisedUser === expectedOutput;
 
       const isCorrect = passedPatterns && outputMatches;
@@ -399,7 +431,7 @@ export default function CodingPage() {
       return;
     }
 
-    // ── Non-Python: AI evaluation path ──────────────────────────────
+    // ── Non-Python: AI evaluation path ───────────────────────────────
     if (passedPatterns) {
       await handleAiEvaluation();
     } else {
@@ -416,7 +448,7 @@ export default function CodingPage() {
   };
 
   // ------------------------------------------------------------------
-  // Correct submission (Python path, no AI quota consumed)
+  // Correct submission
   // ------------------------------------------------------------------
   async function handleCorrectSubmission() {
     setFeedback({
@@ -430,7 +462,7 @@ export default function CodingPage() {
 
     if (isGuest) {
       localProgressDb.completeLesson(lessonId, {
-        total_exercises: (progress?.total_exercises || 0) + 1,
+        total_exercises:  (progress?.total_exercises  || 0) + 1,
         correct_exercises: (progress?.correct_exercises || 0) + 1,
       });
       setProgress(localProgressDb.getProgress());
@@ -453,7 +485,7 @@ export default function CodingPage() {
         user.id,
         lessonId,
         {
-          total_exercises: (progress?.total_exercises || 0) + 1,
+          total_exercises:  (progress?.total_exercises  || 0) + 1,
           correct_exercises: (progress?.correct_exercises || 0) + 1,
           mistake_patterns: progress?.mistake_patterns || [],
         }
@@ -466,8 +498,7 @@ export default function CodingPage() {
   }
 
   // ------------------------------------------------------------------
-  // Incorrect without AI (pattern mismatch or output mismatch)
-  // No AI quota is consumed here.
+  // Incorrect without AI
   // ------------------------------------------------------------------
   async function handleIncorrectSubmission(reasonMessage) {
     const newFailCount = failCount + 1;
@@ -497,28 +528,21 @@ export default function CodingPage() {
   }
 
   // ------------------------------------------------------------------
-  // AI evaluation (non-Python languages)
-  //
-  // Order of operations:
-  //   1. checkAiLimit  – read-only, bail early if quota exhausted
-  //   2. evaluateCode  – the actual AI network call
-  //   3. incrementAiCount – write, only reached if step 2 succeeded
-  //
-  // A network failure at step 2 never reaches step 3, so the user's
-  // daily quota is never decremented on a failed request.
+  // AI evaluation (non-Python)
+  // 1. checkAiLimit  – read-only gate
+  // 2. evaluateCode  – AI network call
+  // 3. incrementAiCount – only on success
   // ------------------------------------------------------------------
   async function handleAiEvaluation() {
     const newFailCount = failCount + 1;
     setFailCount(newFailCount);
 
-    // ── Step 1: read-only limit check ───────────────────────────────
     if (!isGuest && supabaseClient && user) {
       const limitCheck = await progressDb.checkAiLimit(
         supabaseClient,
         user.id,
         progress?.is_pro
       );
-
       if (!limitCheck.allowed) {
         setLimitReached(true);
         setAiRemaining(0);
@@ -534,12 +558,10 @@ export default function CodingPage() {
       }
     }
 
-    // ── Step 2: AI network call ──────────────────────────────────────
     let aiResponse;
     try {
       aiResponse = await evaluateCode(code, language, lesson);
     } catch (err) {
-      // Network / timeout — quota is NOT touched
       console.error("AI evaluation error:", err);
       setFeedback({
         isCorrect: false,
@@ -555,31 +577,22 @@ export default function CodingPage() {
       return;
     }
 
-    // ── Step 3: AI succeeded — now increment the quota ───────────────
     if (!isGuest && supabaseClient && user) {
       const incrementResult = await progressDb.incrementAiCount(
         supabaseClient,
         user.id,
         progress?.is_pro
       );
-
-      // Update the displayed remaining count
       if (incrementResult.remaining !== null) {
         setAiRemaining(incrementResult.remaining);
         if (incrementResult.remaining === 0) setLimitReached(true);
       }
-
-      // Edge case: two tabs used the last slot simultaneously.
-      // incrementAiCount returns allowed: false if it detects this.
-      // We still show the response (the AI already answered) but flag
-      // the limit so the next attempt is blocked immediately.
       if (!incrementResult.allowed) {
         setLimitReached(true);
         setAiRemaining(0);
       }
     }
 
-    // ── Step 4: display the response ────────────────────────────────
     setFeedback(aiResponse);
     setSubmitted(true);
 
@@ -590,7 +603,7 @@ export default function CodingPage() {
     if (aiResponse.isCorrect) {
       if (isGuest) {
         localProgressDb.completeLesson(lessonId, {
-          total_exercises: (progress?.total_exercises || 0) + 1,
+          total_exercises:  (progress?.total_exercises  || 0) + 1,
           correct_exercises: (progress?.correct_exercises || 0) + 1,
         });
         setProgress(localProgressDb.getProgress());
@@ -609,7 +622,7 @@ export default function CodingPage() {
           user.id,
           lessonId,
           {
-            total_exercises: (progress?.total_exercises || 0) + 1,
+            total_exercises:  (progress?.total_exercises  || 0) + 1,
             correct_exercises: (progress?.correct_exercises || 0) + 1,
             mistake_patterns: progress?.mistake_patterns || [],
           }
@@ -629,14 +642,10 @@ export default function CodingPage() {
             ]),
           ].slice(-5)
         : progress?.mistake_patterns || [];
-      const updated = await progressDb.updateProgress(
-        supabaseClient,
-        user.id,
-        {
-          total_exercises: (progress?.total_exercises || 0) + 1,
-          mistake_patterns: updatedMistakes,
-        }
-      );
+      const updated = await progressDb.updateProgress(supabaseClient, user.id, {
+        total_exercises: (progress?.total_exercises || 0) + 1,
+        mistake_patterns: updatedMistakes,
+      });
       if (updated) setProgress(updated);
     }
   }
@@ -786,15 +795,9 @@ export default function CodingPage() {
               }`}
             >
               {feedback.isCorrect ? (
-                <CheckCircle
-                  size={16}
-                  className="text-emerald-500 shrink-0 mt-0.5"
-                />
+                <CheckCircle size={16} className="text-emerald-500 shrink-0 mt-0.5" />
               ) : (
-                <XCircle
-                  size={16}
-                  className="text-red-400 shrink-0 mt-0.5"
-                />
+                <XCircle size={16} className="text-red-400 shrink-0 mt-0.5" />
               )}
               <div className="flex-1 min-w-0">
                 <p
@@ -818,10 +821,7 @@ export default function CodingPage() {
                 {!feedback.isCorrect && feedback.suggestions?.length > 0 && (
                   <div className="mt-2 flex flex-col gap-1">
                     {feedback.suggestions.map((s, i) => (
-                      <div
-                        key={i}
-                        className="flex items-start gap-1.5 text-xs text-red-500"
-                      >
+                      <div key={i} className="flex items-start gap-1.5 text-xs text-red-500">
                         <Lightbulb size={11} className="shrink-0 mt-0.5" />
                         <span>{s}</span>
                       </div>
@@ -831,8 +831,7 @@ export default function CodingPage() {
                 {feedback.isCorrect && isGuest && (
                   <p className="text-xs text-emerald-500 mt-2">
                     <Sparkles size={11} className="inline mr-1" />
-                    Create a free account to unlock AI feedback on every
-                    exercise!
+                    Create a free account to unlock AI feedback on every exercise!
                   </p>
                 )}
                 {feedback.isCorrect && exerciseFirst && (
@@ -878,17 +877,10 @@ export default function CodingPage() {
           {/* Output panel */}
           <div className="h-36 border-t border-zinc-100 bg-zinc-950 overflow-y-auto shrink-0">
             <div className="flex items-center gap-2 px-4 py-2 border-b border-zinc-800">
-              <div
-                className={`w-2 h-2 rounded-full ${
-                  output ? "bg-green-500" : "bg-zinc-700"
-                }`}
-              />
+              <div className={`w-2 h-2 rounded-full ${output ? "bg-green-500" : "bg-zinc-700"}`} />
               <span className="text-xs text-zinc-500 font-mono">output</span>
               {running && (
-                <Loader2
-                  size={11}
-                  className="text-zinc-600 animate-spin ml-1"
-                />
+                <Loader2 size={11} className="text-zinc-600 animate-spin ml-1" />
               )}
             </div>
             <pre className="text-xs text-zinc-400 font-mono px-4 py-3 leading-relaxed whitespace-pre-wrap">
@@ -977,10 +969,7 @@ export default function CodingPage() {
                 className="overflow-hidden border-t border-zinc-100 shrink-0"
               >
                 <div className="bg-amber-50 px-4 py-4 flex gap-3">
-                  <Lightbulb
-                    size={14}
-                    className="text-amber-500 shrink-0 mt-0.5"
-                  />
+                  <Lightbulb size={14} className="text-amber-500 shrink-0 mt-0.5" />
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-widest text-amber-600 mb-1">
                       Hint

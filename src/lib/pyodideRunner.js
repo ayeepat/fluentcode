@@ -1,43 +1,33 @@
 // src/lib/pyodideRunner.js
 //
-// Singleton Pyodide loader + sandboxed Python executor.
-// Import { runPython, runPythonSilent } wherever you need real execution.
+// Loads Pyodide via importScripts-compatible CDN URL.
+// Uses a module-level singleton so Pyodide is only ever initialised once
+// per page session, regardless of how many times runPython is called.
 
+// Use the ESM build from the CDN — this works correctly inside Vite's
+// module environment without conflicting with the bundler's own module
+// system. The key difference from the old approach: we use a dynamic
+// import() instead of injecting a <script> tag, which avoids the MIME
+// type and module-environment conflicts.
 const PYODIDE_CDN =
-  "https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js";
+  "https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.mjs";
 
-// Module-level cache — survives across component re-renders
 let pyodideInstance = null;
-let loadingPromise = null;
+let loadingPromise  = null;
 
-/**
- * Load Pyodide exactly once. Subsequent calls return the cached instance.
- * @returns {Promise<Pyodide>}
- */
 async function getPyodide() {
-  // Already loaded
   if (pyodideInstance) return pyodideInstance;
-
-  // Load already in progress — wait for it instead of double-loading
-  if (loadingPromise) return loadingPromise;
+  if (loadingPromise)  return loadingPromise;
 
   loadingPromise = (async () => {
-    // Dynamically inject the Pyodide bootstrap script into the page
-    await new Promise((resolve, reject) => {
-      // If it's already on the page from a previous attempt, skip
-      if (window.loadPyodide) { resolve(); return; }
+    // Dynamic import() of the ESM build — no script tag injection,
+    // no MIME conflicts, works with Vite's module system cleanly.
+    const { loadPyodide } = await import(/* @vite-ignore */ PYODIDE_CDN);
 
-      const script = document.createElement("script");
-      script.src = PYODIDE_CDN;
-      script.onload = resolve;
-      script.onerror = () =>
-        reject(new Error("Failed to load Pyodide from CDN"));
-      document.head.appendChild(script);
-    });
-
-    // window.loadPyodide is now available
-    pyodideInstance = await window.loadPyodide({
-      // Suppress Pyodide's own stdout — we capture it ourselves
+    pyodideInstance = await loadPyodide({
+      // indexURL tells Pyodide where to find its own sub-resources
+      // (stdlib wheels, stackframe.js, etc.). Must match the CDN base.
+      indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.2/full/",
       stdout: () => {},
       stderr: () => {},
     });
@@ -48,10 +38,10 @@ async function getPyodide() {
   return loadingPromise;
 }
 
-/**
- * The stdout-capture Python bootstrap we inject before every user script.
- * It redirects sys.stdout to an in-memory StringIO buffer.
- */
+// ---------------------------------------------------------------------------
+// stdout capture
+// ---------------------------------------------------------------------------
+
 const STDOUT_SETUP = `
 import sys
 import io as _io
@@ -59,33 +49,34 @@ _stdout_capture = _io.StringIO()
 sys.stdout = _stdout_capture
 `;
 
-/**
- * After the user script runs, we read and return the captured output.
- */
 const STDOUT_TEARDOWN = `
 sys.stdout = sys.__stdout__
 _stdout_capture.getvalue()
 `;
 
-const EXEC_TIMEOUT_MS = 5000; // 5 seconds
+const EXEC_TIMEOUT_MS = 6000; // 6 seconds for user code
+
+// ---------------------------------------------------------------------------
+// Public API
+// ---------------------------------------------------------------------------
 
 /**
  * Run arbitrary Python code in the Pyodide sandbox.
  *
- * @param {string} code  – Python source to execute
+ * @param {string} code
  * @returns {Promise<{ output: string, error: string | null }>}
- *   output – everything written to stdout (may be empty string)
- *   error  – Python traceback string, or null on success
  */
 export async function runPython(code) {
   let pyodide;
   try {
+    // Give Pyodide up to 30 s to download on a slow connection.
+    // After the first load this resolves instantly from the cache.
     pyodide = await Promise.race([
       getPyodide(),
       new Promise((_, reject) =>
         setTimeout(
-          () => reject(new Error("Pyodide took too long to load")),
-          15000 // generous timeout for first load (~10 MB download)
+          () => reject(new Error("Pyodide took too long to load — check your connection and try again.")),
+          30_000
         )
       ),
     ]);
@@ -96,34 +87,22 @@ export async function runPython(code) {
     };
   }
 
-  // Wrap execution in a race against the timeout
   const execPromise = (async () => {
     try {
-      // Set up stdout capture
       await pyodide.runPythonAsync(STDOUT_SETUP);
-
-      // Run the user's code
       await pyodide.runPythonAsync(code);
-
-      // Retrieve captured output
       const output = await pyodide.runPythonAsync(STDOUT_TEARDOWN);
       return { output: output ?? "", error: null };
     } catch (err) {
-      // Recover stdout so future runs still work
       try {
         await pyodide.runPythonAsync("sys.stdout = sys.__stdout__");
-      } catch (_) {
-        // ignore secondary error
-      }
+      } catch (_) {}
 
-      // Format the error message — strip the internal Pyodide prefix
-      const rawMessage = err.message ?? String(err);
-      // Pyodide wraps tracebacks; surface just the Python part
-      const tracebackStart = rawMessage.indexOf("Traceback");
-      const formatted =
-        tracebackStart !== -1
-          ? rawMessage.slice(tracebackStart)
-          : rawMessage;
+      const raw            = err.message ?? String(err);
+      const tracebackStart = raw.indexOf("Traceback");
+      const formatted      = tracebackStart !== -1
+        ? raw.slice(tracebackStart)
+        : raw;
 
       return { output: "", error: formatted };
     }
@@ -135,8 +114,8 @@ export async function runPython(code) {
         resolve({
           output: "",
           error:
-            "TimeoutError: Code took longer than 5 seconds to run.\n" +
-            "Hint: Check for infinite loops (e.g., while True without a break).",
+            "TimeoutError: Code took longer than 6 seconds.\n" +
+            "Hint: Check for infinite loops (e.g. while True without a break).",
         }),
       EXEC_TIMEOUT_MS
     )
@@ -145,13 +124,6 @@ export async function runPython(code) {
   return Promise.race([execPromise, timeoutPromise]);
 }
 
-/**
- * Convenience wrapper: run code and return only stdout, or "" on any error.
- * Used internally to pre-compute expected output from solution code.
- *
- * @param {string} code
- * @returns {Promise<string>}
- */
 export async function runPythonSilent(code) {
   const { output } = await runPython(code);
   return output ?? "";
