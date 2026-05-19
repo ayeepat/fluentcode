@@ -4,7 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { ArrowRight, Check, Heart, Menu, X, Mail, Code2, HelpCircle } from "lucide-react";
-import { curriculum } from "@/lib/curriculum";
 import { getGuestLessonIds } from "@/lib/guestAccess";
 import { useUser, SignUpButton, SignInButton, useClerk } from "@clerk/clerk-react";
 
@@ -26,6 +25,68 @@ function useIsMobile() {
   }, []);
   return mobile;
 }
+
+// ---------------------------------------------------------------------------
+// Static course display data — used only for the landing page cards.
+// These numbers should be updated manually when the curriculum changes,
+// but they never need to be loaded from a curriculum file at runtime.
+// Decoupling this from the Proxy means the landing page never crashes due
+// to a cache-miss on first render.
+// ---------------------------------------------------------------------------
+const COURSE_CARDS = [
+  {
+    lang: "python",
+    label: "Python",
+    modules: [
+      { id: "m0", title: "Level 0 — Your First Code",        lessons: 4  },
+      { id: "m1", title: "Level 1 — Talking and Listening",  lessons: 5  },
+      { id: "m2", title: "Level 2 — Making Decisions",       lessons: 6  },
+      { id: "m3", title: "Level 3 — Loops",                  lessons: 5  },
+      { id: "m4", title: "Level 4 — Functions",              lessons: 6  },
+      { id: "m5", title: "Level 5 — Data Structures",        lessons: 6  },
+      { id: "m6", title: "Level 6 — Files & Errors",         lessons: 6  },
+      { id: "m7", title: "Level 7 — Advanced Topics",        lessons: 6  },
+      { id: "m8", title: "Level 8 — Projects",               lessons: 4  },
+    ],
+  },
+  {
+    lang: "javascript",
+    label: "JavaScript",
+    modules: [
+      { id: "m0", title: "Fundamentals",     lessons: 8  },
+      { id: "m1", title: "Functions",        lessons: 6  },
+      { id: "m2", title: "Objects & Arrays", lessons: 7  },
+      { id: "m3", title: "Async JS",         lessons: 5  },
+    ],
+  },
+  {
+    lang: "typescript",
+    label: "TypeScript",
+    modules: [
+      { id: "m0", title: "Types & Basics",   lessons: 7  },
+      { id: "m1", title: "Interfaces",       lessons: 5  },
+      { id: "m2", title: "Generics",         lessons: 5  },
+    ],
+  },
+  {
+    lang: "java",
+    label: "Java",
+    modules: [
+      { id: "m0", title: "Fundamentals",     lessons: 8  },
+      { id: "m1", title: "OOP",              lessons: 7  },
+      { id: "m2", title: "Collections",      lessons: 5  },
+    ],
+  },
+  {
+    lang: "ruby",
+    label: "Ruby",
+    modules: [
+      { id: "m0", title: "Basics",           lessons: 7  },
+      { id: "m1", title: "Classes",          lessons: 5  },
+      { id: "m2", title: "Blocks & Procs",   lessons: 5  },
+    ],
+  },
+];
 
 export default function Landing() {
   const { user, isSignedIn } = useUser();
@@ -51,10 +112,8 @@ export default function Landing() {
       navigate("/dashboard");
       return;
     }
-    // Send guests directly to first lesson (uses v2 for Python) — quiz on mobile, lesson on desktop
     const guestLessonIds = getGuestLessonIds("python");
     if (guestLessonIds.length === 0) {
-      // Fallback: shouldn't happen, but redirect to courses if no guest lessons found
       navigate("/courses");
       return;
     }
@@ -74,6 +133,7 @@ export default function Landing() {
         <meta property="og:title" content="FluentCode | Learn to Code with AI-Powered Feedback" />
         <meta property="og:description" content="Interactive Python lessons with instant AI feedback. Start coding in seconds. No signup required. Completely free." />
       </Helmet>
+
       {/* Navigation */}
       <nav
         className={`sticky top-0 z-40 flex items-center justify-between px-6 py-4 transition-all duration-300 ${
@@ -97,7 +157,9 @@ export default function Landing() {
           {isSignedIn && (
             <>
               <NavLink to="/dashboard">Dashboard</NavLink>
-              <NavLink to="/upgrade" icon={<Heart size={12} className="text-rose-500" />}>Support</NavLink>
+              <NavLink to="/upgrade" icon={<Heart size={12} className="text-rose-500" />}>
+                Support
+              </NavLink>
             </>
           )}
           <div className="w-px h-4 bg-zinc-200 mx-2" />
@@ -306,7 +368,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Courses */}
+      {/* Courses section — uses static COURSE_CARDS, zero async dependency */}
       <section
         id="courses"
         className="px-6 py-24 max-w-4xl mx-auto w-full border-t border-zinc-100"
@@ -329,9 +391,9 @@ export default function Landing() {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {Object.entries(curriculum).map(([lang, data], idx) => (
+          {COURSE_CARDS.map((course, idx) => (
             <motion.div
-              key={lang}
+              key={course.lang}
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
@@ -343,10 +405,12 @@ export default function Landing() {
               >
                 <div className="flex items-start justify-between mb-7">
                   <div>
-                    <h3 className="text-xl font-semibold mb-1.5 text-zinc-900">{data.label}</h3>
+                    <h3 className="text-xl font-semibold mb-1.5 text-zinc-900">
+                      {course.label}
+                    </h3>
                     <p className="text-xs text-zinc-400">
-                      {data.modules.length} modules ·{" "}
-                      {data.modules.reduce((a, m) => a + m.lessons.length, 0)} lessons
+                      {course.modules.length} modules ·{" "}
+                      {course.modules.reduce((a, m) => a + m.lessons, 0)} lessons
                     </p>
                   </div>
                   <ArrowRight
@@ -355,14 +419,14 @@ export default function Landing() {
                   />
                 </div>
                 <div>
-                  {data.modules.map((mod) => (
+                  {course.modules.map((mod) => (
                     <div
                       key={mod.id}
                       className="flex items-center justify-between py-2.5 border-t border-zinc-100"
                     >
                       <span className="text-sm text-zinc-600">{mod.title}</span>
                       <span className="text-xs text-zinc-400 tabular-nums">
-                        {mod.lessons.length}
+                        {mod.lessons}
                       </span>
                     </div>
                   ))}
@@ -520,35 +584,12 @@ export default function Landing() {
 function NavLink({ to, href, icon, children }) {
   const cls =
     "flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-900 px-3 py-1.5 rounded-full hover:bg-zinc-100 transition-all duration-150";
-  if (href) {
-    return (
-      <a href={href} className={cls}>
-        {icon}
-        {children}
-      </a>
-    );
-  }
-  return (
-    <Link to={to} className={cls}>
-      {icon}
-      {children}
-    </Link>
-  );
+  if (href) return <a href={href} className={cls}>{icon}{children}</a>;
+  return <Link to={to} className={cls}>{icon}{children}</Link>;
 }
 
 function MobileNavLink({ to, href, onClick, children }) {
-  const cls =
-    "text-sm text-zinc-600 hover:text-zinc-900 py-2 transition-colors duration-150 block";
-  if (href) {
-    return (
-      <a href={href} onClick={onClick} className={cls}>
-        {children}
-      </a>
-    );
-  }
-  return (
-    <Link to={to} onClick={onClick} className={cls}>
-      {children}
-    </Link>
-  );
+  const cls = "text-sm text-zinc-600 hover:text-zinc-900 py-2 transition-colors duration-150 block";
+  if (href) return <a href={href} onClick={onClick} className={cls}>{children}</a>;
+  return <Link to={to} onClick={onClick} className={cls}>{children}</Link>;
 }
