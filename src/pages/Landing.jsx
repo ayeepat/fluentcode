@@ -27,69 +27,81 @@ function useIsMobile() {
 }
 
 // ---------------------------------------------------------------------------
-// Static course display data — used only for the landing page cards.
-// These numbers should be updated manually when the curriculum changes,
-// but they never need to be loaded from a curriculum file at runtime.
-// Decoupling this from the Proxy means the landing page never crashes due
-// to a cache-miss on first render.
+// Static course display data — sourced from actual curriculum files.
+// Update these numbers manually whenever lessons are added or removed.
+// Never import curriculum files here — that causes the cache-miss crash.
 // ---------------------------------------------------------------------------
 const COURSE_CARDS = [
   {
     lang: "python",
     label: "Python",
     modules: [
-      { id: "m0", title: "Level 0 — Your First Code",        lessons: 4  },
-      { id: "m1", title: "Level 1 — Talking and Listening",  lessons: 5  },
-      { id: "m2", title: "Level 2 — Making Decisions",       lessons: 6  },
-      { id: "m3", title: "Level 3 — Loops",                  lessons: 5  },
-      { id: "m4", title: "Level 4 — Functions",              lessons: 6  },
-      { id: "m5", title: "Level 5 — Data Structures",        lessons: 6  },
-      { id: "m6", title: "Level 6 — Files & Errors",         lessons: 6  },
-      { id: "m7", title: "Level 7 — Advanced Topics",        lessons: 6  },
-      { id: "m8", title: "Level 8 — Projects",               lessons: 4  },
-    ],
-  },
-  {
-    lang: "javascript",
-    label: "JavaScript",
-    modules: [
-      { id: "m0", title: "Fundamentals",     lessons: 8  },
-      { id: "m1", title: "Functions",        lessons: 6  },
-      { id: "m2", title: "Objects & Arrays", lessons: 7  },
-      { id: "m3", title: "Async JS",         lessons: 5  },
-    ],
-  },
-  {
-    lang: "typescript",
-    label: "TypeScript",
-    modules: [
-      { id: "m0", title: "Types & Basics",   lessons: 7  },
-      { id: "m1", title: "Interfaces",       lessons: 5  },
-      { id: "m2", title: "Generics",         lessons: 5  },
+      { id: "l0",  title: "Level 0 — Your First Code",            lessons: 4  },
+      { id: "l1",  title: "Level 1 — Talking and Listening",      lessons: 5  },
+      { id: "l2",  title: "Level 2 — Working with Text",          lessons: 5  },
+      { id: "l3",  title: "Level 3 — Numbers and Math",           lessons: 5  },
+      { id: "l4",  title: "Level 4 — Making Decisions",           lessons: 6  },
+      { id: "l5",  title: "Level 5 — Repeating Code",             lessons: 5  },
+      { id: "l6",  title: "Level 6 — Lists",                      lessons: 5  },
+      { id: "l7",  title: "Level 7 — Dictionaries",               lessons: 4  },
+      { id: "l8",  title: "Level 8 — Reusable Code with Functions", lessons: 6 },
+      { id: "l9",  title: "Level 9 — Handy Built-ins",            lessons: 5  },
+      { id: "l10", title: "Level 10 — Advanced Topics",           lessons: 4  },
     ],
   },
   {
     lang: "java",
     label: "Java",
     modules: [
-      { id: "m0", title: "Fundamentals",     lessons: 8  },
-      { id: "m1", title: "OOP",              lessons: 7  },
-      { id: "m2", title: "Collections",      lessons: 5  },
+      { id: "p0", title: "Phase 0 — Welcome to Java",             lessons: 1  },
+      { id: "p1", title: "Phase 1 — Fundamentals",                lessons: 9  },
+      { id: "p2", title: "Phase 2 — Control Flow",                lessons: 8  },
+      { id: "p3", title: "Phase 3 — Methods and Collections",     lessons: 9  },
+      { id: "p4", title: "Phase 4 — Object-Oriented Programming", lessons: 8  },
+      { id: "p5", title: "Phase 5 — Intermediate Java",           lessons: 5  },
+    ],
+  },
+  {
+    lang: "javascript",
+    label: "JavaScript",
+    modules: [
+      { id: "p0", title: "Phase 0 — Welcome to JavaScript",       lessons: 1  },
+      { id: "p1", title: "Phase 1 — Fundamentals",                lessons: 8  },
+      { id: "p2", title: "Phase 2 — Control Flow",                lessons: 5  },
+      { id: "p3", title: "Phase 3 — Functions",                   lessons: 4  },
+      { id: "p4", title: "Phase 4 — Arrays and Objects",          lessons: 4  },
+      { id: "p5", title: "Phase 5 — Intermediate JavaScript",     lessons: 5  },
     ],
   },
   {
     lang: "ruby",
     label: "Ruby",
     modules: [
-      { id: "m0", title: "Basics",           lessons: 7  },
-      { id: "m1", title: "Classes",          lessons: 5  },
-      { id: "m2", title: "Blocks & Procs",   lessons: 5  },
+      { id: "p0", title: "Phase 0 — Welcome to Ruby",             lessons: 1  },
+      { id: "p1", title: "Phase 1 — Fundamentals",                lessons: 7  },
+      { id: "p2", title: "Phase 2 — Control Flow",                lessons: 5  },
+      { id: "p3", title: "Phase 3 — Methods",                     lessons: 2  },
+      { id: "p4", title: "Phase 4 — Arrays and Hashes",           lessons: 2  },
+      { id: "p5", title: "Phase 5 — Intermediate Ruby",           lessons: 2  },
+    ],
+  },
+  {
+    lang: "typescript",
+    label: "TypeScript",
+    modules: [
+      { id: "p0", title: "Phase 0 — Welcome to TypeScript",       lessons: 1  },
+      { id: "p1", title: "Phase 1 — Type Fundamentals",           lessons: 5  },
+      { id: "p2", title: "Phase 2 — Functions in TypeScript",     lessons: 4  },
+      { id: "p3", title: "Phase 3 — Objects and Interfaces",      lessons: 4  },
+      { id: "p4", title: "Phase 4 — Arrays, Tuples, and Generics", lessons: 3 },
+      { id: "p5", title: "Phase 5 — Classes and OOP",             lessons: 3  },
+      { id: "p6", title: "Phase 6 — Advanced Types",              lessons: 4  },
     ],
   },
 ];
 
 export default function Landing() {
-  const { user, isSignedIn } = useUser();
+  const { isSignedIn } = useUser();
   const { signOut } = useClerk();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -134,7 +146,7 @@ export default function Landing() {
         <meta property="og:description" content="Interactive Python lessons with instant AI feedback. Start coding in seconds. No signup required. Completely free." />
       </Helmet>
 
-      {/* Navigation */}
+      {/* ── Navigation ── */}
       <nav
         className={`sticky top-0 z-40 flex items-center justify-between px-6 py-4 transition-all duration-300 ${
           scrolled
@@ -253,7 +265,7 @@ export default function Landing() {
         </motion.div>
       </nav>
 
-      {/* Hero */}
+      {/* ── Hero ── */}
       <section className="flex-1 flex flex-col items-center justify-center text-center px-6 pt-24 pb-32">
         <motion.div {...fadeUp(0.05)}>
           <span className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 bg-zinc-100 px-3 py-1.5 rounded-full mb-8">
@@ -317,7 +329,7 @@ export default function Landing() {
         </motion.div>
       </section>
 
-      {/* How It Works */}
+      {/* ── How It Works ── */}
       <section id="how" className="px-6 py-24 max-w-4xl mx-auto w-full">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -368,7 +380,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Courses section — uses static COURSE_CARDS, zero async dependency */}
+      {/* ── Courses ── */}
       <section
         id="courses"
         className="px-6 py-24 max-w-4xl mx-auto w-full border-t border-zinc-100"
@@ -388,56 +400,71 @@ export default function Landing() {
             <br />
             Optimised for learning.
           </h2>
+          {/* Total lesson count across all languages */}
+          <p className="text-sm text-zinc-400 mt-4">
+            {COURSE_CARDS.reduce(
+              (total, course) =>
+                total + course.modules.reduce((t, m) => t + m.lessons, 0),
+              0
+            )}{" "}
+            lessons across {COURSE_CARDS.length} languages — all free.
+          </p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {COURSE_CARDS.map((course, idx) => (
-            <motion.div
-              key={course.lang}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.5, delay: idx * 0.08, ease }}
-            >
-              <Link
-                to="/courses"
-                className="block border border-zinc-200 rounded-2xl p-7 hover:border-zinc-400 hover:shadow-[0_4px_24px_rgba(0,0,0,0.06)] transition-all duration-300 group"
+          {COURSE_CARDS.map((course, idx) => {
+            const totalLessons = course.modules.reduce(
+              (t, m) => t + m.lessons,
+              0
+            );
+            return (
+              <motion.div
+                key={course.lang}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.5, delay: idx * 0.08, ease }}
               >
-                <div className="flex items-start justify-between mb-7">
-                  <div>
-                    <h3 className="text-xl font-semibold mb-1.5 text-zinc-900">
-                      {course.label}
-                    </h3>
-                    <p className="text-xs text-zinc-400">
-                      {course.modules.length} modules ·{" "}
-                      {course.modules.reduce((a, m) => a + m.lessons, 0)} lessons
-                    </p>
-                  </div>
-                  <ArrowRight
-                    size={15}
-                    className="text-zinc-300 group-hover:text-zinc-900 group-hover:translate-x-0.5 transition-all duration-200 mt-0.5 shrink-0"
-                  />
-                </div>
-                <div>
-                  {course.modules.map((mod) => (
-                    <div
-                      key={mod.id}
-                      className="flex items-center justify-between py-2.5 border-t border-zinc-100"
-                    >
-                      <span className="text-sm text-zinc-600">{mod.title}</span>
-                      <span className="text-xs text-zinc-400 tabular-nums">
-                        {mod.lessons}
-                      </span>
+                <Link
+                  to="/courses"
+                  className="block border border-zinc-200 rounded-2xl p-7 hover:border-zinc-400 hover:shadow-[0_4px_24px_rgba(0,0,0,0.06)] transition-all duration-300 group"
+                >
+                  <div className="flex items-start justify-between mb-7">
+                    <div>
+                      <h3 className="text-xl font-semibold mb-1.5 text-zinc-900">
+                        {course.label}
+                      </h3>
+                      <p className="text-xs text-zinc-400">
+                        {course.modules.length} modules · {totalLessons} lessons
+                      </p>
                     </div>
-                  ))}
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+                    <ArrowRight
+                      size={15}
+                      className="text-zinc-300 group-hover:text-zinc-900 group-hover:translate-x-0.5 transition-all duration-200 mt-0.5 shrink-0"
+                    />
+                  </div>
+
+                  <div>
+                    {course.modules.map((mod) => (
+                      <div
+                        key={mod.id}
+                        className="flex items-center justify-between py-2.5 border-t border-zinc-100"
+                      >
+                        <span className="text-sm text-zinc-600">{mod.title}</span>
+                        <span className="text-xs text-zinc-400 tabular-nums">
+                          {mod.lessons}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </Link>
+              </motion.div>
+            );
+          })}
         </div>
       </section>
 
-      {/* CTA */}
+      {/* ── CTA ── */}
       <section className="px-6 py-24 max-w-2xl mx-auto w-full text-center border-t border-zinc-100">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -471,7 +498,7 @@ export default function Landing() {
         </motion.div>
       </section>
 
-      {/* Support banner */}
+      {/* ── Support banner ── */}
       <section className="px-6 py-16 border-t border-zinc-100">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -487,7 +514,8 @@ export default function Landing() {
             Support the project
           </h3>
           <p className="text-sm text-zinc-400 mb-5 max-w-sm mx-auto leading-relaxed">
-            FluentCode is free forever. If it helps you, consider supporting us to keep the servers running.
+            FluentCode is free forever. If it helps you, consider supporting us
+            to keep the servers running.
           </p>
           <a
             href="https://boosty.to/fluentcode/donate"
@@ -501,14 +529,15 @@ export default function Landing() {
         </motion.div>
       </section>
 
-      {/* Footer */}
+      {/* ── Footer ── */}
       <footer className="border-t border-zinc-100 bg-zinc-50">
         <div className="max-w-4xl mx-auto px-6 py-16">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
             <div>
               <p className="text-sm font-semibold text-zinc-900 mb-3">fluentcode</p>
               <p className="text-xs text-zinc-400 leading-relaxed">
-                Learn to code with real exercises and AI-powered feedback. Free forever, built for people who actually want to learn.
+                Learn to code with real exercises and AI-powered feedback. Free
+                forever, built for people who actually want to learn.
               </p>
             </div>
 
@@ -517,16 +546,28 @@ export default function Landing() {
                 Links
               </p>
               <div className="flex flex-col gap-2">
-                <Link to="/courses" className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors">
+                <Link
+                  to="/courses"
+                  className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
+                >
                   Courses
                 </Link>
-                <Link to="/upgrade" className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors">
+                <Link
+                  to="/upgrade"
+                  className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
+                >
                   Support us
                 </Link>
-                <Link to="/terms" className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors">
+                <Link
+                  to="/terms"
+                  className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
+                >
                   Terms of Service
                 </Link>
-                <Link to="/privacy" className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors">
+                <Link
+                  to="/privacy"
+                  className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
+                >
                   Privacy Policy
                 </Link>
               </div>
@@ -550,7 +591,16 @@ export default function Landing() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
                   </svg>
                   TikTok
@@ -567,10 +617,16 @@ export default function Landing() {
               © {new Date().getFullYear()} fluentcode — learn to code, personally.
             </p>
             <div className="flex items-center gap-4">
-              <Link to="/terms" className="text-xs text-zinc-400 hover:text-zinc-900 transition-colors">
+              <Link
+                to="/terms"
+                className="text-xs text-zinc-400 hover:text-zinc-900 transition-colors"
+              >
                 Terms
               </Link>
-              <Link to="/privacy" className="text-xs text-zinc-400 hover:text-zinc-900 transition-colors">
+              <Link
+                to="/privacy"
+                className="text-xs text-zinc-400 hover:text-zinc-900 transition-colors"
+              >
                 Privacy
               </Link>
             </div>
@@ -589,7 +645,8 @@ function NavLink({ to, href, icon, children }) {
 }
 
 function MobileNavLink({ to, href, onClick, children }) {
-  const cls = "text-sm text-zinc-600 hover:text-zinc-900 py-2 transition-colors duration-150 block";
+  const cls =
+    "text-sm text-zinc-600 hover:text-zinc-900 py-2 transition-colors duration-150 block";
   if (href) return <a href={href} onClick={onClick} className={cls}>{children}</a>;
   return <Link to={to} onClick={onClick} className={cls}>{children}</Link>;
 }
