@@ -24,6 +24,9 @@ import QuizHub from "./pages/QuizHub";
 import QuizIntro from "./pages/QuizIntro";
 import ErrorBoundary from "./components/ErrorBoundary";
 
+// ✅ Add this import
+import { SpeedInsights } from "@vercel/speed-insights/react";
+
 const ProtectedRoute = ({ children }) => {
   return (
     <>
@@ -67,6 +70,9 @@ function App() {
                 <Route path="*" element={<PageNotFound />} />
               </Routes>
               <FeedbackWidget />
+
+              {/* ✅ Add SpeedInsights here – inside Router but outside Routes */}
+              <SpeedInsights />
             </Router>
             <Toaster />
           </QueryClientProvider>
