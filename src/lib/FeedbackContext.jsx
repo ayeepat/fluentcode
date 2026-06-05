@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
 
-const FeedbackContext = createContext();
+const FeedbackContext = createContext(null);
 
 export function FeedbackProvider({ children }) {
   const [isOpen, setIsOpen] = useState(false);

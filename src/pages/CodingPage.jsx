@@ -58,6 +58,16 @@ async function getRunPython() {
   return mod.runPython;
 }
 
+let _cppRunnerPromise = null;
+
+async function getRunCpp() {
+  if (!_cppRunnerPromise) {
+    _cppRunnerPromise = import("@/lib/cppRunner");
+  }
+  const mod = await _cppRunnerPromise;
+  return mod.runCpp;
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -83,6 +93,38 @@ function passesPatternTests(code, tests) {
 
 function isPythonLanguage(lang) {
   return lang === "python";
+}
+
+function isCppLanguage(lang) {
+  return lang === "cpp";
+}
+
+function hasLocalRuntime(lang) {
+  return isPythonLanguage(lang) || isCppLanguage(lang);
+}
+
+async function runLocally(lang, code) {
+  if (isPythonLanguage(lang)) {
+    const runPython = await getRunPython();
+    return runPython(code);
+  }
+  if (isCppLanguage(lang)) {
+    const runCpp = await getRunCpp();
+    return runCpp(code);
+  }
+  return { output: "", error: `No local runtime for ${lang}` };
+}
+
+function runtimeLabel(lang) {
+  if (isCppLanguage(lang)) return "C++";
+  return "Python";
+}
+
+function emptyOutputHint(lang) {
+  if (isCppLanguage(lang)) {
+    return "$ (no output)\nTip: Use std::cout to display results.";
+  }
+  return "$ (no output)\nTip: Use print() to display results.";
 }
 
 // ---------------------------------------------------------------------------
@@ -267,11 +309,10 @@ export default function CodingPage() {
       return expectedOutputCache.current;
     }
 
-    const runPython = await getRunPython();
-    const { output: solOutput, error } = await runPython(solutionCode);
+    const { output: solOutput, error } = await runLocally(language, solutionCode);
 
     if (error) {
-      console.warn("Solution code errored in Pyodide:", error);
+      console.warn("Solution code errored in local runtime:", error);
       expectedOutputCache.current = null;
     } else {
       expectedOutputCache.current = normaliseOutput(solOutput);
@@ -286,7 +327,7 @@ export default function CodingPage() {
   const handleRun = async () => {
     if (running) return;
 
-    if (!isPythonLanguage(language)) {
+    if (!hasLocalRuntime(language)) {
       setOutput(
         `Live execution for ${language} is coming soon.\n` +
           `Use the Submit button to get AI feedback on your code.`
@@ -295,16 +336,15 @@ export default function CodingPage() {
     }
 
     setRunning(true);
-    setOutput("Loading Python runtime…");
+    setOutput(`Loading ${runtimeLabel(language)} runtime…`);
 
     try {
-      const runPython = await getRunPython();
-      const { output: stdout, error } = await runPython(code);
+      const { output: stdout, error } = await runLocally(language, code);
 
       if (error) {
         setOutput(`Error:\n${error}`);
       } else if (stdout.trim() === "") {
-        setOutput("$ (no output)\nTip: Use print() to display results.");
+        setOutput(emptyOutputHint(language));
       } else {
         setOutput(stdout);
       }
@@ -340,14 +380,13 @@ export default function CodingPage() {
     const solutionCode = lesson.exercise.solution || "";
     const passedPatterns = passesPatternTests(code, tests);
 
-    // ── Python: real execution path ──────────────────────────────────
-    if (isPythonLanguage(language)) {
+    // ── Python / C++: real execution path ─────────────────────────────
+    if (hasLocalRuntime(language)) {
       let userOutput = "";
       let userError  = null;
 
       try {
-        const runPython = await getRunPython();
-        const execResult = await runPython(code);
+        const execResult = await runLocally(language, code);
         userOutput = execResult.output;
         userError  = execResult.error;
       } catch (err) {
@@ -357,7 +396,7 @@ export default function CodingPage() {
       if (userError) {
         setOutput(`Error:\n${userError}`);
       } else if (userOutput.trim() === "") {
-        setOutput("$ (no output)\nTip: Use print() to display results.");
+        setOutput(emptyOutputHint(language));
       } else {
         setOutput(userOutput);
       }
@@ -890,7 +929,7 @@ export default function CodingPage() {
 
           {/* Action bar */}
           <div className="flex items-center gap-2 px-3 py-2.5 border-t border-zinc-100 shrink-0">
-            {isPythonLanguage(language) ? (
+            {hasLocalRuntime(language) ? (
               <button
                 onClick={handleRun}
                 disabled={running || submitting}

@@ -38,6 +38,7 @@ const LANGUAGES = [
   { key: "typescript", label: "TypeScript" },
   { key: "java",       label: "Java"       },
   { key: "ruby",       label: "Ruby"       },
+  { key: "cpp",        label: "C++"        },
 ];
 
 export default function Courses() {

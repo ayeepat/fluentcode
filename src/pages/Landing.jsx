@@ -637,6 +637,7 @@ export default function Landing() {
   );
 }
 
+/** @type {(props: { to?: string, href?: string, icon?: any, children: any }) => any} */
 function NavLink({ to, href, icon, children }) {
   const cls =
     "flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-900 px-3 py-1.5 rounded-full hover:bg-zinc-100 transition-all duration-150";
@@ -644,6 +645,7 @@ function NavLink({ to, href, icon, children }) {
   return <Link to={to} className={cls}>{icon}{children}</Link>;
 }
 
+/** @type {(props: { to?: string, href?: string, onClick?: () => void, children: any }) => any} */
 function MobileNavLink({ to, href, onClick, children }) {
   const cls =
     "text-sm text-zinc-600 hover:text-zinc-900 py-2 transition-colors duration-150 block";

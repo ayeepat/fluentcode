@@ -298,8 +298,8 @@ function shuffleAndFinish(raw, prng) {
  * Questions are skipped (not faked) when the required lesson field is
  * absent, so the returned array may have fewer than 5 items.
  *
- * @param {object} lesson     – a single lesson object from the curriculum
- * @param {string} [language] – reserved for future display tweaks, unused
+ * @param {object} lesson - a single lesson object from the curriculum
+ * @param {string} [_language] - reserved for future display tweaks, unused
  * @returns {Array<{
  *   question    : string,
  *   options     : string[],   // 4 items

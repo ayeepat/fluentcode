@@ -22,7 +22,7 @@ function getCorsHeaders(origin: string | null): Record<string, string> {
   };
 }
 
-const ALLOWED_LANGUAGES = ["python", "java", "javascript", "ruby", "typescript"];
+const ALLOWED_LANGUAGES = ["python", "java", "javascript", "ruby", "typescript", "cpp"];
 const MAX_CODE_LENGTH = 10000;
 const MAX_LESSON_FIELD_LENGTH = 2000;
 
