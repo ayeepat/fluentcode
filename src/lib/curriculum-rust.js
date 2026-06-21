@@ -1250,5 +1250,3 @@ strip = true`,
     }
   ]
 };
-
-export { rustCurriculum };
