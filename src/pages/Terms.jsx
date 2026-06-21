@@ -7,10 +7,10 @@ export default function Terms() {
   return (
     <div className="min-h-screen bg-white">
       <Helmet>
-        <title>Terms of Service | FluentCode</title>
-        <meta name="description" content="Read our Terms of Service to understand the rules and conditions for using FluentCode." />
-        <meta property="og:title" content="Terms of Service - FluentCode" />
-        <meta property="og:description" content="Legal terms and conditions for FluentCode users." />
+        <title>Terms of Service | FluentlyCode</title>
+        <meta name="description" content="Read our Terms of Service to understand the rules and conditions for using FluentlyCode." />
+        <meta property="og:title" content="Terms of Service - FluentlyCode" />
+        <meta property="og:description" content="Legal terms and conditions for FluentlyCode users." />
       </Helmet>
       <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-4 bg-white/90 backdrop-blur-md border-b border-zinc-100\">
         <Link
@@ -21,7 +21,7 @@ export default function Terms() {
           Home
         </Link>
         <Link to="/" className="text-sm font-semibold tracking-tight text-zinc-900">
-          fluentcode
+          fluentlycode
         </Link>
         <div className="w-16" />
       </nav>
@@ -34,17 +34,17 @@ export default function Terms() {
           <section>
             <h2 className="text-base font-semibold text-zinc-900 mb-2">1. Agreement to Terms</h2>
             <p>
-              By accessing or using FluentCode ("the Service"), available at fluentcode.com and related domains,
+              By accessing or using FluentlyCode ("the Service"), available at fluentlycode.xyz and related domains,
               you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms,
               you may not access or use the Service. These Terms constitute a legally binding agreement between
-              you ("User", "you") and FluentCode ("we", "us", "our").
+              you ("User", "you") and FluentlyCode ("we", "us", "our").
             </p>
           </section>
 
           <section>
             <h2 className="text-base font-semibold text-zinc-900 mb-2">2. Description of Service</h2>
             <p>
-              FluentCode is an online platform that provides interactive programming education through
+              FluentlyCode is an online platform that provides interactive programming education through
               structured lessons, coding exercises, and AI-powered feedback. The Service includes both
               free and paid subscription tiers. We reserve the right to modify, suspend, or discontinue
               any part of the Service at any time, with or without notice.
@@ -69,7 +69,7 @@ export default function Terms() {
           <section>
             <h2 className="text-base font-semibold text-zinc-900 mb-2">4. Subscriptions and Payments</h2>
             <p>
-              FluentCode offers a free tier and a paid "Pro" subscription. By subscribing to the Pro plan,
+              FluentlyCode offers a free tier and a paid "Pro" subscription. By subscribing to the Pro plan,
               you agree to pay the applicable fees as displayed at the time of purchase. All payments are
               processed securely through Stripe, Inc.
             </p>
@@ -112,8 +112,8 @@ export default function Terms() {
           <section>
             <h2 className="text-base font-semibold text-zinc-900 mb-2">7. Intellectual Property</h2>
             <p>
-              All content on FluentCode — including but not limited to lessons, exercises, code examples,
-              design, logos, and text — is the intellectual property of FluentCode and is protected by
+              All content on FluentlyCode — including but not limited to lessons, exercises, code examples,
+              design, logos, and text — is the intellectual property of FluentlyCode and is protected by
               copyright, trademark, and other intellectual property laws. You may not copy, modify,
               distribute, sell, or lease any part of our Service or content without our explicit
               written permission.
@@ -129,7 +129,7 @@ export default function Terms() {
           <section>
             <h2 className="text-base font-semibold text-zinc-900 mb-2">8. AI-Powered Features</h2>
             <p>
-              FluentCode uses artificial intelligence to provide code feedback and tutoring assistance.
+              FluentlyCode uses artificial intelligence to provide code feedback and tutoring assistance.
               While we strive for accuracy, AI-generated feedback may occasionally contain errors or
               inaccuracies. AI responses are provided for educational purposes only and should not be
               relied upon as professional advice. We are not liable for any consequences arising from
@@ -163,7 +163,7 @@ export default function Terms() {
           <section>
             <h2 className="text-base font-semibold text-zinc-900 mb-2">11. Indemnification</h2>
             <p>
-              You agree to indemnify, defend, and hold harmless FluentCode and its affiliates from
+              You agree to indemnify, defend, and hold harmless FluentlyCode and its affiliates from
               any claims, damages, losses, liabilities, and expenses (including reasonable legal fees)
               arising out of your use of the Service, your violation of these Terms, or your violation
               of any rights of a third party.

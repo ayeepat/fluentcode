@@ -6,15 +6,15 @@ const MODEL = "llama-3.3-70b-versatile";
 const TIMEOUT_MS = 15000;  // 15 seconds – increased from 10s
 const MAX_CONTENT_LENGTH = 50000;
 const ALLOWED_ORIGINS = [
-  "https://fluent-code.xyz",
-  "https://www.fluent-code.xyz",
+  "https://fluentlycode.xyz",
+  "https://www.fluentlycode.xyz",
   "http://localhost:5173",
   "http://localhost:3000",
   "http://localhost:8000",
 ];
 
 function getCorsHeaders(origin: string | null): Record<string, string> {
-  const allowedOrigin = origin && ALLOWED_ORIGINS.includes(origin) ? origin : "https://fluent-code.xyz";
+  const allowedOrigin = origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
   return {
     "Access-Control-Allow-Origin": allowedOrigin,
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -22,7 +22,7 @@ function getCorsHeaders(origin: string | null): Record<string, string> {
   };
 }
 
-const ALLOWED_LANGUAGES = ["python", "java", "javascript", "ruby", "typescript", "cpp"];
+const ALLOWED_LANGUAGES = ["python", "java", "javascript", "ruby", "typescript", "cpp", "go"];
 const MAX_CODE_LENGTH = 10000;
 const MAX_LESSON_FIELD_LENGTH = 2000;
 
@@ -182,7 +182,7 @@ serve(async (req) => {
       MAX_LESSON_FIELD_LENGTH
     );
 
-    const evaluationPrompt = `You are a kind, encouraging coding tutor for FluentCode.
+    const evaluationPrompt = `You are a kind, encouraging coding tutor for FluentlyCode.
 Your task:
 1. Read the lesson and exercise below.
 2. Evaluate whether the student's code correctly solves the exercise.

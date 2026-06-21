@@ -20,4 +20,4 @@ Disallow: /sign-in
 Disallow: /sign-up
 
 # Point to sitemap
-Sitemap: https://fluent-code.xyz/sitemap.xml
+Sitemap: https://fluentlycode.xyz/sitemap.xml

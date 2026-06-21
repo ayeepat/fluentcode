@@ -1,14 +1,14 @@
-# FluentCode: Complete Platform Overview
+# FluentlyCode: Complete Platform Overview
 
 ## Mission
 
-FluentCode teaches people to code by actually coding. Instead of passive videos or multiple-choice quizzes, learners write real, executable code, see immediate output, and receive AI-powered feedback. The platform removes friction (no signup to start), eliminates cost barriers (completely free), and focuses on deep, practical learning.
+FluentlyCode teaches people to code by actually coding. Instead of passive videos or multiple-choice quizzes, learners write real, executable code, see immediate output, and receive AI-powered feedback. The platform removes friction (no signup to start), eliminates cost barriers (completely free), and focuses on deep, practical learning.
 
 ## Platform Overview
 
-FluentCode is a web-based coding education platform built with React, Vite, and Supabase. It features an interactive Monaco code editor, Groq-powered AI feedback, quiz generation, progress tracking, and a supportive community-first approach.
+FluentlyCode is a web-based coding education platform built with React, Vite, and Supabase. It features an interactive Monaco code editor, Groq-powered AI feedback, quiz generation, progress tracking, and a supportive community-first approach.
 
-Website: https://fluent-code.xyz
+Website: https://fluentlycode.xyz
 Created by: Solo developer
 Model: Free forever with optional donations
 
@@ -45,7 +45,7 @@ UI Components: Radix UI, shadcn/ui
 LESSON: Your First Step
 - Title: Your First Step
 - Concept: The print() function displays messages on the screen — this is your first way to communicate with the computer.
-- Explanation: Welcome to FluentCode! This platform teaches you to code by actually coding — just like learning a language by speaking it. Every lesson gives you a tiny, focused challenge. In Python, the most basic thing you can do is make the computer talk using print(). Let's write your first line of Python.
+- Explanation: Welcome to FluentlyCode! This platform teaches you to code by actually coding — just like learning a language by speaking it. Every lesson gives you a tiny, focused challenge. In Python, the most basic thing you can do is make the computer talk using print(). Let's write your first line of Python.
 - Example Code: print('Hello, world!')\nprint('I am learning Python!')
 - Exercise Prompt: Use print() to make the computer say exactly: 'I am ready to code!' (Don't forget the quotes!)
 - Starter Code: # Write your first print statement below:\n# Make it say: I am ready to code!\n
@@ -313,7 +313,7 @@ LESSON 8: Dictionary Methods and Iteration
 
 ## Security Measures
 
-- **CORS Locked**: API endpoints accept only from https://fluent-code.xyz and allowed localhost domains
+- **CORS Locked**: API endpoints accept only from https://fluentlycode.xyz and allowed localhost domains
 - **Input Validation**: All inputs validated for type, length, and content
 - **Rate Limiting**: 20-30 requests/minute per IP on AI endpoints
 - **Payload Limits**: 50KB maximum request size
@@ -375,7 +375,7 @@ LESSON 8: Dictionary Methods and Iteration
 - Students preparing for coding interviews
 - Teachers looking for student resources
 
-## What Makes FluentCode Unique
+## What Makes FluentlyCode Unique
 
 1. **No Setup Barrier**: Start coding in 10 seconds without signup
 2. **No Cost Barrier**: Completely free forever with optional donations
@@ -439,6 +439,6 @@ LESSON 8: Dictionary Methods and Iteration
 
 ## Conclusion
 
-FluentCode reimagines coding education for the modern learner. By removing signup friction, eliminating cost barriers, and focusing on hands-on practice with AI mentorship, it makes learning to code accessible to anyone. The platform's emphasis on actually writing code — not watching videos or selecting multiple choice — builds real skills that stick. Whether you're a complete beginner or brushing up on fundamentals, FluentCode provides a supportive, judgment-free environment to learn, practice, fail, get feedback, and improve.
+FluentlyCode reimagines coding education for the modern learner. By removing signup friction, eliminating cost barriers, and focusing on hands-on practice with AI mentorship, it makes learning to code accessible to anyone. The platform's emphasis on actually writing code — not watching videos or selecting multiple choice — builds real skills that stick. Whether you're a complete beginner or brushing up on fundamentals, FluentlyCode provides a supportive, judgment-free environment to learn, practice, fail, get feedback, and improve.
 
-Start at https://fluent-code.xyz
+Start at https://fluentlycode.xyz

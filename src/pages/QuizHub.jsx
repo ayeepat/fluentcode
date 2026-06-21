@@ -26,6 +26,9 @@ const LANGUAGES = [
   { key: "typescript", label: "TypeScript" },
   { key: "java",       label: "Java"       },
   { key: "ruby",       label: "Ruby"       },
+  { key: "cpp",        label: "C++"        },
+  { key: "go",         label: "Go"         },
+  { key: "rust",       label: "Rust"       },
 ];
 
 export default function QuizHub() {
@@ -141,7 +144,7 @@ export default function QuizHub() {
       <Helmet>
         <title>Quiz Hub | Practice Python Quizzes</title>
         <meta name="description" content="Access all Python quizzes. Test your knowledge with interactive questions after each lesson. No prerequisites needed." />
-        <meta property="og:title" content="Quiz Hub - FluentCode" />
+        <meta property="og:title" content="Quiz Hub - FluentlyCode" />
         <meta property="og:description" content="Interactive quizzes covering all Python lessons." />
       </Helmet>
       <Navbar streak={streak} />

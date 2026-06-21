@@ -208,7 +208,7 @@ export default function Quiz() {
             Courses
           </button>
           <span className="text-sm font-semibold text-zinc-900">
-            fluentcode
+            fluentlycode
           </span>
           <div className="w-20" />
         </nav>

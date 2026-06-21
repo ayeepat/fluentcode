@@ -234,7 +234,7 @@ Type widening: const infers literal type, let infers broader type
 const x = 'hello'  → type is literal "hello"
 let x = 'hello'    → type is string (can be reassigned)`,
           example: `// TypeScript infers all these types:
-const siteName = 'FluentCode';    // type: "FluentCode" (string literal!)
+const siteName = 'FluentlyCode';    // type: "FluentlyCode" (string literal!)
 let userName = 'Alice';            // type: string
 let score = 100;                   // type: number
 let isLoggedIn = false;            // type: boolean
@@ -290,7 +290,7 @@ const config = { host: 'localhost', port: 3000 };
 // Try adding new property:
 // config.newProp = 'value'; // Error: ...
 `,
-            solution: `const appName = 'FluentCode';
+            solution: `const appName = 'FluentlyCode';
 let userCount = 0;
 let isPremium = false;
 let scores = [95, 87, 92, 78];
@@ -2091,7 +2091,7 @@ console.log(getColor('RED'));
 }
 
 const config: AppConfig = {
-  appName: 'FluentCode',
+  appName: 'FluentlyCode',
   version: '1.0.0',
   maxUsers: 1000,
   features: ['lessons', 'quizzes', 'ai-review'],

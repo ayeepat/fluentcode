@@ -58,7 +58,7 @@ export default function Navbar({ streak = 0, backTo = null, backLabel = null, mo
     <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-4 bg-white/90 backdrop-blur-md border-b border-zinc-100">
       <div className="flex items-center gap-3">
         <Link to="/" className="text-sm font-semibold tracking-tight text-zinc-900">
-          fluentcode
+          fluentlycode
         </Link>
         {streak > 0 && (
           <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-50 border border-orange-100">

@@ -1779,12 +1779,12 @@ var ignores block scope (only has function scope) — avoid it!
 Closure: a function that remembers variables from its outer scope even after that scope ends.
 Variable shadowing: inner variable with same name as outer — inner one takes precedence.`,
           example: `// Global scope — accessible everywhere
-const appName = 'FluentCode';
+const appName = 'FluentlyCode';
 
 function showApp() {
   console.log(appName);  // Can access global variable
 }
-showApp();  // FluentCode
+showApp();  // FluentlyCode
 
 // Function scope — only inside the function
 function calculate() {

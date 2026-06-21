@@ -144,7 +144,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-white">
       <Helmet>
         <title>Dashboard | Your Learning Progress</title>
-        <meta name="description" content="Track your learning progress. View your streak, completed exercises, and continue your coding journey with FluentCode." />
+        <meta name="description" content="Track your learning progress. View your streak, completed exercises, and continue your coding journey with FluentlyCode." />
       </Helmet>
       <Navbar streak={streak} />
 

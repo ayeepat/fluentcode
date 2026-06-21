@@ -165,9 +165,9 @@ export default function Lesson() {
   return (
     <div className="min-h-screen bg-white">
       <Helmet>
-        <title>{lesson.title} | Learn Python with FluentCode</title>
+        <title>{lesson.title} | Learn Python with FluentlyCode</title>
         <meta name="description" content={`${lesson.title}: ${lesson.explanation.substring(0, 150)}... Learn Python concepts with interactive coding lessons.`} />
-        <meta property="og:title" content={`${lesson.title} | FluentCode`} />
+        <meta property="og:title" content={`${lesson.title} | FluentlyCode`} />
         <meta property="og:description" content={`Learn ${lesson.title} with interactive coding and AI-powered feedback.`} />
       </Helmet>
       <Navbar

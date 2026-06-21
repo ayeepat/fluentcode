@@ -1,7 +1,7 @@
-# FluentCode
+# FluentlyCode
 > Learn to code by actually coding — write real exercises, get AI feedback, build lasting skills.
 
-FluentCode is a free, interactive platform designed to teach you how to code through hands-on practice. Unlike traditional coding tutorials with passive videos or multiple-choice quizzes, FluentCode puts you in control immediately: you write real, working code in a browser-based editor, run it instantly, and receive personalized AI feedback from your tutor. Whether you're a complete beginner or brushing up on fundamentals, FluentCode makes coding accessible, practical, and engaging — no signup required to start.
+FluentlyCode is a free, interactive platform designed to teach you how to code through hands-on practice. Unlike traditional coding tutorials with passive videos or multiple-choice quizzes, FluentlyCode puts you in control immediately: you write real, working code in a browser-based editor, run it instantly, and receive personalized AI feedback from your tutor. Whether you're a complete beginner or brushing up on fundamentals, FluentlyCode makes coding accessible, practical, and engaging — no signup required to start.
 
 ## How It Works
 
@@ -48,9 +48,9 @@ Completely Free. Forever.
 
 ## Support
 
-FluentCode is built and maintained by a solo developer. If you find it useful and want to help keep the servers running, you can donate at https://boosty.to/fluentcode/donate
+FluentlyCode is built and maintained by a solo developer. If you find it useful and want to help keep the servers running, you can donate at https://boosty.to/fluentcode/donate
 
-## Who Should Use FluentCode
+## Who Should Use FluentlyCode
 
 - Complete beginners wanting to learn programming from scratch
 - People who learn best by doing (hands-on practice)
@@ -59,7 +59,7 @@ FluentCode is built and maintained by a solo developer. If you find it useful an
 - Those wanting to learn multiple programming languages in one place
 - Learners who want real-world skills, not just theory
 
-## What Makes FluentCode Different
+## What Makes FluentlyCode Different
 
 - No Theory-Only Lessons — Every lesson combines explanation with immediately executable exercises
 - AI Tutor, Not Just Code Checker — The AI doesn't just say right/wrong; it explains WHY and gives specific guidance
@@ -70,9 +70,9 @@ FluentCode is built and maintained by a solo developer. If you find it useful an
 
 ## Links
 
-- Website: https://fluent-code.xyz
-- Sign Up: https://fluent-code.xyz/sign-up
-- Courses: https://fluent-code.xyz/courses
-- Dashboard: https://fluent-code.xyz/dashboard
-- Support: https://fluent-code.xyz/upgrade
+- Website: https://fluentlycode.xyz
+- Sign Up: https://fluentlycode.xyz/sign-up
+- Courses: https://fluentlycode.xyz/courses
+- Dashboard: https://fluentlycode.xyz/dashboard
+- Support: https://fluentlycode.xyz/upgrade
 - Donate: https://boosty.to/fluentcode/donate

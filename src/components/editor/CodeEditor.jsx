@@ -34,6 +34,7 @@ export default function CodeEditor({ value, onChange, language }) {
     ruby: "ruby",
     typescript: "typescript",
     cpp: "cpp",
+    rust: "rust",
   };
 
   return (

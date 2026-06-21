@@ -140,9 +140,9 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Helmet>
-        <title>FluentCode | Learn to Code with AI-Powered Interactive Lessons</title>
-        <meta name="description" content="Learn to code with FluentCode: interactive Python lessons, AI-powered feedback, quizzes, and instant code evaluation. Free and no signup required." />
-        <meta property="og:title" content="FluentCode | Learn to Code with AI-Powered Feedback" />
+        <title>FluentlyCode | Learn to Code with AI-Powered Interactive Lessons</title>
+        <meta name="description" content="Learn to code with FluentlyCode: interactive Python lessons, AI-powered feedback, quizzes, and instant code evaluation. Free and no signup required." />
+        <meta property="og:title" content="FluentlyCode | Learn to Code with AI-Powered Feedback" />
         <meta property="og:description" content="Interactive Python lessons with instant AI feedback. Start coding in seconds. No signup required. Completely free." />
       </Helmet>
 
@@ -159,7 +159,7 @@ export default function Landing() {
           className="text-sm font-semibold tracking-tight text-zinc-900 z-10"
           onClick={() => setMobileMenuOpen(false)}
         >
-          fluentcode
+          fluentlycode
         </Link>
 
         {/* Desktop Nav */}
@@ -514,7 +514,7 @@ export default function Landing() {
             Support the project
           </h3>
           <p className="text-sm text-zinc-400 mb-5 max-w-sm mx-auto leading-relaxed">
-            FluentCode is free forever. If it helps you, consider supporting us
+            FluentlyCode is free forever. If it helps you, consider supporting us
             to keep the servers running.
           </p>
           <a
@@ -534,7 +534,7 @@ export default function Landing() {
         <div className="max-w-4xl mx-auto px-6 py-16">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
             <div>
-              <p className="text-sm font-semibold text-zinc-900 mb-3">fluentcode</p>
+              <p className="text-sm font-semibold text-zinc-900 mb-3">fluentlycode</p>
               <p className="text-xs text-zinc-400 leading-relaxed">
                 Learn to code with real exercises and AI-powered feedback. Free
                 forever, built for people who actually want to learn.
@@ -579,7 +579,7 @@ export default function Landing() {
               </p>
               <div className="flex flex-col gap-3">
                 <a
-                  href="mailto:fluentcodesupport@gmail.com?subject=FluentCode Support"
+                  href="mailto:fluentcodesupport@gmail.com?subject=FluentlyCode Support"
                   className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
                 >
                   <Mail size={14} />
@@ -614,7 +614,7 @@ export default function Landing() {
 
           <div className="border-t border-zinc-200 pt-6 flex flex-col md:flex-row items-center justify-between gap-3">
             <p className="text-xs text-zinc-400">
-              © {new Date().getFullYear()} fluentcode — learn to code, personally.
+              © {new Date().getFullYear()} fluentlycode — learn to code, personally.
             </p>
             <div className="flex items-center gap-4">
               <Link

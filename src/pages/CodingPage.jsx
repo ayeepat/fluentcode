@@ -695,10 +695,10 @@ export default function CodingPage() {
   return (
     <div className="h-screen flex flex-col bg-white overflow-hidden">
       <Helmet>
-        <title>AI-Powered Code Editor | {lesson.title} - FluentCode</title>
+        <title>AI-Powered Code Editor | {lesson.title} - FluentlyCode</title>
         <meta
           name="description"
-          content="Write code and get instant AI-powered feedback. Practice Python with interactive exercises and AI guidance from FluentCode."
+          content="Write code and get instant AI-powered feedback. Practice Python with interactive exercises and AI guidance from FluentlyCode."
         />
       </Helmet>
 

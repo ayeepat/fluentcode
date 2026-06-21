@@ -10,10 +10,10 @@ export default function Upgrade() {
   return (
     <div className="min-h-screen bg-white">
       <Helmet>
-        <title>Support FluentCode | Free Learning, Donations Welcome</title>
-        <meta name="description" content="FluentCode is 100% free with no paywalls. Support our mission by donating. Every contribution helps us expand our curriculum." />
-        <meta property="og:title" content="Support FluentCode" />
-        <meta property="og:description" content="Help us grow. FluentCode is free and always will be." />
+        <title>Support FluentlyCode | Free Learning, Donations Welcome</title>
+        <meta name="description" content="FluentlyCode is 100% free with no paywalls. Support our mission by donating. Every contribution helps us expand our curriculum." />
+        <meta property="og:title" content="Support FluentlyCode" />
+        <meta property="og:description" content="Help us grow. FluentlyCode is free and always will be." />
       </Helmet>
       <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-4 bg-white/90 backdrop-blur-md border-b border-zinc-100">
         <Link
@@ -24,7 +24,7 @@ export default function Upgrade() {
           Dashboard
         </Link>
         <Link to="/" className="text-sm font-semibold tracking-tight text-zinc-900">
-          fluentcode
+          fluentlycode
         </Link>
         <div className="w-24" />
       </nav>
@@ -40,7 +40,7 @@ export default function Upgrade() {
           </div>
 
           <h1 className="text-3xl font-bold tracking-tight mb-4">
-            FluentCode is completely free.
+            FluentlyCode is completely free.
           </h1>
 
           <p className="text-zinc-500 text-sm leading-relaxed mb-4">

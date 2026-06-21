@@ -181,7 +181,7 @@ export default function FeedbackWidget() {
                     </h3>
                     <p className="text-xs text-zinc-500">
                       We've received your feedback and will use it to improve
-                      FluentCode.
+                      FluentlyCode.
                     </p>
                   </motion.div>
                 ) : (

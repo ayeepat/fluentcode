@@ -92,8 +92,8 @@ export default function Profile() {
     <div className="min-h-screen bg-white">
       <Helmet>
         <title>Your Profile | Learning Stats & Progress</title>
-        <meta name="description" content="View your learning profile. Track statistics, progress, and manage your FluentCode account." />
-        <meta property="og:title" content="Profile - FluentCode" />
+        <meta name="description" content="View your learning profile. Track statistics, progress, and manage your FluentlyCode account." />
+        <meta property="og:title" content="Profile - FluentlyCode" />
         <meta property="og:description" content="Your personalized learning profile and statistics." />
       </Helmet>
       <Navbar streak={streak} hideProfile />

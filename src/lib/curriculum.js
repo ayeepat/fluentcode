@@ -21,6 +21,10 @@ const curriculumLoaders = {
     import('./curriculum-typescript.js').then((m) => m.typescriptCurriculum),
   cpp: () =>
     import('./curriculum-cpp.js').then((m) => m.cppCurriculum),
+  go: () =>
+    import('./curriculum-go.js').then((m) => m.goCurriculum),
+  rust: () =>
+    import('./curriculum-rust.js').then((m) => m.rustCurriculum),
 };
 
 function cacheKey(language, version) {
@@ -77,6 +81,8 @@ export const LANGUAGE_META = {
   ruby:       { label: 'Ruby',       versions: [1] },
   typescript: { label: 'TypeScript', versions: [1] },
   cpp:        { label: 'C++',        versions: [1] },
+  go:         { label: 'Go',         versions: [1] },
+  rust:       { label: 'Rust',       versions: [1] },
 };
 
 /**

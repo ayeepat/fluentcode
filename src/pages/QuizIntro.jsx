@@ -98,7 +98,7 @@ export default function QuizIntro() {
   return (
     <div className="min-h-screen bg-white">
       <Helmet>
-        <title>Quiz Intro | {lesson.title} - FluentCode</title>
+        <title>Quiz Intro | {lesson.title} - FluentlyCode</title>
         <meta name="description" content={`Test your knowledge about ${lesson.title}. Interactive quiz with instant feedback.`} />
       </Helmet>
       <Navbar

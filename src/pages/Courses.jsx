@@ -39,6 +39,8 @@ const LANGUAGES = [
   { key: "java",       label: "Java"       },
   { key: "ruby",       label: "Ruby"       },
   { key: "cpp",        label: "C++"        },
+  { key: "go",         label: "Go"         },
+  { key: "rust",       label: "Rust"       },
 ];
 
 export default function Courses() {
@@ -212,7 +214,7 @@ export default function Courses() {
       <Helmet>
         <title>Courses & Lessons | Learn Python Coding</title>
         <meta name="description" content="Browse Python courses with interactive lessons, quizzes, and AI-powered code feedback. Progress tracking and structured learning paths." />
-        <meta property="og:title" content="Courses & Lessons | FluentCode" />
+        <meta property="og:title" content="Courses & Lessons | FluentlyCode" />
         <meta property="og:description" content="Interactive Python curriculum with hands-on coding lessons and instant feedback." />
       </Helmet>
       <Navbar streak={streak} />

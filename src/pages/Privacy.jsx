@@ -7,9 +7,9 @@ export default function Privacy() {
   return (
     <div className="min-h-screen bg-white">
       <Helmet>
-        <title>Privacy Policy | FluentCode</title>
-        <meta name="description" content="Read our Privacy Policy to understand how we collect, use, and protect your data on FluentCode." />
-        <meta property="og:title" content="Privacy Policy - FluentCode" />
+        <title>Privacy Policy | FluentlyCode</title>
+        <meta name="description" content="Read our Privacy Policy to understand how we collect, use, and protect your data on FluentlyCode." />
+        <meta property="og:title" content="Privacy Policy - FluentlyCode" />
         <meta property="og:description" content="Our privacy policy and data protection practices." />
       </Helmet>
       <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-4 bg-white/90 backdrop-blur-md border-b border-zinc-100\">
@@ -21,7 +21,7 @@ export default function Privacy() {
           Home
         </Link>
         <Link to="/" className="text-sm font-semibold tracking-tight text-zinc-900">
-          fluentcode
+          fluentlycode
         </Link>
         <div className="w-16" />
       </nav>
@@ -34,7 +34,7 @@ export default function Privacy() {
           <section>
             <h2 className="text-base font-semibold text-zinc-900 mb-2">1. Introduction</h2>
             <p>
-              FluentCode ("we", "us", "our") respects your privacy and is committed to protecting
+              FluentlyCode ("we", "us", "our") respects your privacy and is committed to protecting
               your personal data. This Privacy Policy explains how we collect, use, store, and
               protect your information when you use our website and services ("the Service").
               This policy is designed to comply with the General Data Protection Regulation (GDPR)
@@ -192,7 +192,7 @@ export default function Privacy() {
           <section>
             <h2 className="text-base font-semibold text-zinc-900 mb-2">11. Cookies and Tracking</h2>
             <p>
-              FluentCode uses essential cookies required for the Service to function properly,
+              FluentlyCode uses essential cookies required for the Service to function properly,
               including authentication cookies managed by Clerk. We do not use advertising cookies
               or third-party tracking cookies. We do not engage in cross-site tracking.
             </p>
