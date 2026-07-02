@@ -4,7 +4,8 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
-import { getLessonById, getAllLessons, hasVersion2 } from "@/lib/curriculum";
+import { getLessonById, getAllLessons, hasVersion2, loadCurriculum } from "@/lib/curriculum";
+import { useCurriculumReady } from "@/hooks/useCurriculumReady";
 import {
   isGuestAccessible,
   shouldPromptSignup,
@@ -81,14 +82,27 @@ function normaliseOutput(raw) {
     .trim();
 }
 
+// Quote style and spacing are irrelevant to whether the construct is present:
+// print("hi") should satisfy a test authored as print('hi'), and `15+27`
+// should satisfy `15 + 27`. Output comparison / AI review remain the real gate.
+function normaliseForPatternTest(s) {
+  return s.replace(/"/g, "'").replace(/\s+/g, "");
+}
+
+function findFailingPatternTest(code, tests) {
+  if (!tests || tests.length === 0) return null;
+  const normalisedCode = normaliseForPatternTest(code);
+  return (
+    tests.find(
+      (t) =>
+        t.type === "contains" &&
+        !normalisedCode.includes(normaliseForPatternTest(t.value))
+    ) ?? null
+  );
+}
+
 function passesPatternTests(code, tests) {
-  if (!tests || tests.length === 0) return true;
-  for (const test of tests) {
-    if (test.type === "contains" && !code.includes(test.value)) {
-      return false;
-    }
-  }
-  return true;
+  return findFailingPatternTest(code, tests) === null;
 }
 
 function isPythonLanguage(lang) {
@@ -139,7 +153,8 @@ export default function CodingPage() {
   const { openFeedbackWidget } = useFeedbackWidget();
 
   const isGuest    = !isSignedIn;
-  const guestAllowed = isGuestAccessible(language, lessonId);
+  const curriculumReady = useCurriculumReady(language);
+  const guestAllowed = curriculumReady && isGuestAccessible(language, lessonId);
 
   // ------------------------------------------------------------------
   // State
@@ -174,20 +189,21 @@ export default function CodingPage() {
 
   const result = useMemo(
     () =>
-      curriculumVersion
+      curriculumVersion && curriculumReady
         ? getLessonById(language, lessonId, curriculumVersion)
         : null,
-    [language, lessonId, curriculumVersion]
+    [language, lessonId, curriculumVersion, curriculumReady]
   );
 
   // ------------------------------------------------------------------
-  // Guards
+  // Guards — wait for the curriculum cache before judging guest access,
+  // otherwise deep links redirect before the lesson list exists.
   // ------------------------------------------------------------------
   useEffect(() => {
-    if (isUserLoaded && isGuest && !guestAllowed) {
+    if (isUserLoaded && curriculumReady && isGuest && !guestAllowed) {
       navigate("/courses");
     }
-  }, [isUserLoaded, isGuest, guestAllowed, navigate]);
+  }, [isUserLoaded, curriculumReady, isGuest, guestAllowed, navigate]);
 
   // ------------------------------------------------------------------
   // Reset lesson state when lesson changes
@@ -243,7 +259,9 @@ export default function CodingPage() {
           user.primaryEmailAddress?.emailAddress
         );
         setProgress(data);
-        setCurriculumVersion(data?.curriculum_version || 1);
+        const version = data?.curriculum_version || 1;
+        await loadCurriculum(language, version).catch(() => {});
+        setCurriculumVersion(version);
         const remaining = await progressDb.getAiRequestsRemaining(
           supabaseClient,
           user.id,
@@ -274,7 +292,7 @@ export default function CodingPage() {
   // ------------------------------------------------------------------
   // Loading screens
   // ------------------------------------------------------------------
-  if (!isUserLoaded || isLoading) {
+  if (!isUserLoaded || isLoading || !curriculumReady) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="w-5 h-5 border-2 border-zinc-200 border-t-zinc-900 rounded-full animate-spin" />
@@ -452,9 +470,7 @@ export default function CodingPage() {
       } else {
         let diffMessage = "Your output doesn't match the expected output yet.";
         if (!passedPatterns) {
-          const failing = tests.find(
-            (t) => t.type === "contains" && !code.includes(t.value)
-          );
+          const failing = findFailingPatternTest(code, tests);
           diffMessage = failing
             ? `Your code should include: \`${failing.value}\``
             : "Your code is missing a required construct.";
@@ -474,9 +490,7 @@ export default function CodingPage() {
     if (passedPatterns) {
       await handleAiEvaluation();
     } else {
-      const failing = tests.find(
-        (t) => t.type === "contains" && !code.includes(t.value)
-      );
+      const failing = findFailingPatternTest(code, tests);
       const diffMessage = failing
         ? `Your code should include: \`${failing.value}\``
         : "Your code is missing a required construct.";

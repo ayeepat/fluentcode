@@ -4,7 +4,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
-import { getLessonById, getAllLessons, hasVersion2 } from "@/lib/curriculum";
+import { getLessonById, getAllLessons, hasVersion2, loadCurriculum } from "@/lib/curriculum";
+import { useCurriculumReady } from "@/hooks/useCurriculumReady";
 import { generateQuizQuestions } from "@/lib/quizGenerator";
 import { isGuestAccessible } from "@/lib/guestAccess";
 import { localProgressDb } from "@/lib/localProgressDb";
@@ -29,7 +30,8 @@ export default function Quiz() {
   const { supabaseClient } = useAuth();
 
   const isGuest = !isSignedIn;
-  const guestAllowed = isGuestAccessible(language, lessonId);
+  const curriculumReady = useCurriculumReady(language);
+  const guestAllowed = curriculumReady && isGuestAccessible(language, lessonId);
 
   const [questions, setQuestions] = useState([]);
   const [currentQ, setCurrentQ] = useState(0);
@@ -45,10 +47,10 @@ export default function Quiz() {
   const [curriculumVersion, setCurriculumVersion] = useState(1);
 
   useEffect(() => {
-    if (isLoaded && isGuest && !guestAllowed) {
+    if (isLoaded && curriculumReady && isGuest && !guestAllowed) {
       navigate("/courses");
     }
-  }, [isLoaded, isGuest, guestAllowed, navigate]);
+  }, [isLoaded, curriculumReady, isGuest, guestAllowed, navigate]);
 
   const loadVersionAndLesson = useCallback(async () => {
     let version = 1;
@@ -68,6 +70,7 @@ export default function Quiz() {
       }
     }
     setCurriculumVersion(version);
+    await loadCurriculum(language, version).catch(() => {});
     const result = getLessonById(language, lessonId, version);
     if (!result) {
       setNotFound(true);

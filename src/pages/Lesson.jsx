@@ -3,7 +3,8 @@ import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
-import { getLessonById, hasVersion2 } from "@/lib/curriculum";
+import { getLessonById, hasVersion2, loadCurriculum } from "@/lib/curriculum";
+import { useCurriculumReady } from "@/hooks/useCurriculumReady";
 import { isGuestAccessible, shouldPromptSignup, isExerciseFirst, getGuestLessonIds } from "@/lib/guestAccess";
 import { localProgressDb } from "@/lib/localProgressDb";
 import { Play, Lightbulb, HelpCircle } from "lucide-react";
@@ -12,6 +13,7 @@ import { progressDb } from "@/lib/progressDb";
 import { useAuth } from "@/lib/AuthContext";
 import Navbar from "@/components/Navbar";
 import SignupPrompt from "@/components/SignupPrompt";
+import CodeExample from "@/components/CodeExample";
 
 const ease = [0.16, 1, 0.3, 1];
 
@@ -39,15 +41,17 @@ export default function Lesson() {
   const isMobile = useIsMobile();
 
   const isGuest = !isSignedIn;
-  const guestAllowed = isGuestAccessible(language, lessonId);
+  const curriculumReady = useCurriculumReady(language);
+  const guestAllowed = curriculumReady && isGuestAccessible(language, lessonId);
   const exerciseFirst = useMemo(
     () => isExerciseFirst(language, lessonId, curriculumVersion),
     [language, lessonId, curriculumVersion]
   );
 
-  // Redirect guests trying to access non-guest lessons
+  // Redirect guests trying to access non-guest lessons.
+  // Wait for the curriculum cache — on deep links it isn't populated yet.
   useEffect(() => {
-    if (isLoaded && isGuest && !guestAllowed) {
+    if (isLoaded && curriculumReady && isGuest && !guestAllowed) {
       // Redirect to first guest lesson (v2 for Python, v1 for other languages)
       const guestLessonIds = getGuestLessonIds(language);
       if (guestLessonIds.length > 0) {
@@ -56,7 +60,7 @@ export default function Lesson() {
         navigate("/courses");
       }
     }
-  }, [isLoaded, isGuest, guestAllowed, language, navigate]);
+  }, [isLoaded, curriculumReady, isGuest, guestAllowed, language, navigate]);
 
   // For exercise-first lessons, redirect straight to coding page
   useEffect(() => {
@@ -88,7 +92,9 @@ export default function Lesson() {
           user.primaryEmailAddress?.emailAddress
         );
         setStreak(data?.streak_days || 0);
-        setCurriculumVersion(data?.curriculum_version || 1);
+        const version = data?.curriculum_version || 1;
+        await loadCurriculum(language, version).catch(() => {});
+        setCurriculumVersion(version);
       } catch (err) {
         console.error("Failed to load progress:", err);
       } finally {
@@ -99,12 +105,12 @@ export default function Lesson() {
   }, [isLoaded, isGuest, supabaseClient, user, language]);
 
   useEffect(() => {
-    if (!isLoaded) return;
+    if (!isLoaded || !curriculumReady) return;
     setIsLoading(true);
     const data = getLessonById(language, lessonId, curriculumVersion);
     setResult(data);
     setIsLoading(false);
-  }, [language, lessonId, curriculumVersion, isLoaded]);
+  }, [language, lessonId, curriculumVersion, isLoaded, curriculumReady]);
 
   useEffect(() => {
     if (!isGuest) return;
@@ -118,7 +124,7 @@ export default function Lesson() {
     window.scrollTo(0, 0);
   }, [lessonId]);
 
-  if (isLoading) {
+  if (isLoading || !curriculumReady) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="w-5 h-5 border-2 border-zinc-200 border-t-zinc-900 rounded-full animate-spin" />
@@ -222,11 +228,7 @@ export default function Lesson() {
           <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">
             Example
           </p>
-          <div className="bg-zinc-950 rounded-2xl p-6 overflow-x-auto">
-            <pre className="text-sm text-zinc-100 font-mono leading-relaxed whitespace-pre-wrap">
-              {lesson.example}
-            </pre>
-          </div>
+          <CodeExample code={lesson.example} language={language} />
         </motion.div>
 
         {lesson.exercise?.debuggingTip && (

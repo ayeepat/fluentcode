@@ -4,14 +4,29 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+// If Supabase env vars are missing (e.g. local dev without .env.local),
+// export null instead of crashing the whole app at module load.
+// Every consumer already null-checks supabaseClient before using it.
+const hasSupabaseConfig = Boolean(supabaseUrl && supabaseAnonKey);
+
+if (!hasSupabaseConfig) {
+  console.warn(
+    "⚠️ VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY not set — running without Supabase (guest mode only)."
+  );
+}
+
 // Default unauthenticated client (for public data only)
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = hasSupabaseConfig
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null;
 
 // Single authenticated client instance — reused and updated with new tokens
 let authenticatedClient = null;
 let currentToken = null;
 
 export const createClerkSupabaseClient = (clerkToken) => {
+  if (!hasSupabaseConfig) return null;
+
   // If token hasn't changed, return existing client
   if (authenticatedClient && currentToken === clerkToken) {
     return authenticatedClient;

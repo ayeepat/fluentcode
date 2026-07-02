@@ -3,13 +3,15 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
-import { getLessonById, hasVersion2 } from "@/lib/curriculum";
+import { getLessonById, hasVersion2, loadCurriculum } from "@/lib/curriculum";
+import { useCurriculumReady } from "@/hooks/useCurriculumReady";
 import { isGuestAccessible } from "@/lib/guestAccess";
 import { HelpCircle, Play, Lightbulb } from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
 import { progressDb } from "@/lib/progressDb";
 import { useAuth } from "@/lib/AuthContext";
 import Navbar from "@/components/Navbar";
+import CodeExample from "@/components/CodeExample";
 
 const ease = [0.16, 1, 0.3, 1];
 
@@ -36,13 +38,14 @@ export default function QuizIntro() {
   const isMobile = useIsMobile();
 
   const isGuest = !isSignedIn;
-  const guestAllowed = isGuestAccessible(language, lessonId);
+  const curriculumReady = useCurriculumReady(language);
+  const guestAllowed = curriculumReady && isGuestAccessible(language, lessonId);
 
   useEffect(() => {
-    if (isLoaded && isGuest && !guestAllowed) {
+    if (isLoaded && curriculumReady && isGuest && !guestAllowed) {
       navigate("/courses");
     }
-  }, [isLoaded, isGuest, guestAllowed, navigate]);
+  }, [isLoaded, curriculumReady, isGuest, guestAllowed, navigate]);
 
   useEffect(() => {
     const loadVersionAndLesson = async () => {
@@ -64,6 +67,7 @@ export default function QuizIntro() {
         }
       }
       setCurriculumVersion(version);
+      await loadCurriculum(language, version).catch(() => {});
       const data = getLessonById(language, lessonId, version);
       setResult(data);
       setIsLoading(false);
@@ -150,11 +154,7 @@ export default function QuizIntro() {
           <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">
             Example
           </p>
-          <div className="bg-zinc-950 rounded-2xl p-6 overflow-x-auto">
-            <pre className="text-sm text-zinc-100 font-mono leading-relaxed whitespace-pre-wrap">
-              {lesson.example}
-            </pre>
-          </div>
+          <CodeExample code={lesson.example} language={language} />
         </motion.div>
 
         {lesson.exercise?.debuggingTip && (

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -37,6 +37,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
   }
 
   body {
@@ -71,5 +72,17 @@
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* Subtle dot-grid backdrop used on hero / section backgrounds */
+  .bg-dots {
+    background-image: radial-gradient(circle, #e4e4e7 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+
+  /* Fades the dot grid out towards the edges so it never fights the content */
+  .mask-fade-edges {
+    -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 40%, black 30%, transparent 75%);
+    mask-image: radial-gradient(ellipse 70% 70% at 50% 40%, black 30%, transparent 75%);
   }
 }

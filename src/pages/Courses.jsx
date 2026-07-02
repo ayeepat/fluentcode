@@ -33,14 +33,14 @@ const ease = [0.16, 1, 0.3, 1];
 // export from curriculum.js. If you add a language, update this array too.
 // ---------------------------------------------------------------------------
 const LANGUAGES = [
-  { key: "python",     label: "Python"     },
-  { key: "javascript", label: "JavaScript" },
-  { key: "typescript", label: "TypeScript" },
-  { key: "java",       label: "Java"       },
-  { key: "ruby",       label: "Ruby"       },
-  { key: "cpp",        label: "C++"        },
-  { key: "go",         label: "Go"         },
-  { key: "rust",       label: "Rust"       },
+  { key: "python",     label: "Python",     mono: "Py" },
+  { key: "javascript", label: "JavaScript", mono: "JS" },
+  { key: "typescript", label: "TypeScript", mono: "TS" },
+  { key: "java",       label: "Java",       mono: "Jv" },
+  { key: "ruby",       label: "Ruby",       mono: "Rb" },
+  { key: "cpp",        label: "C++",        mono: "C+" },
+  { key: "go",         label: "Go",         mono: "Go" },
+  { key: "rust",       label: "Rust",       mono: "Rs" },
 ];
 
 export default function Courses() {
@@ -228,13 +228,18 @@ export default function Courses() {
           transition={{ duration: 0.5, ease }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-bold tracking-tight mb-1.5">Courses</h1>
+          <div className="flex items-end justify-between gap-4 mb-1.5">
+            <h1 className="text-3xl font-bold tracking-tight">Courses</h1>
+            <span className="text-sm font-semibold text-zinc-900 tabular-nums pb-0.5">
+              {progressPct}%
+            </span>
+          </div>
           <p className="text-sm text-zinc-400">
             {mode === "quiz"
               ? `${completedQuizCount} of ${totalLessons} quizzes completed`
               : `${completedLessonCount} of ${totalLessons} lessons completed`}
           </p>
-          <div className="mt-4 h-1 bg-zinc-100 rounded-full overflow-hidden">
+          <div className="mt-4 h-1.5 bg-zinc-100 rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${progressPct}%` }}
@@ -317,29 +322,34 @@ export default function Courses() {
           transition={{ duration: 0.4, delay: 0.1, ease }}
           className="flex gap-2 mb-10 flex-wrap"
         >
-          {LANGUAGES.map(({ key, label }) => (
-            <button
-              key={key}
-              onClick={() => handleLangChange(key)}
-              disabled={langLoading}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 disabled:opacity-60 ${
-                selectedLang === key
-                  ? "bg-zinc-900 text-white"
-                  : "border border-zinc-200 text-zinc-500 hover:border-zinc-400 hover:text-zinc-900"
-              }`}
-            >
-              {langLoading && selectedLang !== key ? (
-                label
-              ) : langLoading && selectedLang === key ? (
-                <span className="flex items-center gap-1.5">
-                  <Loader2 size={11} className="animate-spin" />
-                  {label}
+          {LANGUAGES.map(({ key, label, mono }) => {
+            const active = selectedLang === key;
+            return (
+              <button
+                key={key}
+                onClick={() => handleLangChange(key)}
+                disabled={langLoading}
+                className={`flex items-center gap-2 pl-1.5 pr-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 disabled:opacity-60 ${
+                  active
+                    ? "bg-zinc-900 text-white shadow-[0_4px_16px_-4px_rgba(0,0,0,0.3)]"
+                    : "border border-zinc-200 text-zinc-500 hover:border-zinc-400 hover:text-zinc-900 bg-white"
+                }`}
+              >
+                <span
+                  className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold font-mono ${
+                    active ? "bg-white/15 text-white" : "bg-zinc-100 text-zinc-500"
+                  }`}
+                >
+                  {langLoading && active ? (
+                    <Loader2 size={11} className="animate-spin" />
+                  ) : (
+                    mono
+                  )}
                 </span>
-              ) : (
-                label
-              )}
-            </button>
-          ))}
+                {label}
+              </button>
+            );
+          })}
         </motion.div>
 
         {/* Curriculum content */}
@@ -361,7 +371,7 @@ export default function Courses() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.25, ease }}
-              className="space-y-10"
+              className="space-y-6"
             >
               {modules.map((module) => {
                 const modLessons          = module.lessons;
@@ -371,41 +381,45 @@ export default function Courses() {
                 const modCompletedQuizzes = modLessons.filter((l) =>
                   completedQuizzes.includes(l.id)
                 ).length;
+                const modDone =
+                  mode === "quiz" ? modCompletedQuizzes : modCompletedLessons;
+                const modPct =
+                  modLessons.length > 0
+                    ? Math.round((modDone / modLessons.length) * 100)
+                    : 0;
 
                 return (
-                  <div key={module.id}>
-                    <div className="flex items-center justify-between mb-3">
-                      <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
-                        {module.title}
-                      </p>
-                      <span className="text-xs text-zinc-300 tabular-nums">
-                        {mode === "quiz"
-                          ? `${modCompletedQuizzes}/${modLessons.length}`
-                          : `${modCompletedLessons}/${modLessons.length}`}
-                      </span>
+                  <div
+                    key={module.id}
+                    className="border border-zinc-200 rounded-3xl bg-white overflow-hidden"
+                  >
+                    {/* Module header */}
+                    <div className="px-5 pt-5 pb-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
+                          {module.title}
+                        </p>
+                        <span
+                          className={`text-xs font-medium tabular-nums px-2 py-0.5 rounded-full ${
+                            modPct === 100
+                              ? "bg-emerald-50 text-emerald-600"
+                              : "bg-zinc-100 text-zinc-500"
+                          }`}
+                        >
+                          {modDone}/{modLessons.length}
+                        </span>
+                      </div>
+                      <div className="h-1 bg-zinc-100 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                          style={{ width: `${modPct}%` }}
+                        />
+                      </div>
                     </div>
 
-                    <div className="h-0.5 bg-zinc-100 rounded-full overflow-hidden mb-3">
-                      <div
-                        className="h-full bg-emerald-500 rounded-full transition-all duration-500"
-                        style={{
-                          width: `${
-                            modLessons.length > 0
-                              ? Math.round(
-                                  ((mode === "quiz"
-                                    ? modCompletedQuizzes
-                                    : modCompletedLessons) /
-                                    modLessons.length) *
-                                    100
-                                )
-                              : 0
-                          }%`,
-                        }}
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      {modLessons.map((lesson) => {
+                    {/* Lessons */}
+                    <div className="divide-y divide-zinc-100 border-t border-zinc-100">
+                      {modLessons.map((lesson, li) => {
                         if (mode === "quiz") {
                           const quizDone      = completedQuizzes.includes(lesson.id);
                           const quizAccessible = isGuest
@@ -416,8 +430,11 @@ export default function Courses() {
                             return (
                               <div
                                 key={lesson.id}
-                                className="flex items-center gap-3 px-4 py-3.5 rounded-xl border border-zinc-100 opacity-40 cursor-not-allowed select-none"
+                                className="flex items-center gap-3 px-5 py-3.5 opacity-40 cursor-not-allowed select-none"
                               >
+                                <span className="w-6 text-xs text-zinc-300 tabular-nums shrink-0">
+                                  {String(li + 1).padStart(2, "0")}
+                                </span>
                                 <Lock size={14} className="text-zinc-300 shrink-0" />
                                 <span className="text-sm text-zinc-400 flex-1">
                                   {lesson.title}
@@ -435,14 +452,15 @@ export default function Courses() {
                               onClick={() =>
                                 navigate(`/quiz/${selectedLang}/${lesson.id}`)
                               }
-                              className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border transition-all duration-200 group text-left ${
-                                quizDone
-                                  ? "border-emerald-100 bg-emerald-50/30 hover:border-emerald-300"
-                                  : "border-zinc-200 hover:border-zinc-900"
+                              className={`w-full flex items-center gap-3 px-5 py-3.5 transition-colors duration-150 group text-left ${
+                                quizDone ? "bg-emerald-50/40 hover:bg-emerald-50/70" : "hover:bg-zinc-50"
                               }`}
                             >
+                              <span className="w-6 text-xs text-zinc-300 tabular-nums shrink-0">
+                                {String(li + 1).padStart(2, "0")}
+                              </span>
                               {quizDone ? (
-                                <Check size={13} strokeWidth={3} className="text-emerald-500 shrink-0" />
+                                <Check size={14} strokeWidth={3} className="text-emerald-500 shrink-0" />
                               ) : (
                                 <HelpCircle size={14} className="text-zinc-300 group-hover:text-zinc-600 transition-colors shrink-0" />
                               )}
@@ -463,6 +481,7 @@ export default function Courses() {
                           <LessonRow
                             key={lesson.id}
                             lesson={lesson}
+                            index={li}
                             done={done}
                             unlocked={unlocked}
                             lang={selectedLang}
@@ -482,10 +501,13 @@ export default function Courses() {
   );
 }
 
-function LessonRow({ lesson, done, unlocked, lang, isGuest }) {
+function LessonRow({ lesson, index = 0, done, unlocked, lang, isGuest }) {
+  const num = String(index + 1).padStart(2, "0");
+
   if (!unlocked) {
     return (
-      <div className="flex items-center gap-3 px-4 py-3.5 rounded-xl border border-zinc-100 opacity-40 cursor-not-allowed select-none">
+      <div className="flex items-center gap-3 px-5 py-3.5 opacity-40 cursor-not-allowed select-none">
+        <span className="w-6 text-xs text-zinc-300 tabular-nums shrink-0">{num}</span>
         <Lock size={14} className="text-zinc-300 shrink-0" />
         <span className="text-sm text-zinc-400 flex-1">{lesson.title}</span>
         <span className="text-xs text-zinc-300">
@@ -498,18 +520,17 @@ function LessonRow({ lesson, done, unlocked, lang, isGuest }) {
   return (
     <Link
       to={`/lesson/${lang}/${lesson.id}`}
-      className={`flex items-center gap-3 px-4 py-3.5 rounded-xl border transition-all duration-200 group ${
-        done
-          ? "border-emerald-100 bg-emerald-50/30 hover:border-emerald-200"
-          : "border-zinc-200 hover:border-zinc-900 hover:bg-white"
+      className={`flex items-center gap-3 px-5 py-3.5 transition-colors duration-150 group ${
+        done ? "bg-emerald-50/40 hover:bg-emerald-50/70" : "hover:bg-zinc-50"
       }`}
     >
+      <span className="w-6 text-xs text-zinc-300 tabular-nums shrink-0">{num}</span>
       {done ? (
         <Check size={15} strokeWidth={3} className="text-emerald-500 shrink-0" />
       ) : (
         <Circle size={15} className="text-zinc-300 group-hover:text-zinc-500 transition-colors shrink-0" />
       )}
-      <span className={`text-sm flex-1 ${done ? "text-emerald-700 font-medium" : "text-zinc-700 font-medium"}`}>
+      <span className={`text-sm flex-1 font-medium ${done ? "text-emerald-700" : "text-zinc-700"}`}>
         {lesson.title}
       </span>
       {done ? (

@@ -1,7 +1,20 @@
 // src/components/Navbar.jsx
 import { Link } from "react-router-dom";
-import { BookOpen, Heart, User, LogOut, Flame } from "lucide-react";
+import { BookOpen, Heart, User, LogOut, Flame, ArrowLeft } from "lucide-react";
 import { useClerk, useUser, SignInButton, SignUpButton } from "@clerk/clerk-react";
+import Wordmark from "@/components/Wordmark";
+
+function StreakBadge({ streak }) {
+  if (!streak) return null;
+  return (
+    <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-50 border border-orange-100">
+      <Flame size={12} className="text-orange-500" />
+      <span className="text-xs font-semibold text-orange-500 tabular-nums">
+        {streak}
+      </span>
+    </div>
+  );
+}
 
 export default function Navbar({ streak = 0, backTo = null, backLabel = null, moduleTitle = null, hideProfile = false }) {
   const { signOut } = useClerk();
@@ -9,25 +22,19 @@ export default function Navbar({ streak = 0, backTo = null, backLabel = null, mo
 
   if (backTo) {
     return (
-      <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-4 bg-white/90 backdrop-blur-md border-b border-zinc-100">
+      <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-3.5 bg-white/85 backdrop-blur-xl border-b border-zinc-200/70">
         <Link
           to={backTo}
-          className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
+          className="flex items-center gap-1.5 text-sm font-medium text-zinc-500 hover:text-zinc-900 transition-colors"
         >
-          ← {backLabel}
+          <ArrowLeft size={14} />
+          {backLabel}
         </Link>
         <span className="text-xs text-zinc-400 max-w-xs truncate hidden sm:block">
           {moduleTitle}
         </span>
         <div className="flex items-center gap-3">
-          {streak > 0 && (
-            <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-50 border border-orange-100">
-              <Flame size={12} className="text-orange-500" />
-              <span className="text-xs font-semibold text-orange-500 tabular-nums">
-                {streak}
-              </span>
-            </div>
-          )}
+          <StreakBadge streak={streak} />
           {isSignedIn ? (
             <Link
               to="/dashboard"
@@ -55,19 +62,12 @@ export default function Navbar({ streak = 0, backTo = null, backLabel = null, mo
   }
 
   return (
-    <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-4 bg-white/90 backdrop-blur-md border-b border-zinc-100">
+    <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-3.5 bg-white/85 backdrop-blur-xl border-b border-zinc-200/70">
       <div className="flex items-center gap-3">
-        <Link to="/" className="text-sm font-semibold tracking-tight text-zinc-900">
-          fluentlycode
+        <Link to="/">
+          <Wordmark />
         </Link>
-        {streak > 0 && (
-          <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-50 border border-orange-100">
-            <Flame size={12} className="text-orange-500" />
-            <span className="text-xs font-semibold text-orange-500 tabular-nums">
-              {streak}
-            </span>
-          </div>
-        )}
+        <StreakBadge streak={streak} />
       </div>
       <div className="flex items-center gap-1">
         <NavBtn to="/courses" icon={<BookOpen size={12} />}>
