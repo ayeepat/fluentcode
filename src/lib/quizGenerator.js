@@ -78,6 +78,8 @@ const PRINT_PATTERNS = [
   /print\(\s*(\d[\d.]*)\s*\)/,
   // Java    : System.out.println("hello")
   /System\.out\.print(?:ln)?\(\s*"([^"]+)"\s*\)/,
+  // C#      : Console.WriteLine("hello")
+  /Console\.Write(?:Line)?\(\s*\$?["']([^"']+)["']\s*\)/,
   // JS / TS : console.log("hello")
   /console\.log\(\s*["'`]([^"'`]+)["'`]\s*\)/,
   // Ruby    : puts "hello"  print "hello"

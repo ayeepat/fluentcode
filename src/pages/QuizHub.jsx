@@ -25,6 +25,7 @@ const LANGUAGES = [
   { key: "javascript", label: "JavaScript" },
   { key: "typescript", label: "TypeScript" },
   { key: "java",       label: "Java"       },
+  { key: "csharp",     label: "C#"         },
   { key: "ruby",       label: "Ruby"       },
   { key: "cpp",        label: "C++"        },
   { key: "go",         label: "Go"         },
@@ -167,7 +168,7 @@ export default function QuizHub() {
         </motion.div>
 
         {/* Language selector */}
-        <div className="flex gap-2 mb-10">
+        <div className="flex gap-2 mb-10 flex-wrap">
           {LANGUAGES.map(({ key, label }) => (
             <button
               key={key}

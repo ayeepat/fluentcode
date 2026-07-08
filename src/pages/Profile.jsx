@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { useUser, useClerk } from "@clerk/clerk-react";
-import { getAllLessons } from "@/lib/curriculum";
+import { getAllLessons, LANGUAGE_META } from "@/lib/curriculum";
 import { Flame, Target, BookOpen, TrendingUp } from "lucide-react";
 import { progressDb } from "@/lib/progressDb";
 import { useAuth } from "@/lib/AuthContext";
@@ -62,6 +62,7 @@ export default function Profile() {
   if (!isSignedIn) return null;
 
   const lang = progress?.language || "python";
+  const languageLabel = LANGUAGE_META[lang]?.label || lang;
   const allLessons = getAllLessons(lang);
   const completed = progress?.completed_lessons || [];
   const streak = progress?.streak_days || 0;
@@ -137,7 +138,7 @@ export default function Profile() {
           className="mb-10"
         >
           <div className="flex justify-between text-xs text-zinc-400 mb-2">
-            <span>{lang === "python" ? "Python" : "Java"} progress</span>
+            <span>{languageLabel} progress</span>
             <span className="tabular-nums font-medium text-zinc-600">{progressPct}%</span>
           </div>
           <div className="h-1.5 bg-zinc-100 rounded-full overflow-hidden">

@@ -87,6 +87,21 @@ const COURSE_CARDS = [
     ],
   },
   {
+    lang: "csharp",
+    label: "C#",
+    mono: "C#",
+    tagline: "Modern apps, games, and APIs",
+    modules: [
+      { id: "l0", title: "Level 0 - Hello C#",                    lessons: 5 },
+      { id: "l1", title: "Level 1 - Variables and Types",         lessons: 5 },
+      { id: "l2", title: "Level 2 - Decisions and Loops",         lessons: 5 },
+      { id: "l3", title: "Level 3 - Methods",                     lessons: 5 },
+      { id: "l4", title: "Level 4 - Collections and LINQ",        lessons: 5 },
+      { id: "l5", title: "Level 5 - Classes and OOP",             lessons: 5 },
+      { id: "l6", title: "Level 6 - Practical C#",                lessons: 5 },
+    ],
+  },
+  {
     lang: "javascript",
     label: "JavaScript",
     mono: "JS",

@@ -4,7 +4,13 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
-import { getLessonById, getAllLessons, hasVersion2, loadCurriculum } from "@/lib/curriculum";
+import {
+  getLessonById,
+  getAllLessons,
+  hasVersion2,
+  loadCurriculum,
+  LANGUAGE_META,
+} from "@/lib/curriculum";
 import { useCurriculumReady } from "@/hooks/useCurriculumReady";
 import {
   isGuestAccessible,
@@ -132,6 +138,10 @@ async function runLocally(lang, code) {
 function runtimeLabel(lang) {
   if (isCppLanguage(lang)) return "C++";
   return "Python";
+}
+
+function languageDisplayName(lang) {
+  return LANGUAGE_META[lang]?.label || lang;
 }
 
 function emptyOutputHint(lang) {
@@ -347,7 +357,7 @@ export default function CodingPage() {
 
     if (!hasLocalRuntime(language)) {
       setOutput(
-        `Live execution for ${language} is coming soon.\n` +
+        `Live execution for ${languageDisplayName(language)} is coming soon.\n` +
           `Use the Submit button to get AI feedback on your code.`
       );
       return;

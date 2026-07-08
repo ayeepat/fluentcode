@@ -17,7 +17,7 @@ export default function CodeEditor({ value, onChange, language }) {
       // If the starter code is just a comment/template structure, clear it
       const isStarterCode =
         value?.startsWith("# ") ||      // Python
-        value?.startsWith("//") ||      // C++, Java, JS, TS, Rust
+        value?.startsWith("//") ||      // C++, C#, Java, JS, TS, Rust
         value?.startsWith("package main") ||  // Go
         value?.startsWith("fn main()");  // Rust
       if (isStarterCode) {
@@ -34,6 +34,7 @@ export default function CodeEditor({ value, onChange, language }) {
   const languageMap = {
     python: "python",
     java: "java",
+    csharp: "csharp",
     javascript: "javascript",
     ruby: "ruby",
     typescript: "typescript",

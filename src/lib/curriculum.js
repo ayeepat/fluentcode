@@ -13,6 +13,8 @@ const curriculumLoaders = {
     import('./curriculum-python-v2.js').then((m) => m.pythonCurriculumV2),
   java: () =>
     import('./curriculum-java.js').then((m) => m.javaCurriculum),
+  csharp: () =>
+    import('./curriculum-csharp.js').then((m) => m.csharpCurriculum),
   javascript: () =>
     import('./curriculum-javascript.js').then((m) => m.javascriptCurriculum),
   ruby: () =>
@@ -77,6 +79,7 @@ export function getCurriculumByVersion(version = 2, language) {
 export const LANGUAGE_META = {
   python:     { label: 'Python',     versions: [1, 2] },
   java:       { label: 'Java',       versions: [1] },
+  csharp:     { label: 'C#',         versions: [1] },
   javascript: { label: 'JavaScript', versions: [1] },
   ruby:       { label: 'Ruby',       versions: [1] },
   typescript: { label: 'TypeScript', versions: [1] },

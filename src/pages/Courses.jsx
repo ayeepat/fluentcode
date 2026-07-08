@@ -37,6 +37,7 @@ const LANGUAGES = [
   { key: "javascript", label: "JavaScript", mono: "JS" },
   { key: "typescript", label: "TypeScript", mono: "TS" },
   { key: "java",       label: "Java",       mono: "Jv" },
+  { key: "csharp",     label: "C#",         mono: "C#" },
   { key: "ruby",       label: "Ruby",       mono: "Rb" },
   { key: "cpp",        label: "C++",        mono: "C+" },
   { key: "go",         label: "Go",         mono: "Go" },
