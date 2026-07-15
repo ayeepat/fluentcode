@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, ArrowUp, Lock } from "lucide-react";
 import { SignUpButton } from "@clerk/clerk-react";
-import { progressDb } from "@/lib/progressDb";
 import { useAuth } from "@/lib/AuthContext";
 
 const QUICK_PROMPTS = [
@@ -18,11 +17,9 @@ export default function AIFeedbackPanel({
   lesson,
   userCode,
   language,
-  userId,
-  isPro,
   isGuest = false,
 }) {
-  const { supabaseClient } = useAuth();
+  const { getToken } = useAuth();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -33,21 +30,6 @@ export default function AIFeedbackPanel({
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
-
-  // Initialise the displayed remaining count on mount
-  useEffect(() => {
-    if (!userId || !supabaseClient || isGuest) return;
-    const checkRemaining = async () => {
-      const r = await progressDb.getAiRequestsRemaining(
-        supabaseClient,
-        userId,
-        isPro
-      );
-      setRemaining(r);
-      setLimitReached(r === 0);
-    };
-    checkRemaining();
-  }, [userId, isPro, supabaseClient, isGuest]);
 
   const sendMessage = async (text) => {
     if (isGuest) return;
@@ -71,38 +53,13 @@ export default function AIFeedbackPanel({
       return;
     }
 
-    // ── Step 1: read-only limit check — no DB write yet ──────────────
-    if (userId && supabaseClient) {
-      const limitCheck = await progressDb.checkAiLimit(
-        supabaseClient,
-        userId,
-        isPro
-      );
-
-      if (!limitCheck.allowed) {
-        setLimitReached(true);
-        setRemaining(0);
-        setMessages((prev) => [
-          ...prev,
-          { role: "user", content: q },
-          {
-            role: "assistant",
-            content:
-              "You've used all your AI requests for today. Come back tomorrow to ask more questions.",
-            isLimit: true,
-          },
-        ]);
-        setInput("");
-        return;
-      }
-    }
-
-    // Optimistically render the user message and start the spinner
+    // The Edge Function is the authority for identity and quota. The client
+    // only reflects the server's response and never decides access itself.
     setMessages((prev) => [...prev, { role: "user", content: q }]);
     setInput("");
     setLoading(true);
 
-    // ── Step 2: AI network call — quota not touched yet ───────────────
+    // The server authenticates the request and reserves quota before calling AI.
     let reply;
     try {
       const prompt = `You are a calm, precise coding assistant helping a student learn ${language}.
@@ -123,17 +80,47 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${await getToken()}`,
         },
         body: JSON.stringify({ prompt }),
       });
+
+      if (!res.ok) {
+        if (res.status === 429) {
+          setLimitReached(true);
+          setRemaining(0);
+          setMessages((prev) => [
+            ...prev,
+            { role: "assistant", content: "You've used all your AI requests for today. Come back tomorrow to ask more questions.", isLimit: true },
+          ]);
+          setLoading(false);
+          return;
+        }
+        // The server deliberately fails closed on invalid or unavailable AI
+        // infrastructure; no model response is rendered as a success.
+        console.error("ai-chat error:", res.status, await res.text());
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: "Sorry, I couldn't process that. Please try again.",
+          },
+        ]);
+        setLoading(false);
+        return;
+      }
 
       const data = await res.json();
       reply =
         data?.reply ||
         "Sorry, I'm having trouble right now. Please try again.";
+      if (typeof data?.remaining === "number") {
+        setRemaining(data.remaining);
+        if (data.remaining === 0) setLimitReached(true);
+      }
     } catch (err) {
-      // Network / server error — quota is NOT decremented
+      // Network errors do not yield a model response to the client.
       console.error("AI Assistant error:", err);
       setMessages((prev) => [
         ...prev,
@@ -146,29 +133,7 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
       return;
     }
 
-    // ── Step 3: AI responded — now safely increment the quota ─────────
-    if (userId && supabaseClient) {
-      const incrementResult = await progressDb.incrementAiCount(
-        supabaseClient,
-        userId,
-        isPro
-      );
-
-      if (incrementResult.remaining !== null) {
-        setRemaining(incrementResult.remaining);
-        if (incrementResult.remaining === 0) setLimitReached(true);
-      }
-
-      // Edge case: another tab used the last slot between step 1 and 3.
-      // We still show the reply (the AI already answered) but mark the
-      // limit so the next message is blocked immediately.
-      if (!incrementResult.allowed) {
-        setLimitReached(true);
-        setRemaining(0);
-      }
-    }
-
-    // ── Step 4: render the reply ──────────────────────────────────────
+    // Render the server-authorized reply.
     setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
     setLoading(false);
   };
@@ -214,7 +179,7 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
         <p className="text-xs text-zinc-300 max-w-[160px] leading-relaxed">
           Ask anything about this lesson or your code
         </p>
-        {remaining !== null && !isPro && (
+        {remaining !== null && (
           <span
             className={`text-xs font-medium px-2 py-0.5 rounded-full ${
               remaining <= 2
@@ -251,7 +216,7 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
             AI Assistant
           </span>
         </div>
-        {remaining !== null && !isPro && (
+        {remaining !== null && (
           <span
             className={`text-xs font-medium px-2 py-0.5 rounded-full ${
               remaining <= 2

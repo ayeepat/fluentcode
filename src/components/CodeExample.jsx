@@ -11,6 +11,8 @@ const FILE_NAMES = {
   cpp: "example.cpp",
   go: "main.go",
   rust: "main.rs",
+  sql: "query.sql",
+  "html-css": "index.html",
 };
 
 const LANG_LABELS = {
@@ -23,6 +25,8 @@ const LANG_LABELS = {
   cpp: "C++",
   go: "Go",
   rust: "Rust",
+  sql: "SQL",
+  "html-css": "HTML & CSS",
 };
 
 export default function CodeExample({ code, language }) {

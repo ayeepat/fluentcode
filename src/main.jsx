@@ -47,13 +47,11 @@ if (!rootElement) {
               <App />
             </ClerkProvider>
           ) : (
-            <div className="min-h-screen flex items-center justify-center bg-white">
-              <div className="text-center">
-                <p className="text-red-500 font-semibold mb-2">⚠️ Configuration Error</p>
-                <p className="text-zinc-600 text-sm">VITE_CLERK_PUBLISHABLE_KEY is not configured</p>
-                <p className="text-zinc-500 text-xs mt-2">Check your .env.local file</p>
-              </div>
-            </div>
+            // No Clerk key: vite.config.js has aliased @clerk/clerk-react to the
+            // guest-mode stub (src/lib/clerk-stub.jsx), whose hooks work without a
+            // provider. Render the app so guests can still use it instead of
+            // showing a dead-end configuration screen.
+            <App />
           )}
         </Suspense>
       </HelmetProvider>

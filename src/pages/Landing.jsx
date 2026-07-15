@@ -195,6 +195,32 @@ const COURSE_CARDS = [
       { id: "m7", title: "Module 7 — The Capstone Build (CLI Tool)",   lessons: 5 },
     ],
   },
+  {
+    lang: "sql",
+    label: "SQL",
+    mono: "SQL",
+    tagline: "Ask better questions of your data",
+    modules: [
+      { id: "m1", title: "Module 1 — Reading Data",             lessons: 5 },
+      { id: "m2", title: "Module 2 — Filtering and Sorting",    lessons: 5 },
+      { id: "m3", title: "Module 3 — Summaries and Groups",     lessons: 5 },
+      { id: "m4", title: "Module 4 — Joining Tables",           lessons: 5 },
+      { id: "m5", title: "Module 5 — Changing Data Safely",     lessons: 5 },
+    ],
+  },
+  {
+    lang: "html-css",
+    label: "HTML & CSS",
+    mono: "H&C",
+    tagline: "Build pages people can actually use",
+    modules: [
+      { id: "m1", title: "Module 1 — Building a Meaningful Page",          lessons: 5 },
+      { id: "m2", title: "Module 2 — CSS Foundations",                     lessons: 5 },
+      { id: "m3", title: "Module 3 — Layout with Flexbox and Grid",        lessons: 5 },
+      { id: "m4", title: "Module 4 — Responsive and Accessible Interfaces", lessons: 5 },
+      { id: "m5", title: "Module 5 — Practical Components",                lessons: 5 },
+    ],
+  },
 ];
 
 const TOTAL_LESSONS = COURSE_CARDS.reduce(
@@ -568,7 +594,7 @@ export default function Landing() {
               Curriculum
             </p>
             <h2 className="text-4xl font-bold tracking-tight">
-              Eight languages.
+              {COURSE_CARDS.length} languages.
               <br />
               Optimised for learning.
             </h2>

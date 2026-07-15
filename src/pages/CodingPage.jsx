@@ -159,7 +159,7 @@ export default function CodingPage() {
   const { language, lessonId } = useParams();
   const navigate = useNavigate();
   const { user, isLoaded: isUserLoaded, isSignedIn } = useUser();
-  const { supabaseClient } = useAuth();
+  const { supabaseClient, getToken } = useAuth();
   const { openFeedbackWidget } = useFeedbackWidget();
 
   const isGuest    = !isSignedIn;
@@ -272,12 +272,6 @@ export default function CodingPage() {
         const version = data?.curriculum_version || 1;
         await loadCurriculum(language, version).catch(() => {});
         setCurriculumVersion(version);
-        const remaining = await progressDb.getAiRequestsRemaining(
-          supabaseClient,
-          user.id,
-          data?.is_pro
-        );
-        setAiRemaining(remaining);
       } catch (err) {
         console.error("Failed to load progress:", err);
       } finally {
@@ -445,7 +439,7 @@ export default function CodingPage() {
         setSubmitted(true);
 
         if (!isGuest && supabaseClient && user) {
-          await progressDb.updateProgress(supabaseClient, user.id, {
+          const updated = await progressDb.updateProgress(supabaseClient, user.id, {
             total_exercises: (progress?.total_exercises || 0) + 1,
             mistake_patterns: [
               ...new Set([
@@ -454,6 +448,7 @@ export default function CodingPage() {
               ]),
             ].slice(-5),
           });
+          if (updated) setProgress(updated);
         }
 
         if (exerciseFirst && newFailCount >= 3) {
@@ -580,9 +575,10 @@ export default function CodingPage() {
     setSubmitted(true);
 
     if (!isGuest && supabaseClient && user) {
-      await progressDb.updateProgress(supabaseClient, user.id, {
+      const updated = await progressDb.updateProgress(supabaseClient, user.id, {
         total_exercises: (progress?.total_exercises || 0) + 1,
       });
+      if (updated) setProgress(updated);
     }
 
     if (exerciseFirst && newFailCount >= 3) {
@@ -591,39 +587,16 @@ export default function CodingPage() {
   }
 
   // ------------------------------------------------------------------
-  // AI evaluation (non-Python)
-  // 1. checkAiLimit  – read-only gate
-  // 2. evaluateCode  – AI network call
-  // 3. incrementAiCount – only on success
+  // AI evaluation (non-Python). The Edge Function authenticates the request
+  // and atomically reserves quota before calling the model.
   // ------------------------------------------------------------------
   async function handleAiEvaluation() {
     const newFailCount = failCount + 1;
     setFailCount(newFailCount);
 
-    if (!isGuest && supabaseClient && user) {
-      const limitCheck = await progressDb.checkAiLimit(
-        supabaseClient,
-        user.id,
-        progress?.is_pro
-      );
-      if (!limitCheck.allowed) {
-        setLimitReached(true);
-        setAiRemaining(0);
-        setFeedback({
-          isCorrect: false,
-          feedback:
-            "You've used all 10 free AI reviews for today. Come back tomorrow, or support the project to unlock unlimited reviews!",
-          mistakePatterns: [],
-          suggestions: [],
-        });
-        setSubmitted(true);
-        return;
-      }
-    }
-
     let aiResponse;
     try {
-      aiResponse = await evaluateCode(code, language, lesson);
+      aiResponse = await evaluateCode(code, language, lesson, await getToken());
     } catch (err) {
       console.error("AI evaluation error:", err);
       setFeedback({
@@ -640,20 +613,16 @@ export default function CodingPage() {
       return;
     }
 
-    if (!isGuest && supabaseClient && user) {
-      const incrementResult = await progressDb.incrementAiCount(
-        supabaseClient,
-        user.id,
-        progress?.is_pro
-      );
-      if (incrementResult.remaining !== null) {
-        setAiRemaining(incrementResult.remaining);
-        if (incrementResult.remaining === 0) setLimitReached(true);
-      }
-      if (!incrementResult.allowed) {
-        setLimitReached(true);
-        setAiRemaining(0);
-      }
+    if (aiResponse.quotaExceeded) {
+      setLimitReached(true);
+      setAiRemaining(0);
+      setFeedback(aiResponse);
+      setSubmitted(true);
+      return;
+    }
+    if (aiResponse.remaining !== null && aiResponse.remaining !== undefined) {
+      setAiRemaining(aiResponse.remaining);
+      if (aiResponse.remaining === 0) setLimitReached(true);
     }
 
     setFeedback(aiResponse);
@@ -1075,8 +1044,6 @@ export default function CodingPage() {
             lesson={lesson}
             userCode={code}
             language={language}
-            userId={user?.id}
-            isPro={progress?.is_pro}
             isGuest={isGuest}
           />
         </div>

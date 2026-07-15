@@ -5,7 +5,7 @@ import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
 import { getAllLessons } from "@/lib/curriculum";
-import { ArrowRight, Flame, Target, BookOpen, Sparkles } from "lucide-react";
+import { ArrowRight, Flame, Target, BookOpen } from "lucide-react";
 import { progressDb } from "@/lib/progressDb";
 import { useAuth } from "@/lib/AuthContext";
 import Navbar from "@/components/Navbar";
@@ -23,7 +23,6 @@ export default function Dashboard() {
   const { supabaseClient } = useAuth();
   const [progress, setProgress] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [aiRemaining, setAiRemaining] = useState(null);
   const [curriculumVersion, setCurriculumVersion] = useState(1);
 
   useEffect(() => {
@@ -43,12 +42,6 @@ export default function Dashboard() {
         );
         setProgress(data);
         setCurriculumVersion(data?.curriculum_version || 1);
-        const remaining = await progressDb.getAiRequestsRemaining(
-          supabaseClient,
-          user.id,
-          data?.is_pro
-        );
-        setAiRemaining(remaining);
       } catch (err) {
         console.error("Failed to load progress:", err);
       } finally {
@@ -175,45 +168,6 @@ export default function Dashboard() {
             </div>
           ))}
         </motion.div>
-
-        {aiRemaining !== null && (
-          <motion.div {...stagger(1.5)} className="mb-8">
-            <div className="flex items-center justify-between border border-zinc-100 rounded-2xl px-5 py-4">
-              <div className="flex items-center gap-3">
-                <Sparkles size={15} className="text-zinc-300" />
-                <div>
-                  <div className="text-sm font-medium text-zinc-700">
-                    AI Reviews Today
-                  </div>
-                  <div className="text-xs text-zinc-400">
-                    {aiRemaining === 0
-                      ? "Resets tomorrow"
-                      : `${aiRemaining} remaining`}
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="flex gap-0.5">
-                  {Array.from({ length: 10 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className={`w-2 h-2 rounded-full ${
-                        i < 10 - aiRemaining ? "bg-zinc-900" : "bg-zinc-100"
-                      }`}
-                    />
-                  ))}
-                </div>
-                <span
-                  className={`text-sm font-bold tabular-nums ${
-                    aiRemaining <= 2 ? "text-amber-500" : "text-zinc-900"
-                  }`}
-                >
-                  {aiRemaining}/10
-                </span>
-              </div>
-            </div>
-          </motion.div>
-        )}
 
         <motion.div {...stagger(2)} className="mb-10">
           <div className="flex justify-between text-xs text-zinc-400 mb-2">

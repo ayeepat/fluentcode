@@ -27,6 +27,10 @@ const curriculumLoaders = {
     import('./curriculum-go.js').then((m) => m.goCurriculum),
   rust: () =>
     import('./curriculum-rust.js').then((m) => m.rustCurriculum),
+  sql: () =>
+    import('./curriculum-sql.js').then((m) => m.sqlCurriculum),
+  'html-css': () =>
+    import('./curriculum-html-css.js').then((m) => m.htmlCssCurriculum),
 };
 
 function cacheKey(language, version) {
@@ -86,6 +90,8 @@ export const LANGUAGE_META = {
   cpp:        { label: 'C++',        versions: [1] },
   go:         { label: 'Go',         versions: [1] },
   rust:       { label: 'Rust',       versions: [1] },
+  sql:        { label: 'SQL',        versions: [1] },
+  'html-css': { label: 'HTML & CSS', versions: [1] },
 };
 
 /**

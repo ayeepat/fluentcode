@@ -11,20 +11,26 @@ export default function CodeEditor({ value, onChange, language }) {
     editor.focus();
   };
 
-  const handleChange = (newValue) => {
-    // On first keystroke, check if user is typing over the starter code
-    if (!hasCleared && newValue !== value) {
+  const handleChange = (newValue, event) => {
+    // On the first edit, check if the user is typing over the starter code.
+    // We only special-case this when Monaco gives us the change event so we can
+    // recover exactly what was entered — otherwise fall through to a plain update.
+    if (!hasCleared && newValue !== value && event?.changes?.length) {
       // If the starter code is just a comment/template structure, clear it
       const isStarterCode =
         value?.startsWith("# ") ||      // Python
         value?.startsWith("//") ||      // C++, C#, Java, JS, TS, Rust
         value?.startsWith("package main") ||  // Go
-        value?.startsWith("fn main()");  // Rust
+        value?.startsWith("fn main()") ||  // Rust
+        value?.startsWith("-- ") ||  // SQL
+        value?.startsWith("<!--");  // HTML & CSS
       if (isStarterCode) {
-        // Get only the new character the user typed
-        const lastChar = newValue.slice(-1);
+        // Keep exactly what the user just entered — a single keystroke or a
+        // whole pasted solution — and drop the starter template. Truncating to
+        // the last character silently deleted pastes and multi-char edits.
+        const inserted = event.changes.map((c) => c.text).join("");
         setHasCleared(true);
-        onChange(lastChar);
+        onChange(inserted);
         return;
       }
     }
@@ -41,6 +47,8 @@ export default function CodeEditor({ value, onChange, language }) {
     cpp: "cpp",
     go: "go",
     rust: "rust",
+    sql: "sql",
+    "html-css": "html",
   };
 
   return (

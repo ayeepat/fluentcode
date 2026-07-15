@@ -30,6 +30,8 @@ const LANGUAGES = [
   { key: "cpp",        label: "C++"        },
   { key: "go",         label: "Go"         },
   { key: "rust",       label: "Rust"       },
+  { key: "sql",        label: "SQL"        },
+  { key: "html-css",   label: "HTML & CSS" },
 ];
 
 export default function QuizHub() {

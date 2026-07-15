@@ -29,3 +29,6 @@ dist-ssr
 
 .env
 .vite
+
+# Safe placeholder for Edge Function secrets; never commit real env files.
+!supabase/functions/.env.example

@@ -10,6 +10,7 @@ const AuthContext = createContext({
   isAuthenticated: false,
   isLoading: true,
   supabaseClient: null,
+  getToken: async () => null,
 });
 
 export function AuthProvider({ children }) {
@@ -82,6 +83,8 @@ export function AuthProvider({ children }) {
     isAuthenticated: !!isSignedIn,
     isLoading,
     supabaseClient,
+    getToken: async () =>
+      session ? session.getToken({ template: "supabase_prod" }) : null,
   };
 
   return (

@@ -1,50 +1,30 @@
 // supabase/functions/evaluate-code/index.ts
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import {
+  authenticateClerkRequest,
+  consumeAiQuota,
+  corsHeaders,
+  isRateLimited,
+  jsonResponse,
+} from "../_shared/security.ts";
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const MODEL = "llama-3.3-70b-versatile";
 const TIMEOUT_MS = 15000;  // 15 seconds – increased from 10s
 const MAX_CONTENT_LENGTH = 50000;
-const ALLOWED_ORIGINS = [
-  "https://fluentlycode.xyz",
-  "https://www.fluentlycode.xyz",
-  "http://localhost:5173",
-  "http://localhost:3000",
-  "http://localhost:8000",
-];
-
-function getCorsHeaders(origin: string | null): Record<string, string> {
-  const allowedOrigin = origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-  return {
-    "Access-Control-Allow-Origin": allowedOrigin,
-    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-  };
-}
-
-const ALLOWED_LANGUAGES = ["python", "java", "csharp", "javascript", "ruby", "typescript", "cpp", "go", "rust"];
+const ALLOWED_LANGUAGES = ["python", "java", "csharp", "javascript", "ruby", "typescript", "cpp", "go", "rust", "sql", "html-css"];
 const MAX_CODE_LENGTH = 10000;
 const MAX_LESSON_FIELD_LENGTH = 2000;
 
-const ipRequestCounts = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 20;
-const RATE_WINDOW_MS = 60 * 1000;
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const record = ipRequestCounts.get(ip);
-  if (!record || now > record.resetAt) {
-    ipRequestCounts.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS });
-    return false;
-  }
-  if (record.count >= RATE_LIMIT) return true;
-  record.count++;
-  return false;
-}
-
 function sanitizeString(input: unknown, maxLength: number): string {
   if (typeof input !== "string") return "";
-  return input.slice(0, maxLength).replace(/`/g, "'");
+  // Strip the tags used to delimit the prompt (</CODE>, <CONTEXT>, <SYSTEM>)
+  // so student-submitted code can't close the <CODE> block early and inject
+  // instructions into the surrounding prompt.
+  return input
+    .slice(0, maxLength)
+    .replace(/`/g, "'")
+    .replace(/<\/?(CODE|CONTEXT|SYSTEM)>/gi, "");
 }
 
 function extractJson(text: string) {
@@ -72,103 +52,73 @@ function extractJson(text: string) {
 }
 
 serve(async (req) => {
-  const corsHeaders = getCorsHeaders(req.headers.get("origin"));
+  const headers = corsHeaders(req.headers.get("origin"));
   
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", { headers });
   }
   
   if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Method not allowed" }), {
-      status: 405,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return jsonResponse({ error: "Method not allowed" }, 405, headers);
   }
 
   const contentLength = parseInt(req.headers.get("content-length") || "0", 10);
   if (contentLength > MAX_CONTENT_LENGTH) {
-    return new Response(JSON.stringify({ error: "Payload too large" }), {
-      status: 413,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return jsonResponse({ error: "Payload too large" }, 413, headers);
   }
 
-  const ip = req.headers.get("x-forwarded-for") ?? "unknown";
-  if (isRateLimited(ip)) {
-    return new Response(
-      JSON.stringify({
-        isCorrect: false,
-        feedback: "Too many requests. Please slow down.",
-        mistakePatterns: [],
-        suggestions: [],
-      }),
-      {
-        status: 429,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+  const clerkUserId = await authenticateClerkRequest(req);
+  if (!clerkUserId) {
+    return jsonResponse({ error: "Authentication required" }, 401, headers);
   }
-
+  if (isRateLimited(`evaluate:${clerkUserId}`, 10)) {
+    return jsonResponse({ error: "Too many requests. Please slow down." }, 429, headers);
+  }
   try {
     const body = await req.json().catch(() => null);
     if (!body || typeof body !== "object") {
-      return new Response(JSON.stringify({ error: "Invalid request body" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "Invalid request body" }, 400, headers);
     }
 
     const { code, language, lesson } = body;
 
     if (!language || !ALLOWED_LANGUAGES.includes(language)) {
-      return new Response(
-        JSON.stringify({
-          error: `Invalid language. Allowed: ${ALLOWED_LANGUAGES.join(", ")}`,
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return jsonResponse({ error: `Invalid language. Allowed: ${ALLOWED_LANGUAGES.join(", ")}` }, 400, headers);
     }
 
     if (typeof code !== "string") {
-      return new Response(JSON.stringify({ error: "Code must be a string" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "Code must be a string" }, 400, headers);
     }
     if (code.length > MAX_CODE_LENGTH) {
-      return new Response(
-        JSON.stringify({ error: "Code too long (max 10,000 characters)" }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return jsonResponse({ error: "Code too long (max 10,000 characters)" }, 400, headers);
     }
 
     if (!lesson || typeof lesson !== "object") {
-      return new Response(JSON.stringify({ error: "Invalid lesson data" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "Invalid lesson data" }, 400, headers);
     }
 
     const groqApiKey = Deno.env.get("GROQ_API_KEY");
     if (!groqApiKey) {
-      return new Response(
-        JSON.stringify({
+      // Server misconfiguration, not a real evaluation — non-200 so the
+      // client doesn't mistake this for a completed AI review and charge quota.
+      return jsonResponse(
+        {
           isCorrect: false,
           feedback: "AI is not configured on the server.",
           mistakePatterns: [],
           suggestions: [],
-        }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
+        }, 500, headers
       );
+    }
+
+    // Reserve quota immediately before the paid upstream call. This is atomic
+    // across Edge instances and prevents concurrent requests from overspending.
+    const quota = await consumeAiQuota(clerkUserId);
+    if (!quota) {
+      return jsonResponse({ error: "AI quota service is unavailable" }, 503, headers);
+    }
+    if (!quota.allowed) {
+      return jsonResponse({ error: "Daily AI review limit reached", remaining: 0 }, 429, headers);
     }
 
     const sanitizedCode = sanitizeString(code, MAX_CODE_LENGTH);
@@ -249,17 +199,15 @@ Return exactly this JSON shape:
 
     if (!groqRes.ok) {
       console.error("Groq API error:", groqRes.status, await groqRes.text());
-      return new Response(
-        JSON.stringify({
+      // Upstream provider failure, not a real evaluation — non-200 so the
+      // client doesn't mistake this for a completed AI review and charge quota.
+      return jsonResponse(
+        {
           isCorrect: false,
           feedback: "I had trouble evaluating your code. Please try again.",
           mistakePatterns: [],
           suggestions: ["Try submitting again."],
-        }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
+        }, 502, headers
       );
     }
 
@@ -268,23 +216,21 @@ Return exactly this JSON shape:
     const parsed = extractJson(content);
 
     if (!parsed) {
-      return new Response(
-        JSON.stringify({
+      // Model didn't return parseable JSON — the student never got a real
+      // verdict, so this must not count as a completed AI review either.
+      return jsonResponse(
+        {
           isCorrect: false,
           feedback:
             "I could read your code but had trouble formatting the evaluation. Please try again.",
           mistakePatterns: [],
           suggestions: ["Try submitting again."],
-        }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
+        }, 502, headers
       );
     }
 
-    return new Response(
-      JSON.stringify({
+    return jsonResponse(
+      {
         isCorrect: Boolean(parsed.isCorrect),
         feedback:
           typeof parsed.feedback === "string" && parsed.feedback.trim()
@@ -300,11 +246,8 @@ Return exactly this JSON shape:
               .slice(0, 2)
               .filter((s: unknown) => typeof s === "string")
           : [],
-      }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+        remaining: quota.remaining,
+      }, 200, headers
     );
   } catch (error) {
     console.error("Edge function error:", error);
@@ -312,19 +255,17 @@ Return exactly this JSON shape:
     const errorMessage = isTimeout
       ? "The AI evaluation took too long (over 15 seconds). Please try again or simplify your code."
       : "Something went wrong on the server. Please try again.";
-    return new Response(
-      JSON.stringify({
+    // Timeout / unhandled error, not a real evaluation — non-200 so the
+    // client doesn't mistake this for a completed AI review and charge quota.
+    return jsonResponse(
+      {
         isCorrect: false,
         feedback: errorMessage,
         mistakePatterns: [],
-        suggestions: isTimeout 
+        suggestions: isTimeout
           ? ["Try breaking your code into smaller steps", "Make sure your code is not in an infinite loop"]
           : ["Refresh the page and try again"],
-      }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      }, 502, headers
     );
   }
 });

@@ -42,6 +42,8 @@ const LANGUAGES = [
   { key: "cpp",        label: "C++",        mono: "C+" },
   { key: "go",         label: "Go",         mono: "Go" },
   { key: "rust",       label: "Rust",       mono: "Rs" },
+  { key: "sql",        label: "SQL",        mono: "SQL" },
+  { key: "html-css",   label: "HTML & CSS", mono: "H&C" },
 ];
 
 export default function Courses() {

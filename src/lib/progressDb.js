@@ -1,8 +1,6 @@
 // src/lib/progressDb.js
 import { localProgressDb } from "./localProgressDb";
 
-const FREE_DAILY_LIMIT = 10;
-
 function getTodayStr() {
   const d = new Date();
   const utcYear = d.getUTCFullYear();
@@ -26,30 +24,6 @@ function computeNewStreak(lastStudyDate, currentStreak) {
   if (lastStudyDate === today) return currentStreak;
   if (lastStudyDate === yesterday) return currentStreak + 1;
   return 1;
-}
-
-/**
- * Read the user's current daily AI count from the DB row.
- */
-async function readAiCount(supabaseClient, clerkUserId) {
-  const today = getTodayStr();
-
-  const { data, error } = await supabaseClient
-    .from("user_progress")
-    .select("daily_ai_count, last_ai_date")
-    .eq("clerk_user_id", clerkUserId)
-    .single();
-
-  if (error) {
-    console.error("Failed to read AI count:", error);
-    return { currentCount: 0, today };
-  }
-
-  const lastDate = data?.last_ai_date;
-  const currentCount =
-    lastDate === today ? data?.daily_ai_count || 0 : 0;
-
-  return { currentCount, today };
 }
 
 // ---------------------------------------------------------------------------
@@ -389,71 +363,4 @@ export const progressDb = {
     }
   },
 
-  // ─────────────────────────────────────────────────────────────────────
-  // AI quota helpers
-  // ─────────────────────────────────────────────────────────────────────
-
-  async checkAiLimit(supabaseClient, clerkUserId, isPro) {
-    if (isPro) return { allowed: true, remaining: null };
-    const { currentCount } = await readAiCount(supabaseClient, clerkUserId);
-    if (currentCount >= FREE_DAILY_LIMIT) {
-      return { allowed: false, remaining: 0 };
-    }
-    return { allowed: true, remaining: FREE_DAILY_LIMIT - currentCount };
-  },
-
-  async incrementAiCount(supabaseClient, clerkUserId, isPro) {
-    if (isPro) return { allowed: true, remaining: null };
-    const { currentCount, today } = await readAiCount(
-      supabaseClient,
-      clerkUserId
-    );
-    if (currentCount >= FREE_DAILY_LIMIT) {
-      return { allowed: false, remaining: 0 };
-    }
-    const newCount = currentCount + 1;
-    await supabaseClient
-      .from("user_progress")
-      .update({
-        daily_ai_count: newCount,
-        last_ai_date: today,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("clerk_user_id", clerkUserId);
-    return { allowed: true, remaining: FREE_DAILY_LIMIT - newCount };
-  },
-
-  /**
-   * DEPRECATED – kept for backward compatibility.
-   */
-  async checkAndIncrementAiCount(supabaseClient, clerkUserId, isPro) {
-    if (isPro) return { allowed: true, remaining: null };
-    const { currentCount, today } = await readAiCount(
-      supabaseClient,
-      clerkUserId
-    );
-    if (currentCount >= FREE_DAILY_LIMIT) {
-      return { allowed: false, remaining: 0, limit: FREE_DAILY_LIMIT };
-    }
-    const newCount = currentCount + 1;
-    await supabaseClient
-      .from("user_progress")
-      .update({
-        daily_ai_count: newCount,
-        last_ai_date: today,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("clerk_user_id", clerkUserId);
-    return {
-      allowed: true,
-      remaining: FREE_DAILY_LIMIT - newCount,
-      limit: FREE_DAILY_LIMIT,
-    };
-  },
-
-  async getAiRequestsRemaining(supabaseClient, clerkUserId, isPro) {
-    if (isPro) return null;
-    const { currentCount } = await readAiCount(supabaseClient, clerkUserId);
-    return Math.max(0, FREE_DAILY_LIMIT - currentCount);
-  },
 };

@@ -1,45 +1,16 @@
 // supabase/functions/ai-chat/index.ts
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import {
+  authenticateClerkRequest,
+  consumeAiQuota,
+  corsHeaders,
+  isRateLimited,
+  jsonResponse,
+} from "../_shared/security.ts";
 
-const ALLOWED_ORIGINS = [
-  "https://fluentlycode.xyz",
-  "https://www.fluentlycode.xyz",
-  "http://localhost:5173",
-  "http://localhost:3000",
-  "http://localhost:8000",
-];
 const MODEL = "llama-3.3-70b-versatile";
 const TIMEOUT_MS = 15000;  // 15 seconds – increased from 10s
 const MAX_CONTENT_LENGTH = 50000;
-
-function getCorsHeaders(origin: string | null): Record<string, string> {
-  const allowedOrigin = origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-  return {
-    "Access-Control-Allow-Origin": allowedOrigin,
-    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-  };
-}
-
-// Simple in-memory rate limiter (resets on cold start — acceptable at this scale)
-const ipRequestCounts = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 30;
-const RATE_WINDOW_MS = 60 * 1000;
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const record = ipRequestCounts.get(ip);
-
-  if (!record || now > record.resetAt) {
-    ipRequestCounts.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS });
-    return false;
-  }
-
-  if (record.count >= RATE_LIMIT) return true;
-
-  record.count++;
-  return false;
-}
 
 function sanitizePromptInput(input: string, maxLength: number): string {
   if (typeof input !== "string") return "";
@@ -50,76 +21,63 @@ function sanitizePromptInput(input: string, maxLength: number): string {
 }
 
 serve(async (req) => {
-  const corsHeaders = getCorsHeaders(req.headers.get("origin"));
+  const headers = corsHeaders(req.headers.get("origin"));
 
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", { headers });
   }
 
   if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Method not allowed" }), {
-      status: 405,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return jsonResponse({ error: "Method not allowed" }, 405, headers);
   }
 
   // Block oversized payloads early
   const contentLength = parseInt(req.headers.get("content-length") || "0", 10);
   if (contentLength > MAX_CONTENT_LENGTH) {
-    return new Response(JSON.stringify({ error: "Payload too large" }), {
-      status: 413,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return jsonResponse({ error: "Payload too large" }, 413, headers);
   }
 
-  // Rate limiting by IP
-  const ip = req.headers.get("x-forwarded-for") ?? "unknown";
-  if (isRateLimited(ip)) {
-    return new Response(
-      JSON.stringify({ reply: "Too many requests. Please slow down." }),
-      {
-        status: 429,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+  const clerkUserId = await authenticateClerkRequest(req);
+  if (!clerkUserId) {
+    return jsonResponse({ error: "Authentication required" }, 401, headers);
+  }
+  if (isRateLimited(`chat:${clerkUserId}`, 10)) {
+    return jsonResponse({ error: "Too many requests. Please slow down." }, 429, headers);
   }
 
   try {
     const body = await req.json().catch(() => null);
 
     if (!body || typeof body !== "object") {
-      return new Response(JSON.stringify({ error: "Invalid request body" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "Invalid request body" }, 400, headers);
     }
 
     const { prompt } = body;
 
     if (!prompt || typeof prompt !== "string") {
-      return new Response(JSON.stringify({ error: "Missing or invalid prompt" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "Missing or invalid prompt" }, 400, headers);
     }
 
     if (prompt.length > 4000) {
-      return new Response(JSON.stringify({ error: "Prompt too long" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "Prompt too long" }, 400, headers);
     }
 
     const groqApiKey = Deno.env.get("GROQ_API_KEY");
 
     if (!groqApiKey) {
-      return new Response(
-        JSON.stringify({ reply: "AI is not configured on the server." }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      // Server misconfiguration, not a real reply — non-200 so the client
+      // doesn't mistake this for a completed AI response and charge quota.
+      return jsonResponse({ reply: "AI is not configured on the server." }, 500, headers);
+    }
+
+    // Reserve quota immediately before the paid upstream call. This is atomic
+    // across Edge instances and prevents concurrent requests from overspending.
+    const quota = await consumeAiQuota(clerkUserId);
+    if (!quota) {
+      return jsonResponse({ error: "AI quota service is unavailable" }, 503, headers);
+    }
+    if (!quota.allowed) {
+      return jsonResponse({ error: "Daily AI assistant limit reached", remaining: 0 }, 429, headers);
     }
 
     const sanitizedPrompt = sanitizePromptInput(prompt, 4000);
@@ -160,13 +118,9 @@ serve(async (req) => {
 
     if (!res.ok) {
       console.error("Groq API error:", res.status, await res.text());
-      return new Response(
-        JSON.stringify({ reply: "Sorry, I'm having trouble right now. Please try again." }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      // Upstream provider failure, not a real reply — non-200 so the client
+      // doesn't mistake this for a completed AI response and charge quota.
+      return jsonResponse({ reply: "Sorry, I'm having trouble right now. Please try again." }, 502, headers);
     }
 
     const data = await res.json();
@@ -174,10 +128,7 @@ serve(async (req) => {
       data?.choices?.[0]?.message?.content ||
       "Sorry, I'm having trouble right now. Please try again.";
 
-    return new Response(JSON.stringify({ reply }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return jsonResponse({ reply, remaining: quota.remaining }, 200, headers);
   } catch (error) {
     console.error("ai-chat error:", error);
 
@@ -186,12 +137,8 @@ serve(async (req) => {
       ? "The AI took too long to respond (over 15 seconds). Please try again or ask a shorter question."
       : "Sorry, I couldn't process that. Please try again.";
 
-    return new Response(
-      JSON.stringify({ reply: userMessage }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    // Timeout / unhandled error, not a real reply — non-200 so the client
+    // doesn't mistake this for a completed AI response and charge quota.
+    return jsonResponse({ reply: userMessage }, 502, headers);
   }
 });
