@@ -460,13 +460,6 @@ export default function Landing() {
         {/* Dot-grid backdrop */}
         <div className="absolute inset-0 bg-dots mask-fade-edges pointer-events-none" aria-hidden="true" />
 
-        <motion.div {...fadeUp(0.05)} className="relative">
-          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-600 bg-white border border-zinc-200 px-3.5 py-1.5 rounded-full mb-8 shadow-sm">
-            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-            No signup required · Start coding in 10 seconds
-          </span>
-        </motion.div>
-
         <motion.h1
           {...fadeUp(0.1)}
           className="relative text-5xl sm:text-6xl md:text-7xl font-bold leading-[0.95] tracking-tight mb-6 max-w-4xl"
