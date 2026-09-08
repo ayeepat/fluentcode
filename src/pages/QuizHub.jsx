@@ -17,7 +17,7 @@ import { HelpCircle, Check, Loader2 } from "lucide-react";
 const ease = [0.16, 1, 0.3, 1];
 
 // ---------------------------------------------------------------------------
-// Language list — inlined so this component never depends on an async
+// Language list - inlined so this component never depends on an async
 // export from curriculum.js. If you add a language, update this array too.
 // ---------------------------------------------------------------------------
 const LANGUAGES = [
@@ -161,11 +161,11 @@ export default function QuizHub() {
         >
           <div className="flex items-center gap-3 mb-2">
             <HelpCircle size={20} className="text-zinc-400" />
-            <h1 className="text-3xl font-bold tracking-tight">Quiz Mode</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Quizzes</h1>
           </div>
           <p className="text-sm text-zinc-400">
-            Test your knowledge with multiple choice questions. All quizzes are
-            available — no need to complete lessons first.
+            Use the quizzes to check what you remember. Every quiz is available
+            from the start, so you can practice any topic.
           </p>
         </motion.div>
 
