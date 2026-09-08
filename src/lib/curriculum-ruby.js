@@ -4,16 +4,16 @@ export const rubyCurriculum = {
   modules: [
     {
       id: "ruby-phase0-m1",
-      title: "Phase 0 — Welcome to Ruby",
+      title: "Phase 0 - Welcome to Ruby",
       duration: "15 min",
       lessons: [
         {
           id: "ruby-phase0-m1-l1",
           title: "Your First Ruby Program",
           explanation: `Ruby is one of the most beginner-friendly programming languages ever created. 
-It was designed to feel natural — almost like writing English. The very first thing 
+It was designed to feel natural - almost like writing English. The very first thing 
 you learn in any language is how to make it say something. In Ruby, that's done with 
-'puts' (short for "put string"). Think of puts like a megaphone — whatever you hand 
+'puts' (short for "put string"). Think of puts like a megaphone - whatever you hand 
 it, it announces to the world (your screen). Every great programmer started exactly 
 where you are right now.`,
           concept: `'puts' prints text to the screen and automatically moves to a new line afterward. 
@@ -52,7 +52,7 @@ print ' is fun!'`,
             debuggingTip: `Common mistakes:
 • Forgot the quotes? Ruby will think your text is a variable name and throw an error.
 • Used single quotes but want to use apostrophes? Switch to double quotes: puts "It's great!"
-• Nothing printed? Make sure you actually called puts or print — just writing text in quotes does nothing.
+• Nothing printed? Make sure you actually called puts or print - just writing text in quotes does nothing.
 • Extra spaces inside quotes matter! 'Hello' and ' Hello' are different.`
           }
         }
@@ -60,14 +60,14 @@ print ' is fun!'`,
     },
     {
       id: "ruby-phase1-m1",
-      title: "Phase 1 — Fundamentals",
+      title: "Phase 1 - Fundamentals",
       duration: "3 hours",
       lessons: [
         {
           id: "ruby-phase1-m1-l1",
-          title: "puts vs print — Controlling Output",
+          title: "puts vs print - Controlling Output",
           explanation: `Imagine you're texting a friend. Sometimes you hit Enter after each sentence 
-(that's puts — it adds a line break). Sometimes you keep typing on the same line 
+(that's puts - it adds a line break). Sometimes you keep typing on the same line 
 (that's print). Knowing which to use gives you precise control over how your 
 program's output looks. This matters when building menus, formatting tables, 
 or creating user-friendly messages. Ruby developers use puts far more often 
@@ -126,21 +126,21 @@ puts ''`,
             debuggingTip: `Common mistakes:
 • Mixing up puts and print? Remember: puts = paragraph break, print = same line.
 • Missing quotes around strings will cause a NameError.
-• puts '' prints a blank line — useful for spacing your output nicely.
+• puts '' prints a blank line - useful for spacing your output nicely.
 • Calling puts with no argument (just puts) also prints a blank line.`
           }
         },
         {
           id: "ruby-phase1-m1-l2",
-          title: "Variables — Storing Information",
+          title: "Variables - Storing Information",
           explanation: `A variable is like a labeled jar in your kitchen. You write "Sugar" on the jar 
 and put sugar inside. Later, whenever a recipe calls for sugar, you grab that jar. 
-In Ruby, variables work the same way — you give a name to a piece of information 
+In Ruby, variables work the same way - you give a name to a piece of information 
 so you can use it later. Unlike many other languages, Ruby doesn't require you to 
-declare the type (text vs number) — Ruby figures it out automatically. Variable 
+declare the type (text vs number) - Ruby figures it out automatically. Variable 
 names use snake_case (words_joined_with_underscores) which is the Ruby convention.`,
           concept: `variable_name = value (the = sign means "store this value")
-Ruby is dynamically typed — you don't write String or Integer, Ruby figures it out.
+Ruby is dynamically typed - you don't write String or Integer, Ruby figures it out.
 Use snake_case for all variable names: first_name, total_price, user_age.
 Variables can be reassigned (changed) at any time.`,
           example: `# Storing different types of data
@@ -198,23 +198,23 @@ puts favorite_number`,
             debuggingTip: `Common mistakes:
 • Variable names can't start with a number: 1name is invalid, name1 is fine.
 • Variable names can't have spaces: first name won't work, use first_name.
-• Capitalized variables (Name) mean something special in Ruby — stick to lowercase.
+• Capitalized variables (Name) mean something special in Ruby - stick to lowercase.
 • Forgot to puts the variable? Creating it doesn't automatically display it.
-• Used the variable before creating it? Ruby reads top to bottom — define first, use second.`
+• Used the variable before creating it? Ruby reads top to bottom - define first, use second.`
           }
         },
         {
           id: "ruby-phase1-m1-l3",
-          title: "String Interpolation — Mixing Text and Variables",
+          title: "String Interpolation - Mixing Text and Variables",
           explanation: `Imagine writing a form letter: "Dear [NAME], your order [ORDER_ID] is ready." 
-String interpolation is exactly that — you write a template and Ruby fills in the 
+String interpolation is exactly that - you write a template and Ruby fills in the 
 blanks with your variables. This is far cleaner than manually joining strings 
 together with + signs. It's one of Ruby's most loved features and something you'll 
 use in almost every Ruby program you write. Real-world uses: generating personalized 
 messages, building URLs, creating formatted reports.`,
           concept: `Use double quotes " " and #{ } to embed any variable or expression directly in a string.
 "Hello, #{variable_name}!" → Ruby replaces #{} with the actual value.
-Only works in double-quoted strings — single quotes treat #{ } as plain text.
+Only works in double-quoted strings - single quotes treat #{ } as plain text.
 You can put any Ruby expression inside #{ }, not just variable names.`,
           example: `name = 'Maria'
 age = 28
@@ -269,14 +269,14 @@ puts "Total cost: $#{quantity * price}"`,
             debuggingTip: `Common mistakes:
 • Using single quotes? #{variable} won't work inside ' '. Always use " " for interpolation.
 • Getting the literal text #{name} printed? That means you used single quotes by accident.
-• Interpolation prints nil if the variable doesn't exist — double check spelling.
+• Interpolation prints nil if the variable doesn't exist - double check spelling.
 • Want a # sign without interpolation in double quotes? Use \\# to escape it.`
           }
         },
         {
           id: "ruby-phase1-m1-l4",
           title: "Numbers and Math",
-          explanation: `Every useful program does math at some point — calculating prices, scores, distances, 
+          explanation: `Every useful program does math at some point - calculating prices, scores, distances, 
 ages. Ruby handles two types of numbers: Integers (whole numbers like 5, 100, -3) 
 and Floats (decimals like 3.14, -0.5, 99.99). The tricky part that surprises many 
 beginners: when you divide two integers in Ruby, the result is always an integer 
@@ -349,23 +349,23 @@ puts 127 % 2`,
             ],
             debuggingTip: `Common mistakes:
 • Getting 0 for tax? Integer division! 8/100 = 0 in integer math. Use 8.0 or multiply first.
-• Order of operations: Ruby follows PEMDAS — use parentheses when in doubt.
-• % is NOT percentage — it's remainder. 10 % 3 = 1, not 0.33.
+• Order of operations: Ruby follows PEMDAS - use parentheses when in doubt.
+• % is NOT percentage - it's remainder. 10 % 3 = 1, not 0.33.
 • ** is power: 2**3 = 8. Don't confuse with * (multiply).`
           }
         },
         {
           id: "ruby-phase1-m1-l5",
-          title: "Comparison Operators — Asking True/False Questions",
+          title: "Comparison Operators - Asking True/False Questions",
           explanation: `Every decision in a program comes down to a yes/no question: Is this price too high? 
 Did the user enter the right password? Is the score high enough to win? Comparison 
-operators let Ruby answer these questions. They always return either true or false — 
+operators let Ruby answer these questions. They always return either true or false - 
 these are called Boolean values. This is the foundation of all decision-making in 
 programming. Without comparisons, every program would do the exact same thing every 
 time, with no ability to react to different situations.`,
           concept: `== (equal to), != (not equal), > (greater than), < (less than)
 >= (greater than or equal), <= (less than or equal)
-These return true or false — called Boolean values.
+These return true or false - called Boolean values.
 CRITICAL: = means "assign a value", == means "compare two values". Don't mix them up!`,
           example: `age = 20
 voting_age = 18
@@ -427,19 +427,19 @@ puts user_age >= minimum_age`,
               { type: "contains", value: "user_age >= minimum_age" }
             ],
             debuggingTip: `Common mistakes:
-• Used = instead of ==? That's assignment, not comparison — a very common bug.
+• Used = instead of ==? That's assignment, not comparison - a very common bug.
 • String comparison is case-sensitive: 'Ruby' != 'ruby'. Use .downcase to normalize.
 • Comparing a string to a number? 'five' == 5 is always false in Ruby.
-• Not sure what a comparison returns? Just puts it — it will show true or false.`
+• Not sure what a comparison returns? Just puts it - it will show true or false.`
           }
         },
         {
           id: "ruby-phase1-m1-l6",
-          title: "Type Conversion — Changing Data Types",
+          title: "Type Conversion - Changing Data Types",
           explanation: `Imagine you receive a phone number as text: '555-1234'. You can't do math on text. 
 Or you calculate a price as 29.99 but need to display it in a message. Type conversion 
 is the process of changing data from one form to another. This is especially important 
-when working with user input — everything typed by a user comes in as a String, even 
+when working with user input - everything typed by a user comes in as a String, even 
 if they typed a number. You must convert it before doing any math. This is one of 
 the most common sources of bugs for beginners.`,
           concept: `'42'.to_i   → converts String to Integer (42)
@@ -497,24 +497,24 @@ puts 'abc'.to_i`,
             ],
             debuggingTip: `Common mistakes:
 • Trying to add a String and Integer without converting? NoMethodError or TypeError will appear.
-• .to_i truncates floats — it does NOT round: 9.9.to_i = 9, not 10.
+• .to_i truncates floats - it does NOT round: 9.9.to_i = 9, not 10.
 • String concatenation uses +, but both sides must be strings. Mix types? Convert first.
-• User input from gets is always a String — always convert before math!
-• 'abc'.to_i returns 0 silently — check your data is actually a number first.`
+• User input from gets is always a String - always convert before math!
+• 'abc'.to_i returns 0 silently - check your data is actually a number first.`
           }
         },
         {
           id: "ruby-phase1-m1-l7",
           title: "Getting User Input with gets",
-          explanation: `So far your programs have been one-way conversations — Ruby talks, you listen. 
+          explanation: `So far your programs have been one-way conversations - Ruby talks, you listen. 
 Now let's make it interactive. gets (get string) pauses your program and waits 
 for the user to type something and press Enter. The problem is it captures that 
 Enter key press as a newline character (\\n) at the end. That's why we almost always 
-chain .chomp onto it — chomp "chomps off" that newline. This is how every 
+chain .chomp onto it - chomp "chomps off" that newline. This is how every 
 command-line program, game, and interactive tool gets information from users.`,
           concept: `gets → pauses and reads a line of text from the user (includes trailing \\n)
 gets.chomp → same but removes the trailing newline character
-gets always returns a String — use .to_i or .to_f to convert for math
+gets always returns a String - use .to_i or .to_f to convert for math
 print is better than puts for input prompts (keeps cursor on same line)`,
           example: `# Basic input
 print 'What is your name? '
@@ -562,9 +562,9 @@ puts "You counted #{letters} letters!"`,
             ],
             debuggingTip: `Common mistakes:
 • Forgot .chomp? Your string will have a hidden \\n at the end, causing display issues.
-• Used puts for the prompt? The cursor moves to the next line — use print instead.
+• Used puts for the prompt? The cursor moves to the next line - use print instead.
 • Forgot .to_i for number input? Gets always returns a String, even if user typed 42.
-• Variable not showing up in interpolation? Check spelling — Ruby is case-sensitive.
+• Variable not showing up in interpolation? Check spelling - Ruby is case-sensitive.
 • Program seems frozen? It's waiting for input! Type something and press Enter.`
           }
         }
@@ -572,16 +572,16 @@ puts "You counted #{letters} letters!"`,
     },
     {
       id: "ruby-phase2-m1",
-      title: "Phase 2 — Control Flow",
+      title: "Phase 2 - Control Flow",
       duration: "2.5 hours",
       lessons: [
         {
           id: "ruby-phase2-m1-l1",
-          title: "If/Elsif/Else — Making Decisions",
-          explanation: `Decision-making is the heart of programming. Think of a vending machine — it checks 
+          title: "If/Elsif/Else - Making Decisions",
+          explanation: `Decision-making is the heart of programming. Think of a vending machine - it checks 
 if you inserted enough money, then checks which button you pressed, then decides 
 what to dispense. Ruby's if/elsif/else works exactly like this chain of decisions. 
-You check one condition, then another, then another, until one is true — or you 
+You check one condition, then another, then another, until one is true - or you 
 fall through to a default. This is how programs react differently to different 
 situations, making them actually useful in the real world.`,
           concept: `if condition      → runs this block if condition is true
@@ -592,15 +592,15 @@ Conditions use comparison operators that return true or false`,
           example: `temperature = 28
 
 if temperature >= 35
-  puts 'Very hot — stay hydrated!'
+  puts 'Very hot - stay hydrated!'
 elsif temperature >= 25
   puts 'Warm and pleasant'
 elsif temperature >= 15
-  puts 'Mild — bring a light jacket'
+  puts 'Mild - bring a light jacket'
 elsif temperature >= 5
-  puts 'Cold — wear a coat'
+  puts 'Cold - wear a coat'
 else
-  puts 'Freezing — bundle up!'
+  puts 'Freezing - bundle up!'
 end
 # Output: Warm and pleasant
 
@@ -650,16 +650,16 @@ puts score >= 60 ? 'Pass' : 'Fail'`,
             ],
             debuggingTip: `Common mistakes:
 • Wrote 'elseif' or 'else if'? Ruby requires 'elsif' (no 'e' at the end).
-• Forgot 'end'? Ruby will throw a SyntaxError — every if needs exactly one end.
+• Forgot 'end'? Ruby will throw a SyntaxError - every if needs exactly one end.
 • Conditions checked in wrong order? Put most specific conditions first (>= 90 before >= 80).
 • Using = instead of == in conditions? That assigns rather than compares.
-• elsif after else? else must always be last — nothing can come after it.`
+• elsif after else? else must always be last - nothing can come after it.`
           }
         },
         {
           id: "ruby-phase2-m1-l2",
-          title: "While Loop — Repeating Until Done",
-          explanation: `Imagine a bouncer at a club checking IDs — they don't check one person then go home. 
+          title: "While Loop - Repeating Until Done",
+          explanation: `Imagine a bouncer at a club checking IDs - they don't check one person then go home. 
 They keep checking, person after person, until their shift ends. That's a loop. 
 The while loop keeps repeating a block of code as long as a condition remains true. 
 The moment the condition becomes false, the loop stops. This is perfect for 
@@ -741,7 +741,7 @@ end`,
         },
         {
           id: "ruby-phase2-m1-l3",
-          title: "For Loop and Ranges — Iterating with Precision",
+          title: "For Loop and Ranges - Iterating with Precision",
           explanation: `While loops are great when you don't know how many times you'll repeat. But often 
 you know exactly: "do this 10 times", "go through numbers 1 to 100", "process each 
 day of the week". That's where for loops and ranges shine. A range (1..10) is Ruby's 
@@ -824,12 +824,12 @@ end`,
         },
         {
           id: "ruby-phase2-m1-l4",
-          title: "Break and Next — Controlling Loop Flow",
-          explanation: `Sometimes you're searching through data and find what you need halfway through — 
+          title: "Break and Next - Controlling Loop Flow",
+          explanation: `Sometimes you're searching through data and find what you need halfway through - 
 there's no point continuing. Sometimes you want to skip certain items (like skipping 
 blank entries in a list). break and next give you precise control over loop execution. 
-break is like an emergency exit — it stops the loop immediately. next is like saying 
-"skip this one, move to the next" — it skips the rest of the current iteration and 
+break is like an emergency exit - it stops the loop immediately. next is like saying 
+"skip this one, move to the next" - it skips the rest of the current iteration and 
 jumps to the next one. These are used constantly in real Ruby code.`,
           concept: `break → immediately exits the loop entirely, code after the loop continues
 next  → skips the rest of current iteration, jumps to the next one
@@ -887,7 +887,7 @@ end`,
               { type: "contains", value: "% 3" }
             ],
             debuggingTip: `Common mistakes:
-• next skips to next iteration but break exits entirely — don't mix them up.
+• next skips to next iteration but break exits entirely - don't mix them up.
 • next if i == 4 means "if i is 4, skip everything below and go to next loop cycle".
 • Code after break in the same iteration never runs.
 • Using break outside a loop causes an error.
@@ -987,12 +987,12 @@ puts "It took #{attempts} attempt(s)."`,
     },
     {
       id: "ruby-phase3-m1",
-      title: "Phase 3 — Methods",
+      title: "Phase 3 - Methods",
       duration: "2.5 hours",
       lessons: [
         {
           id: "ruby-phase3-m1-l1",
-          title: "Defining Methods — Reusable Actions",
+          title: "Defining Methods - Reusable Actions",
           explanation: `Imagine if every time you wanted to make coffee, you had to remember and repeat 
 every step: fill water, add grounds, press start... What if instead you just pressed 
 a button labeled "Make Coffee"? Methods are those buttons. You define the steps once, 
@@ -1036,7 +1036,7 @@ end
 print_menu`,
           exercise: {
             prompt: `Build a method collection:
-1. Define say_motto that prints 'Keep coding!' and 'Never give up!' — call it twice
+1. Define say_motto that prints 'Keep coding!' and 'Never give up!' - call it twice
 2. Define print_header that prints a line of 20 asterisks, then 'RUBY PROGRAM', then another line of 20 asterisks
 3. Call print_header once`,
             starterCode: `# Method 1: say_motto
@@ -1069,7 +1069,7 @@ print_header`,
               { type: "contains", value: "def print_header" }
             ],
             debuggingTip: `Common mistakes:
-• Called the method before defining it? Ruby reads top to bottom — define first, call second.
+• Called the method before defining it? Ruby reads top to bottom - define first, call second.
 • Forgot 'end'? Every def needs a matching end.
 • Method name has spaces or starts with capital? Use lowercase snake_case only.
 • Nothing printed when calling? Check that puts is inside the method definition.
@@ -1080,10 +1080,10 @@ print_header`,
           id: "ruby-phase3-m1-l2",
           title: "Parameters and Return Values",
           explanation: `A method without parameters is like a vending machine that always dispenses the 
-same item. Parameters make methods flexible — you pass in data, and the method 
+same item. Parameters make methods flexible - you pass in data, and the method 
 works with that specific data. Return values are what the method hands back to 
 you after it's done. In Ruby, every method automatically returns the value of 
-its last line — you don't need the return keyword (though you can use it). 
+its last line - you don't need the return keyword (though you can use it). 
 This makes Ruby methods elegant and concise. Parameters + return values = 
 the building blocks of all useful code.`,
           concept: `def method_name(parameter1, parameter2)  → parameters are local variables
@@ -1126,10 +1126,10 @@ puts check_age(15)  # Minor
 puts check_age(21)  # Adult`,
           exercise: {
             prompt: `Build useful methods with parameters:
-1. Define multiply(a, b) that returns the product — call with (4, 7), store result, print it
+1. Define multiply(a, b) that returns the product - call with (4, 7), store result, print it
 2. Define greet_user(name, language) that prints "Hello [name], welcome to [language]!"
 3. Call greet_user with your name and 'Ruby'
-4. Define circle_area(radius) that returns 3.14159 * radius * radius — test with radius 5`,
+4. Define circle_area(radius) that returns 3.14159 * radius * radius - test with radius 5`,
             starterCode: `# Method 1: multiply
 def multiply(a, b)
 
@@ -1169,23 +1169,23 @@ puts circle_area(5)`,
             ],
             debuggingTip: `Common mistakes:
 • Printed inside the method but also tried to puts the return value? You'll print twice.
-• Wrong number of arguments? Ruby raises ArgumentError — count your parameters.
+• Wrong number of arguments? Ruby raises ArgumentError - count your parameters.
 • Forgot to use the return value? result = multiply(4, 7) captures it; just multiply(4, 7) throws it away.
 • Return keyword used unnecessarily at end? It works, but Ruby style omits it at the last line.
-• Parameters are local — they only exist inside the method. Don't try to use them outside.`
+• Parameters are local - they only exist inside the method. Don't try to use them outside.`
           }
         }
       ]
     },
     {
       id: "ruby-phase4-m1",
-      title: "Phase 4 — Arrays and Hashes",
+      title: "Phase 4 - Arrays and Hashes",
       duration: "2.5 hours",
       lessons: [
         {
           id: "ruby-phase4-m1-l1",
-          title: "Arrays — Ordered Collections",
-          explanation: `An array is like a numbered list — a shopping list, a playlist, a leaderboard. 
+          title: "Arrays - Ordered Collections",
+          explanation: `An array is like a numbered list - a shopping list, a playlist, a leaderboard. 
 Each item has a position (called an index) starting at 0. Arrays let you store 
 multiple values in one variable instead of creating name1, name2, name3... 
 separately. Ruby arrays are flexible: they can hold mixed types, grow dynamically, 
@@ -1266,20 +1266,20 @@ puts colors.include?('purple')`,
               { type: "contains", value: ".include?" }
             ],
             debuggingTip: `Common mistakes:
-• Used [1] for first element? Arrays are zero-indexed — first is [0], second is [1].
+• Used [1] for first element? Arrays are zero-indexed - first is [0], second is [1].
 • Getting nil? Index doesn't exist. Check array length before accessing.
-• Using . instead of [] for access? arr.0 is invalid — use arr[0].
-• Forgot quotes around strings in the array? ['red', green] — green without quotes = variable.
+• Using . instead of [] for access? arr.0 is invalid - use arr[0].
+• Forgot quotes around strings in the array? ['red', green] - green without quotes = variable.
 • << vs + : << modifies the original array; arr + ['x'] returns a new array.`
           }
         },
         {
           id: "ruby-phase4-m1-l2",
-          title: "Hashes — Key-Value Storage",
+          title: "Hashes - Key-Value Storage",
           explanation: `An array is great for ordered lists, but sometimes you need labeled data. 
-A hash is like a dictionary or a contact card — instead of position 0, 1, 2, 
+A hash is like a dictionary or a contact card - instead of position 0, 1, 2, 
 you use meaningful names (keys) to store and retrieve values. User profiles, 
-configuration settings, product catalogs — these are all naturally represented 
+configuration settings, product catalogs - these are all naturally represented 
 as hashes. Ruby hashes use symbols (starting with :) as keys because they're 
 faster and more memory-efficient than strings. Hashes are everywhere in real 
 Ruby code, especially when working with APIs and databases.`,
@@ -1358,8 +1358,8 @@ end`,
               { type: "contains", value: "book.each" }
             ],
             debuggingTip: `Common mistakes:
-• Used string key 'title' to access a symbol key :title? Returns nil — be consistent.
-• Wrote hash.title instead of hash[:title]? Methods and keys are different — use [].
+• Used string key 'title' to access a symbol key :title? Returns nil - be consistent.
+• Wrote hash.title instead of hash[:title]? Methods and keys are different - use [].
 • Keys with spaces? Use strings: {'first name' => 'Alice'} (old hash rocket syntax).
 • Confused .keys (returns array) with .key? (checks if key exists)?
 • Iterating with wrong variables? |key, value| order is always key first, value second.`
@@ -1369,12 +1369,12 @@ end`,
     },
     {
       id: "ruby-phase5-m1",
-      title: "Phase 5 — Intermediate Ruby",
+      title: "Phase 5 - Intermediate Ruby",
       duration: "2.5 hours",
       lessons: [
         {
           id: "ruby-phase5-m1-l1",
-          title: "Iterators — each, map, select",
+          title: "Iterators - each, map, select",
           explanation: `Ruby's iterators are one of the language's greatest strengths. Instead of writing 
 a for loop every time you want to process a collection, Ruby provides expressive 
 methods that read almost like English. .each does something for every element. 
@@ -1389,24 +1389,24 @@ of for loops.`,
 Blocks: { |var| single line } or do |var| ... end (multiline)`,
           example: `numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
-# .each — do something with every element
+# .each - do something with every element
 numbers.each { |n| puts n }
 
-# .map — transform every element, get new array
+# .map - transform every element, get new array
 doubled = numbers.map { |n| n * 2 }
 puts doubled   # [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
 
 squared = numbers.map { |n| n ** 2 }
 puts squared   # [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
 
-# .select — keep only matching elements
+# .select - keep only matching elements
 evens = numbers.select { |n| n.even? }
 puts evens     # [2, 4, 6, 8, 10]
 
 big_numbers = numbers.select { |n| n > 5 }
 puts big_numbers  # [6, 7, 8, 9, 10]
 
-# .reject — exclude matching elements
+# .reject - exclude matching elements
 odds = numbers.reject { |n| n.even? }
 puts odds      # [1, 3, 5, 7, 9]
 
@@ -1416,8 +1416,8 @@ puts result    # [40, 50, 60, 70, 80, 90, 100]`,
           exercise: {
             prompt: `Practice with iterators:
 1. Given numbers = [1,2,3,4,5], use .each to print each number squared
-2. Use .map to create a new array where each number is tripled — print it
-3. Use .select to get only numbers greater than 3 — print the result
+2. Use .map to create a new array where each number is tripled - print it
+3. Use .select to get only numbers greater than 3 - print the result
 4. Given words = ['ruby', 'python', 'java', 'go'], use .select to find words longer than 3 characters`,
             starterCode: `numbers = [1, 2, 3, 4, 5]
 
@@ -1453,20 +1453,20 @@ puts long_words`,
             debuggingTip: `Common mistakes:
 • Using .each when you need .map? each returns the original array; map returns the transformed one.
 • Block variable not changing? Check it's being used inside the block: { |n| n * 2 }, not just { n * 2 }.
-• Forgot pipes around block variable? { n | n * 2 } is wrong — use { |n| n * 2 }.
+• Forgot pipes around block variable? { n | n * 2 } is wrong - use { |n| n * 2 }.
 • Chaining not working? Make sure each method returns the right type (map and select return arrays).
 • Confused .select and .reject? select keeps true results, reject keeps false results.`
           }
         },
         {
           id: "ruby-phase5-m1-l2",
-          title: "Exception Handling — Dealing with Errors Gracefully",
+          title: "Exception Handling - Dealing with Errors Gracefully",
           explanation: `Programs encounter unexpected situations: a file doesn't exist, the network is down, 
 a user enters text where a number was expected, division by zero. Without exception 
 handling, your program crashes with an ugly error message. With it, you can catch 
 the error, inform the user helpfully, and either recover or exit gracefully. Think 
 of it like a try/catch safety net. In production Ruby code, exception handling is 
-essential — it's the difference between a program that randomly crashes and one 
+essential - it's the difference between a program that randomly crashes and one 
 that handles problems professionally.`,
           concept: `begin            → start the "try this" section
   # risky code   → code that might raise an error
@@ -1510,8 +1510,8 @@ ensure
 end`,
           exercise: {
             prompt: `Practice exception handling:
-1. Write a begin/rescue that divides 10 by 0 — print 'Math error!' if ZeroDivisionError occurs
-2. Write a begin/rescue that calls .upcase on nil — catch NoMethodError, print 'Method not available'
+1. Write a begin/rescue that divides 10 by 0 - print 'Math error!' if ZeroDivisionError occurs
+2. Write a begin/rescue that calls .upcase on nil - catch NoMethodError, print 'Method not available'
 3. Add an ensure block to the second one that always prints 'Done checking.'`,
             starterCode: `# Part 1: Division by zero
 
@@ -1546,7 +1546,7 @@ end`,
             ],
             debuggingTip: `Common mistakes:
 • Using rescue without begin? rescue must be inside a begin...end block (or a method).
-• Rescuing too broadly? rescue without an error type catches everything — be specific when possible.
+• Rescuing too broadly? rescue without an error type catches everything - be specific when possible.
 • Ensure not running? Check that end closes the entire begin/rescue/ensure block.
 • Want to re-raise the error? Use 'raise' inside rescue to re-throw it after handling.
 • Error variable syntax: rescue ZeroDivisionError => e gives you the error object in 'e'.`
