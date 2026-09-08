@@ -52,13 +52,13 @@ export default function SignupPrompt({ show = true, onClose = null }) {
               </div>
 
               <h2 className="text-2xl font-bold tracking-tight mb-2">
-                You're on a roll! 🎉
+                Nice, you finished 3 lessons.
               </h2>
               <p className="text-sm text-zinc-500 mb-2 leading-relaxed">
-                You've completed 3 lessons — that's more than most people ever do.
+                You've finished the first 3 lessons.
               </p>
               <p className="text-sm text-zinc-400 mb-8 leading-relaxed">
-                Create a free account to unlock all lessons, get AI-powered feedback on your code, and track your progress across devices.
+                Create a free account to keep going, save your progress, and get up to 10 AI code reviews a day.
               </p>
 
               <div className="flex flex-col gap-3">
