@@ -49,7 +49,7 @@ export default function Lesson() {
   );
 
   // Redirect guests trying to access non-guest lessons.
-  // Wait for the curriculum cache — on deep links it isn't populated yet.
+  // Wait for the curriculum cache - on deep links it isn't populated yet.
   useEffect(() => {
     if (isLoaded && curriculumReady && isGuest && !guestAllowed) {
       // Redirect to first guest lesson (v2 for Python, v1 for other languages)
@@ -174,7 +174,7 @@ export default function Lesson() {
         <title>{lesson.title} | Learn Python with FluentlyCode</title>
         <meta name="description" content={`${lesson.title}: ${lesson.explanation.substring(0, 150)}... Learn Python concepts with interactive coding lessons.`} />
         <meta property="og:title" content={`${lesson.title} | FluentlyCode`} />
-        <meta property="og:description" content={`Learn ${lesson.title} with interactive coding and AI-powered feedback.`} />
+        <meta property="og:description" content={`Learn ${lesson.title} with interactive coding and AI feedback.`} />
       </Helmet>
       <Navbar
         streak={streak}
