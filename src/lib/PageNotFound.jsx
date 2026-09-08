@@ -9,9 +9,9 @@ export default function PageNotFound() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-white px-6">
       <div className="text-center">
         <p className="text-8xl font-bold text-zinc-100 mb-6 tracking-tight">404</p>
-        <h1 className="text-2xl font-semibold text-zinc-900 mb-2">Page not found</h1>
+        <h1 className="text-2xl font-semibold text-zinc-900 mb-2">That page doesn't exist</h1>
         <p className="text-sm text-zinc-400 mb-8">
-          <span className="font-mono text-zinc-500">{location.pathname}</span> doesn't exist.
+          <span className="font-mono text-zinc-500">{location.pathname}</span> isn't a valid page.
         </p>
         <Link
           to="/"
