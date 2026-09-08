@@ -45,7 +45,7 @@ export default function Terms() {
             <h2 className="text-base font-semibold text-zinc-900 mb-2">2. Description of Service</h2>
             <p>
               FluentlyCode is an online platform that provides interactive programming education through
-              structured lessons, coding exercises, and AI-powered feedback. The Service includes both
+              structured lessons, coding exercises, and AI feedback. The Service includes both
               free and paid subscription tiers. We reserve the right to modify, suspend, or discontinue
               any part of the Service at any time, with or without notice.
             </p>
@@ -112,8 +112,8 @@ export default function Terms() {
           <section>
             <h2 className="text-base font-semibold text-zinc-900 mb-2">7. Intellectual Property</h2>
             <p>
-              All content on FluentlyCode — including but not limited to lessons, exercises, code examples,
-              design, logos, and text — is the intellectual property of FluentlyCode and is protected by
+              All content on FluentlyCode - including but not limited to lessons, exercises, code examples,
+              design, logos, and text - is the intellectual property of FluentlyCode and is protected by
               copyright, trademark, and other intellectual property laws. You may not copy, modify,
               distribute, sell, or lease any part of our Service or content without our explicit
               written permission.
@@ -127,7 +127,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-zinc-900 mb-2">8. AI-Powered Features</h2>
+            <h2 className="text-base font-semibold text-zinc-900 mb-2">8. AI Features</h2>
             <p>
               FluentlyCode uses artificial intelligence to provide code feedback and tutoring assistance.
               While we strive for accuracy, AI-generated feedback may occasionally contain errors or
