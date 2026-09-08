@@ -74,7 +74,7 @@ ${userCode || "(no code yet)"}
 
 Student's question: "${q}"
 
-Be concise, warm, and clear. Never reveal the full solution — guide instead. 2–4 sentences max unless the concept truly requires more.`;
+Be concise, warm, and clear. Never reveal the full solution - guide instead. 2–4 sentences max unless the concept truly requires more.`;
 
       const res = await fetch(`${SUPABASE_URL}/functions/v1/ai-chat`, {
         method: "POST",
@@ -154,10 +154,10 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
           </div>
           <div>
             <p className="text-sm font-medium text-zinc-700 mb-1">
-              AI tutor available with a free account
+              Code feedback is available with a free account
             </p>
             <p className="text-xs text-zinc-400 max-w-[200px] mx-auto leading-relaxed">
-              Get personalized feedback, hints, and explanations for your code
+              Get hints, explanations, and feedback on your code
             </p>
           </div>
           <SignUpButton mode="modal">
@@ -232,8 +232,7 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
       {limitReached && (
         <div className="mx-4 mt-4 bg-amber-50 border border-amber-200 rounded-2xl p-4 shrink-0">
           <p className="text-xs text-amber-700 leading-relaxed">
-            You've reached your daily AI request limit. Come back tomorrow to
-            continue asking questions.
+            You've used today's free requests. You can ask more questions tomorrow.
           </p>
         </div>
       )}
@@ -330,7 +329,7 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
               onKeyDown={(e) =>
                 e.key === "Enter" && !e.shiftKey && sendMessage()
               }
-              placeholder="Ask the AI assistant…"
+              placeholder="Ask about your code..."
               className="flex-1 text-sm outline-none bg-transparent text-zinc-800 placeholder-zinc-300"
             />
             <button

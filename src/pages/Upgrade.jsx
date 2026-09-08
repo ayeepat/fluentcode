@@ -11,9 +11,9 @@ export default function Upgrade() {
     <div className="min-h-screen bg-white">
       <Helmet>
         <title>Support FluentlyCode | Free Learning, Donations Welcome</title>
-        <meta name="description" content="FluentlyCode is 100% free with no paywalls. Support our mission by donating. Every contribution helps us expand our curriculum." />
+        <meta name="description" content="FluentlyCode is free to use. If you want to help cover hosting and development costs, you can support the project with a donation." />
         <meta property="og:title" content="Support FluentlyCode" />
-        <meta property="og:description" content="Help us grow. FluentlyCode is free and always will be." />
+        <meta property="og:description" content="FluentlyCode is free to use. Donations help cover the costs of running it." />
       </Helmet>
       <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-4 bg-white/90 backdrop-blur-md border-b border-zinc-100">
         <Link
@@ -44,15 +44,13 @@ export default function Upgrade() {
           </h1>
 
           <p className="text-zinc-500 text-sm leading-relaxed mb-4">
-            No subscriptions. No paywalls. No hidden fees.
-            Every feature is available to every user.
+            No subscriptions, paywalls, or hidden fees. Everyone gets the same features.
           </p>
 
           <p className="text-zinc-400 text-sm leading-relaxed mb-10">
-            This project is built and maintained by a solo developer.
-            If you find it useful and want to help keep it running,
-            you can leave a small donation. 100% goes toward
-            server costs and development. No pressure.
+            This project is built and maintained by one developer. If it is useful to you
+            and you want to help keep it online, you can leave a donation. It goes
+            toward hosting and development costs. There is no obligation.
           </p>
 
           <a
@@ -67,7 +65,7 @@ export default function Upgrade() {
           </a>
 
           <p className="text-xs text-zinc-300 mt-6">
-            Thank you. It means a lot. ❤️
+            Thanks for supporting the project. ❤️
           </p>
 
           <div className="mt-12">

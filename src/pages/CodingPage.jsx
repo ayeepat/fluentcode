@@ -206,7 +206,7 @@ export default function CodingPage() {
   );
 
   // ------------------------------------------------------------------
-  // Guards — wait for the curriculum cache before judging guest access,
+  // Guards - wait for the curriculum cache before judging guest access,
   // otherwise deep links redirect before the lesson list exists.
   // ------------------------------------------------------------------
   useEffect(() => {
@@ -432,7 +432,7 @@ export default function CodingPage() {
           feedback: `Your code has a runtime error:\n\n${userError}\n\nFix the error and try again.`,
           mistakePatterns: ["runtime_error"],
           suggestions: [
-            "Read the error message carefully — it tells you the line number.",
+            "Read the error message carefully. It usually points you to the problem.",
             "Check for typos in variable names or function calls.",
           ],
         });
@@ -511,7 +511,7 @@ export default function CodingPage() {
   async function handleCorrectSubmission() {
     setFeedback({
       isCorrect: true,
-      feedback: "Your code produces the correct output. Great work!",
+      feedback: "Your code produces the correct output. Nice work.",
       mistakePatterns: [],
       suggestions: [],
     });
@@ -688,10 +688,10 @@ export default function CodingPage() {
   return (
     <div className="h-screen flex flex-col bg-white overflow-hidden">
       <Helmet>
-        <title>AI-Powered Code Editor | {lesson.title} - FluentlyCode</title>
+        <title>AI Code Editor | {lesson.title} - FluentlyCode</title>
         <meta
           name="description"
-          content="Write code and get instant AI-powered feedback. Practice Python with interactive exercises and AI guidance from FluentlyCode."
+          content="Write code and get instant AI feedback. Practice Python with interactive exercises and AI guidance from FluentlyCode."
         />
       </Helmet>
 
@@ -838,10 +838,10 @@ export default function CodingPage() {
                   }`}
                 >
                   {feedback.isCorrect
-                    ? "🎉 Great job! Your code is correct!"
+                    ? "Looks good. Your code is correct."
                     : failCount >= 3 && exerciseFirst
-                    ? "Not quite — the theory below might help!"
-                    : "Not quite right — here's what to check:"}
+                    ? "Not quite. The explanation below may help."
+                    : "Not quite. Check these:"}
                 </p>
                 <p
                   className={`text-xs leading-relaxed whitespace-pre-wrap ${
@@ -863,7 +863,7 @@ export default function CodingPage() {
                 {feedback.isCorrect && isGuest && (
                   <p className="text-xs text-emerald-500 mt-2">
                     <Sparkles size={11} className="inline mr-1" />
-                    Create a free account to unlock AI feedback on every exercise!
+                    Create a free account to get AI feedback on each exercise!
                   </p>
                 )}
                 {feedback.isCorrect && exerciseFirst && (

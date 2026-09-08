@@ -260,7 +260,7 @@ export default function Quiz() {
                 ) : savedProgress ? (
                   <span className="text-emerald-600">✓ Progress saved</span>
                 ) : (
-                  <span className="text-red-400">Could not save — try again</span>
+                  <span className="text-red-400">Could not save. Try again.</span>
                 )}
               </motion.p>
             )}

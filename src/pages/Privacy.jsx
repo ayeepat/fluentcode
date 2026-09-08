@@ -65,7 +65,7 @@ export default function Privacy() {
             <h2 className="text-base font-semibold text-zinc-900 mb-2">3. How We Use Your Data</h2>
             <p>We use your data for the following purposes:</p>
             <ul className="list-disc pl-5 mt-2 space-y-1">
-              <li><strong>Provide the Service:</strong> Track your learning progress, deliver AI-powered feedback, and manage your account.</li>
+              <li><strong>Provide the Service:</strong> Track your learning progress, deliver AI feedback, and manage your account.</li>
               <li><strong>Process payments:</strong> Manage subscriptions, billing, and refund requests through Stripe.</li>
               <li><strong>Improve the Service:</strong> Analyze usage patterns to improve our curriculum, exercises, and AI tutoring quality.</li>
               <li><strong>Communicate with you:</strong> Send important account notifications, respond to support requests, and provide service updates.</li>

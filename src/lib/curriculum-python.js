@@ -4,26 +4,26 @@ export const pythonCurriculum = {
   modules: [
     {
       id: "python-phase0-m1",
-      title: "Phase 0 — Welcome to Python",
+      title: "Phase 0 - Welcome to Python",
       duration: "15 min",
       lessons: [
         {
           id: "python-phase0-m1-l1",
           title: "Your First Python Program",
-          explanation: `Python is one of the most loved programming languages in the world — and for 
+          explanation: `Python is one of the most loved programming languages in the world - and for 
 good reason. It reads almost like English, runs on every platform, and powers 
 everything from Instagram to NASA's research tools to the AI models you use 
 every day. Unlike many languages, Python doesn't need complicated setup or 
 boilerplate code. Your very first program can be a single line. The print() 
-function is your first tool — think of it as Python's megaphone. Whatever 
+function is your first tool - think of it as Python's megaphone. Whatever 
 you put inside the parentheses gets displayed on the screen. Every programmer 
 in the world started exactly where you are right now.`,
           concept: `print() displays any message or value to the screen.
-Text must be wrapped in quotes — single ('text') or double ("text") — both work.
+Text must be wrapped in quotes - single ('text') or double ("text") - both work.
 Each print() call automatically creates a new line.
 Parentheses are required: print without () just references the function without calling it.
 Python reads and executes code top to bottom, one line at a time.`,
-          example: `# The hash symbol starts a comment — Python ignores these
+          example: `# The hash symbol starts a comment - Python ignores these
 # Comments explain your code to humans
 
 # print() is Python's way of talking to you
@@ -61,9 +61,9 @@ print(10 + 7)`,
             ],
             debuggingTip: `Common mistakes:
 • Forgot the quotes around your message? Python will think it's a variable and throw a NameError.
-• Used mismatched quotes? 'Hello" won't work — opening and closing quotes must be the same type.
-• Nothing printing? Make sure you actually called print() — just writing text in quotes does nothing.
-• Got SyntaxError? Check your parentheses — every ( needs a matching ).
+• Used mismatched quotes? 'Hello" won't work - opening and closing quotes must be the same type.
+• Nothing printing? Make sure you actually called print() - just writing text in quotes does nothing.
+• Got SyntaxError? Check your parentheses - every ( needs a matching ).
 • Math in quotes? print('10 + 7') prints the text "10 + 7". Remove the quotes to do actual math.`
           }
         }
@@ -71,17 +71,17 @@ print(10 + 7)`,
     },
     {
       id: "python-phase1-m1",
-      title: "Phase 1 — Fundamentals",
+      title: "Phase 1 - Fundamentals",
       duration: "3 hours",
       lessons: [
         {
           id: "python-phase1-m1-l1",
           title: "Talking with print()",
-          explanation: `print() is Python's primary way of showing output — and it's far more 
+          explanation: `print() is Python's primary way of showing output - and it's far more 
 flexible than it first appears. You'll use it constantly: to see what 
 your program is doing, to display results to users, and to debug code 
 when things go wrong. Professional Python developers have print() 
-statements scattered throughout their code during development — it's 
+statements scattered throughout their code during development - it's 
 the simplest and fastest way to understand what's happening inside 
 your program. Understanding all the ways to use it saves time every day.`,
           concept: `print('text')           → prints text on its own line
@@ -90,7 +90,7 @@ print('a', 'b', 'c')   → prints multiple values separated by spaces
 print('a', 'b', sep='-') → custom separator between values
 print('text', end='')  → no newline at end (continues on same line)
 print()                → prints a blank line (just a newline)`,
-          example: `# Basic output — each print is a new line
+          example: `# Basic output - each print is a new line
 print('Hello')
 print('Goodbye')
 print('Python is fun!')
@@ -145,8 +145,8 @@ print('Score:', 95)`,
             debuggingTip: `Common mistakes:
 • Math in quotes? print('100 - 37') prints the text "100 - 37", not 63. Remove quotes for math.
 • Using + to combine text and number? print('Score: ' + 95) crashes in Python. Use a comma: print('Score:', 95).
-• Missing parentheses? print without () doesn't call the function — add ().
-• Extra spaces matter in strings: 'Ready' and ' Ready' are different — the space is part of the string.`
+• Missing parentheses? print without () doesn't call the function - add ().
+• Extra spaces matter in strings: 'Ready' and ' Ready' are different - the space is part of the string.`
           }
         },
         {
@@ -155,16 +155,16 @@ print('Score:', 95)`,
           explanation: `Programs that only talk are like books. Programs that also listen become 
 conversations. The input() function pauses your program and waits for 
 the user to type something and press Enter. Everything the user types 
-comes back as a string — text — even if they typed a number. This is 
+comes back as a string - text - even if they typed a number. This is 
 critically important: '42' (the string) and 42 (the integer) are 
 completely different in Python. input() is how command-line programs, 
 games, and interactive tools get information from the person using them.`,
           concept: `input('prompt text')  → displays prompt, waits for user, returns what they typed as a STRING
-Always returns a string — even if user types a number
+Always returns a string - even if user types a number
 Store the result in a variable: name = input('Enter name: ')
 Use print as the prompt message (inside the quotes)
 The prompt text is optional: input() with no argument just waits silently`,
-          example: `# Basic input — stores what user types
+          example: `# Basic input - stores what user types
 name = input('What is your name? ')
 print('Nice to meet you, ' + name)
 
@@ -220,11 +220,11 @@ print('In 5 years you will be', age + 5)`,
         },
         {
           id: "python-phase1-m1-l3",
-          title: "Variables — Storing Information",
+          title: "Variables - Storing Information",
           explanation: `A variable is a named container for storing information. Think of it like a 
-labeled box — you write a name on the outside, put something inside, and 
+labeled box - you write a name on the outside, put something inside, and 
 later you can find it by name. Python is dynamically typed, which means 
-you don't have to declare what type of data a variable holds — Python 
+you don't have to declare what type of data a variable holds - Python 
 figures it out automatically. This makes Python fast to write but requires 
 you to keep track of what's in your variables. Good variable names are 
 one of the most valuable habits you can build as a programmer.`,
@@ -234,7 +234,7 @@ Variable names: lowercase_with_underscores (Python convention called snake_case)
 Cannot start with a number: 1name is invalid, name1 is fine
 Python is CASE-SENSITIVE: age and Age are different variables
 Variables can be reassigned to new values at any time
-Unassigned variables don't exist — using them causes a NameError`,
+Unassigned variables don't exist - using them causes a NameError`,
           example: `# Storing different types
 name = 'Alice'         # string (text)
 age = 28               # integer (whole number)
@@ -303,16 +303,16 @@ print(x, y)`,
             ],
             debuggingTip: `Common mistakes:
 • Print variable name in quotes? print('favorite_food') prints the text "favorite_food", not its value. Remove the quotes.
-• Variable name has spaces? my food won't work — use my_food with underscore.
+• Variable name has spaces? my food won't work - use my_food with underscore.
 • Capital letters in name? Python is case-sensitive: Food and food are different variables.
-• Used variable before creating it? Python reads top to bottom — define before using.
+• Used variable before creating it? Python reads top to bottom - define before using.
 • True/False wrong case? It's True and False with capital first letter, not true or false.`
           }
         },
         {
           id: "python-phase1-m1-l4",
           title: "Working with Strings",
-          explanation: `Strings are sequences of characters — any text wrapped in quotes. They're 
+          explanation: `Strings are sequences of characters - any text wrapped in quotes. They're 
 one of the most fundamental data types in Python, and they come loaded 
 with capabilities. You can join strings together (concatenation), repeat 
 them, check their length, access individual characters, and slice out 
@@ -320,7 +320,7 @@ sections. Understanding strings is essential because so much of what
 programs do involves processing text: reading user names, building 
 messages, parsing data, generating reports. Python's string handling 
 is one of the reasons it's so popular.`,
-          concept: `'Single quotes' or "double quotes" — both create strings
+          concept: `'Single quotes' or "double quotes" - both create strings
 + joins strings: 'Hello' + ' ' + 'World' → 'Hello World'
 * repeats: 'Ha' * 3 → 'HaHaHa'
 len(string) → number of characters
@@ -343,19 +343,19 @@ print('-' * 20)     # --------------------
 print(len('Python'))  # 6
 print(len(full))      # 11
 
-# Indexing — starts at 0!
+# Indexing - starts at 0!
 word = 'Python'
 print(word[0])    # P (first character)
 print(word[1])    # y
 print(word[-1])   # n (last character)
 print(word[-2])   # o (second to last)
 
-# Slicing — [start:end] (end is NOT included)
+# Slicing - [start:end] (end is NOT included)
 print(word[0:3])  # Pyt (characters 0, 1, 2)
 print(word[2:])   # thon (from index 2 to end)
 print(word[:3])   # Pyt (from start to index 3)`,
           exercise: {
-            prompt: `Master string operations:
+            prompt: `Practice string operations:
 1. Create greeting = 'Hi' and name = 'Sam', combine with a space into message, print it
 2. Print greeting repeated 4 times
 3. Create word = 'Python', print its length using len()
@@ -396,15 +396,15 @@ print('-' * 30)`,
             debuggingTip: `Common mistakes:
 • Missing the space? greeting + name gives 'HiSam'. Add ' ' in the middle: greeting + ' ' + name.
 • Concatenating string with number? 'Score: ' + 95 crashes. Convert: 'Score: ' + str(95) or use f-strings.
-• Slice end is exclusive: word[1:4] gives characters at index 1, 2, 3 — NOT 4.
+• Slice end is exclusive: word[1:4] gives characters at index 1, 2, 3 - NOT 4.
 • Negative index confused? word[-1] is the last character, word[-2] is second to last.
 • len() needs parentheses! len without () gives the function object, not the number.`
           }
         },
         {
           id: "python-phase1-m1-l5",
-          title: "String Methods — Built-in Text Tools",
-          explanation: `Strings in Python are packed with built-in methods — pre-written functions 
+          title: "String Methods - Built-in Text Tools",
+          explanation: `Strings in Python are packed with built-in methods - pre-written functions 
 that do useful things with text. Since strings are immutable (they can't 
 be changed in place), all methods return NEW strings. The original is 
 always preserved. You'll use these methods constantly: .strip() to clean 
@@ -420,7 +420,7 @@ These are the everyday tools of Python string processing.`,
 .endswith('x')     → True if string ends with 'x'
 .count('x')        → counts occurrences of 'x'
 .find('x')         → index of first occurrence (-1 if not found)
-Methods are called with a dot: string.method() — always with parentheses`,
+Methods are called with a dot: string.method() - always with parentheses`,
           example: `text = '  Hello, World!  '
 
 # Case methods
@@ -453,7 +453,7 @@ print(clean.count('l'))           # 3`,
 3. Print it in UPPERCASE and lowercase
 4. Create sentence = 'I love Python' and replace 'Python' with 'coding'
 5. Split sentence into a list of words and print the list
-6. Check if sentence starts with 'I' and ends with 'Python' — print both results`,
+6. Check if sentence starts with 'I' and ends with 'Python' - print both results`,
             starterCode: `# Step 1: Create messy name
 name = '  aLiCe  '
 
@@ -491,15 +491,15 @@ print(sentence.endswith('Python'))`,
             ],
             debuggingTip: `Common mistakes:
 • Missing parentheses? .upper without () gives a method object, not the uppercase string. Always add ().
-• Methods don't change original? Correct — strings are immutable. Capture result: clean = name.strip()
+• Methods don't change original? Correct - strings are immutable. Capture result: clean = name.strip()
 • .split() without argument splits on ANY whitespace including newlines and tabs.
-• .find() returns -1 if not found (not None, not False) — check with if result != -1.
+• .find() returns -1 if not found (not None, not False) - check with if result != -1.
 • Chaining works! name.strip().upper() strips first, then uppercases the result.`
           }
         },
         {
           id: "python-phase1-m1-l6",
-          title: "F-Strings — Modern String Formatting",
+          title: "F-Strings - Modern String Formatting",
           explanation: `F-strings (formatted string literals) are one of Python's most beloved 
 features. Introduced in Python 3.6, they let you embed variables and 
 expressions directly inside strings with minimal syntax. Just put f 
@@ -547,7 +547,7 @@ print('Hello, ' + name + '!')             # concatenation
 print('Hello, %s!' % name)               # old % formatting
 print('Hello, {}!'.format(name))         # .format() method`,
           exercise: {
-            prompt: `Master f-strings:
+            prompt: `Practice f-strings:
 1. Create: item = 'headphones', price = 79.99, quantity = 2
 2. Use f-string to print: "Item: headphones"
 3. Use f-string to print price formatted to 2 decimal places: "Price: $79.99"
@@ -591,16 +591,16 @@ print(f'  {item} x{quantity}  \${quantity * price:.2f}')`,
             debuggingTip: `Common mistakes:
 • Forgot the f before the quote? print('{name}') prints the literal text {name}. Add f: print(f'{name}')
 • Using wrong brackets? Only curly braces {} work in f-strings. Parentheses or square brackets won't substitute.
-• Number formatting: {price:.2f} — the colon starts the format spec, .2f means 2 decimal places, float.
+• Number formatting: {price:.2f} - the colon starts the format spec, .2f means 2 decimal places, float.
 • Nested quotes issue? If your f-string uses single quotes, use double quotes inside {}: f'{"hello"}'
 • Complex expressions work: {price * quantity:.2f} calculates AND formats in one step.`
           }
         },
         {
           id: "python-phase1-m1-l7",
-          title: "Numbers — Integers and Floats",
+          title: "Numbers - Integers and Floats",
           explanation: `Python has two main numeric types that you'll use constantly. Integers are 
-whole numbers — no decimal point — and can be arbitrarily large in Python 
+whole numbers - no decimal point - and can be arbitrarily large in Python 
 (unlike many other languages). Floats have decimal points and represent 
 real numbers, but with a famous quirk: floating-point arithmetic is 
 sometimes slightly imprecise due to how computers store decimals in binary. 
@@ -614,12 +614,12 @@ type(x) → tells you the type: <class 'int'> or <class 'float'>
 int + int = int, but int + float = float (float is "contagious")
 10 / 3 = 3.3333... (always float in Python 3!)
 Underscores for readability: 1_000_000 is valid and equals 1000000`,
-          example: `# Integers — whole numbers
+          example: `# Integers - whole numbers
 age = 25
 score = -10
 population = 8_000_000_000  # underscores for readability
 
-# Floats — decimal numbers
+# Floats - decimal numbers
 price = 19.99
 pi = 3.14159
 temperature = -5.5
@@ -628,14 +628,14 @@ temperature = -5.5
 print(type(age))        # <class 'int'>
 print(type(price))      # <class 'float'>
 
-# Float "contagion" — one float makes result float
+# Float "contagion" - one float makes result float
 print(5 + 3)      # 8 (int + int = int)
 print(5 + 3.0)    # 8.0 (int + float = float)
 print(10 / 2)     # 5.0 (division ALWAYS gives float in Python 3)
 print(10 // 2)    # 5 (integer division gives int)
 
 # The famous floating point issue
-print(0.1 + 0.2)  # 0.30000000000000004 (not a bug — it's floating point!)
+print(0.1 + 0.2)  # 0.30000000000000004 (not a bug - it's floating point!)
 
 # Converting between types
 print(int(3.9))   # 3 (truncates, doesn't round!)
@@ -646,7 +646,7 @@ print(round(3.7)) # 4 (actually rounds)`,
 1. Create students = 30 (int) and average_grade = 87.5 (float)
 2. Print both variables and their types using type()
 3. Print the result of 10 / 3 (notice: always a float in Python 3)
-4. Print the result of 10 // 3 (integer division — drops the decimal)
+4. Print the result of 10 // 3 (integer division - drops the decimal)
 5. Print the remainder of 17 divided by 5 using %
 6. Demonstrate float imprecision: print 0.1 + 0.2 and compare with round(0.1 + 0.2, 2)`,
             starterCode: `# Step 1: Create int and float variables
@@ -684,7 +684,7 @@ print(round(0.1 + 0.2, 2))`,
               { type: "contains", value: "type(students)" }
             ],
             debuggingTip: `Common mistakes:
-• Writing 30.0 instead of 30? That makes it a float, not an integer — the decimal point matters.
+• Writing 30.0 instead of 30? That makes it a float, not an integer - the decimal point matters.
 • Division always float: 10 / 2 gives 5.0, not 5. Use // for integer division: 10 // 2 gives 5.
 • int(3.9) gives 3, not 4! int() truncates (drops decimal). Use round(3.9) to get 4.
 • % is modulo (remainder), not percentage: 17 % 5 = 2 because 17 = 5*3 + 2.`
@@ -692,8 +692,8 @@ print(round(0.1 + 0.2, 2))`,
         },
         {
           id: "python-phase1-m1-l8",
-          title: "Arithmetic — Python as a Calculator",
-          explanation: `Python follows the same order of operations you learned in school — 
+          title: "Arithmetic - Python as a Calculator",
+          explanation: `Python follows the same order of operations you learned in school - 
 PEMDAS: Parentheses, Exponents, Multiplication/Division, Addition/Subtraction. 
 Python's arithmetic operators cover everything from basic math to 
 more specialized operations like floor division and modulo. Modulo (%) 
@@ -701,11 +701,11 @@ is particularly useful: it gives you the remainder after division,
 which lets you check if a number is even or odd, cycle through values, 
 and many other practical applications. Python also has shorthand 
 operators like += that make updating variables concise.`,
-          concept: `+ (add), - (subtract), * (multiply), / (divide — always float)
-// (floor division — integer result, rounds toward negative infinity)
-% (modulo — remainder after division)
+          concept: `+ (add), - (subtract), * (multiply), / (divide - always float)
+// (floor division - integer result, rounds toward negative infinity)
+% (modulo - remainder after division)
 ** (exponent/power: 2 ** 8 = 256)
-Follows PEMDAS — use parentheses when in doubt
+Follows PEMDAS - use parentheses when in doubt
 += -= *= /= //= %= **= are shorthand: x += 5 means x = x + 5
 abs(x) → absolute value
 round(x, n) → round to n decimal places`,
@@ -723,9 +723,9 @@ print(2 + 3 * 4)     # 14 (multiplication first)
 print((2 + 3) * 4)   # 20 (parentheses first)
 
 # Practical modulo uses
-print(7 % 2)   # 1 — odd number (remainder 1)
-print(8 % 2)   # 0 — even number (remainder 0)
-print(15 % 12) # 3 — like clock arithmetic!
+print(7 % 2)   # 1 - odd number (remainder 1)
+print(8 % 2)   # 0 - even number (remainder 0)
+print(15 % 12) # 3 - like clock arithmetic!
 
 # Shorthand operators
 score = 100
@@ -744,7 +744,7 @@ print(pow(3, 4))          # 81 (same as 3 ** 4)`,
 2. Calculate area = width * height and print it
 3. Calculate perimeter = 2 * (width + height) and print it
 4. Use ** to calculate width squared and print it
-5. Check if area is divisible by 3 using % — print True or False
+5. Check if area is divisible by 3 using % - print True or False
 6. Use shorthand operator: create total = 0 then add area and perimeter to it separately using +=, then print total`,
             starterCode: `# Step 1: Create width and height
 width = 7
@@ -783,7 +783,7 @@ print(total)`,
               { type: "contains", value: "perimeter" }
             ],
             debuggingTip: `Common mistakes:
-• 2 * width + height is NOT the perimeter formula — add parentheses: 2 * (width + height).
+• 2 * width + height is NOT the perimeter formula - add parentheses: 2 * (width + height).
 • ** is exponent (power): width ** 2 means width squared. Don't confuse with * (multiply).
 • % is remainder, not percentage: 84 % 3 = 0 means 84 is divisible by 3.
 • += modifies in place: total += area means total = total + area. Starting value matters!`
@@ -793,14 +793,14 @@ print(total)`,
           id: "python-phase1-m1-l9",
           title: "Booleans and Logic",
           explanation: `Booleans are the foundation of all decision-making in programming. Every 
-if statement, every loop condition, every filter — they all ultimately 
+if statement, every loop condition, every filter - they all ultimately 
 come down to True or False. Python's logical operators (and, or, not) 
-let you combine conditions. Python also has a concept of "truthiness" — 
+let you combine conditions. Python also has a concept of "truthiness" - 
 values that aren't booleans but behave like them in boolean contexts. 
-Empty strings, zero, empty lists, and None are all "falsy" — they 
+Empty strings, zero, empty lists, and None are all "falsy" - they 
 behave like False. Everything else is "truthy". Understanding this 
 makes your code more elegant and Pythonic.`,
-          concept: `True and False — always capitalized in Python
+          concept: `True and False - always capitalized in Python
 and → both must be True: True and True = True
 or  → at least one must be True: True or False = True
 not → flips the value: not True = False
@@ -890,17 +890,17 @@ print(bool(42))`,
               { type: "contains", value: "has_permission = False" }
             ],
             debuggingTip: `Common mistakes:
-• lowercase true or false? Python will throw a NameError — it must be True and False with capitals.
+• lowercase true or false? Python will throw a NameError - it must be True and False with capitals.
 • Using && and || like other languages? Python uses and and or (English words, not symbols).
-• Not is a keyword: not True, not (x > 5) — no parentheses required but they help with clarity.
+• Not is a keyword: not True, not (x > 5) - no parentheses required but they help with clarity.
 • Confused by truthiness? Remember the falsy values: 0, '', [], {}, None, False. Everything else is truthy.`
           }
         },
         {
           id: "python-phase1-m1-l10",
-          title: "Type Conversion — Changing Data Types",
+          title: "Type Conversion - Changing Data Types",
           explanation: `Type conversion is one of the most practically important skills in Python. 
-Every time you use input(), you get a string — even if the user typed a 
+Every time you use input(), you get a string - even if the user typed a 
 number. Trying to do math with that string will crash your program with 
 a TypeError. Converting between types is the solution. Python provides 
 built-in functions for the most common conversions. Understanding when 
@@ -920,7 +920,7 @@ age_text = input('Enter your age: ')   # returns '25' (string!)
 age = int(age_text)                     # now it's 25 (integer)
 print(age + 10)                         # 35 (actual math!)
 
-# Common mistake — forgetting to convert:
+# Common mistake - forgetting to convert:
 # print(age_text + 10)  # TypeError! Can't add string and int
 
 # Converting in one line:
@@ -944,15 +944,15 @@ print(isinstance(x, float))  # False
 print(isinstance(x, (int, float)))  # True (is it either?)
 
 # What fails
-# int('3.14')  # ValueError — can't convert float string to int directly
-print(int(float('3.14')))  # 3 — convert to float first, then int`,
+# int('3.14')  # ValueError - can't convert float string to int directly
+print(int(float('3.14')))  # 3 - convert to float first, then int`,
           exercise: {
             prompt: `Practice type conversions:
 1. Create age_str = '25', convert to integer storing as age_int, print age_int + 5
-2. Show the bug: print age_str + '5' (string concatenation not math!) — notice the difference
+2. Show the bug: print age_str + '5' (string concatenation not math!) - notice the difference
 3. Convert '3.14' directly to float and print
-4. Convert 1000 to a string and concatenate with ' dollars' — print it
-5. Show what happens with int(3.9) vs round(3.9) — print both
+4. Convert 1000 to a string and concatenate with ' dollars' - print it
+5. Show what happens with int(3.9) vs round(3.9) - print both
 6. Try to convert 'hello' to int inside a try/except and print 'Conversion failed!' if it errors`,
             starterCode: `# Step 1: Convert string to int and do math
 age_str = '25'
@@ -1001,20 +1001,20 @@ except ValueError:
     },
     {
       id: "python-phase2-m1",
-      title: "Phase 2 — Control Flow",
+      title: "Phase 2 - Control Flow",
       duration: "3 hours",
       lessons: [
         {
           id: "python-phase2-m1-l1",
-          title: "Comparing Things — Comparison Operators",
+          title: "Comparing Things - Comparison Operators",
           explanation: `Before your program can make any decision, it needs to ask a question 
-and get a yes or no answer. Comparison operators do exactly this — they 
+and get a yes or no answer. Comparison operators do exactly this - they 
 compare two values and return True or False. This seems simple, but it's 
 the absolute foundation of all logic in programming. Every if statement, 
 every loop condition, every filter is built on comparisons. Python's 
 comparison operators are intuitive, but there are a few gotchas: 
 notably that == (double equals) checks equality while = (single equals) 
-assigns a value — confusing these two is one of the most common bugs 
+assigns a value - confusing these two is one of the most common bugs 
 in all of programming.`,
           concept: `== (equal to): checks if values are the same
 != (not equal to): checks if values differ
@@ -1041,7 +1041,7 @@ print('apple' == 'apple')  # True
 print('Apple' == 'apple')  # False (case sensitive!)
 print('banana' > 'apple')  # True (alphabetical comparison)
 
-# Chaining comparisons — Python only!
+# Chaining comparisons - Python only!
 x = 15
 print(10 < x < 20)   # True (x is between 10 and 20)
 print(0 < x < 10)    # False
@@ -1053,7 +1053,7 @@ print(is_adult)    # False
 print(is_teen)     # False
 
 # Common mistake!
-# print(a = b)   # SyntaxError — = is assignment not comparison
+# print(a = b)   # SyntaxError - = is assignment not comparison
 print(a == b)    # == is comparison`,
           exercise: {
             prompt: `Build a comparison toolkit:
@@ -1061,8 +1061,8 @@ print(a == b)    # == is comparison`,
 2. Print whether x > y (should be True)
 3. Print whether x == y (should be False)
 4. Print whether x != y (should be True)
-5. Create age = 25 and check if it's between 18 and 65 using Python's chained comparison — print the result
-6. Create name1 = 'Alice' and name2 = 'alice' — print whether they're equal (case matters!)`,
+5. Create age = 25 and check if it's between 18 and 65 using Python's chained comparison - print the result
+6. Create name1 = 'Alice' and name2 = 'alice' - print whether they're equal (case matters!)`,
             starterCode: `# Step 1: Create variables
 x = 50
 y = 30
@@ -1103,27 +1103,27 @@ print(name1 == name2)`,
 • Used = instead of ==? Single = assigns a value, double == compares. if x = 5 is a syntax error in Python.
 • String comparison is case-sensitive: 'Alice' == 'alice' is False. Use .lower() to normalize: name1.lower() == name2.lower()
 • Chained comparison is Python-only: 10 < x < 20 works in Python. Other languages need: x > 10 and x < 20.
-• 'is' vs '==': use == for value comparison. 'is' checks identity (same object in memory) — different concept.`
+• 'is' vs '==': use == for value comparison. 'is' checks identity (same object in memory) - different concept.`
           }
         },
         {
           id: "python-phase2-m1-l2",
-          title: "If Statements — Making Decisions",
+          title: "If Statements - Making Decisions",
           explanation: `The if statement is where your program gains the ability to choose. 
-Without if, every program does the same thing every time — it can't 
+Without if, every program does the same thing every time - it can't 
 react to different situations. With if, you can show different messages 
 to different users, handle errors gracefully, create game logic, 
 validate input, and so much more. Python's if statement has two 
 absolutely mandatory parts: the colon at the end of the condition 
 line, and the indented block below it. Python uses indentation 
-(whitespace) to define code blocks — this is unusual but makes 
+(whitespace) to define code blocks - this is unusual but makes 
 Python code extremely readable.`,
           concept: `if condition:
     # indented code runs ONLY if condition is True
     # everything at this indentation level is in the block
 
 Colon after condition is MANDATORY
-Indentation (4 spaces) defines what's inside the block — MANDATORY
+Indentation (4 spaces) defines what's inside the block - MANDATORY
 Code after the block (back to normal indentation) always runs
 Condition must be truthy/falsy (or a comparison expression)
 No parentheses needed around condition (though they don't hurt)`,
@@ -1133,7 +1133,7 @@ No parentheses needed around condition (though they don't hurt)`,
 if temperature > 25:
     print('It is a hot day!')
     print('Stay hydrated!')    # same indentation = same block
-print('Weather check complete.')  # outside if — always runs
+print('Weather check complete.')  # outside if - always runs
 
 # If with multiple conditions using and/or
 score = 85
@@ -1158,12 +1158,12 @@ if age >= 18: print('Adult')      # valid but less readable`,
 1. Create score = 85
 2. Write an if statement: if score >= 60: print 'You passed!' and on the next indented line print 'Congratulations!'
 3. After the if block (back to normal indentation), always print 'Assessment complete.'
-4. Add a separate if statement checking if score >= 90 — if so, print 'Excellent work!'
+4. Add a separate if statement checking if score >= 90 - if so, print 'Excellent work!'
 5. Create is_bonus = True and use a truthy check: if is_bonus: print 'Bonus awarded!'`,
             starterCode: `# Step 1: Create score
 score = 85
 
-# Step 2: if score >= 60 — print two messages
+# Step 2: if score >= 60 - print two messages
 
 
 # Step 3: Always print this (after the if block)
@@ -1191,20 +1191,20 @@ if is_bonus:
               { type: "contains", value: "print('Congratulations!')" }
             ],
             debuggingTip: `Common mistakes:
-• Forgot the colon? if score >= 60 without : is a SyntaxError — the colon is required.
-• Inconsistent indentation? Python requires consistent indentation — use 4 spaces everywhere. Mixing spaces and tabs causes IndentationError.
+• Forgot the colon? if score >= 60 without : is a SyntaxError - the colon is required.
+• Inconsistent indentation? Python requires consistent indentation - use 4 spaces everywhere. Mixing spaces and tabs causes IndentationError.
 • Code at wrong level? If 'Assessment complete.' is indented, it's inside the if block and won't always run.
 • Condition in parentheses? if (score >= 60): works but the parentheses aren't needed in Python.`
           }
         },
         {
           id: "python-phase2-m1-l3",
-          title: "elif and else — Multiple Paths",
+          title: "elif and else - Multiple Paths",
           explanation: `Real decisions have more than two outcomes. A grade can be A, B, C, D, or F. 
 Weather can be hot, warm, cool, or cold. Time of day can be morning, afternoon, 
 evening, or night. Python's elif (else if) lets you check multiple conditions 
 in sequence. The key insight: Python checks each condition top to bottom and 
-stops at the FIRST true one — only that block runs. This is why order matters 
+stops at the FIRST true one - only that block runs. This is why order matters 
 enormously. The else block at the end is your catch-all for anything that 
 didn't match. Without else, if nothing matches, nothing happens (which is 
 sometimes fine and sometimes a bug).`,
@@ -1217,8 +1217,8 @@ elif condition3:
 else:
     # runs if ALL conditions above were False
 
-Only ONE block runs — the first matching one.
-Order matters — check most specific conditions first.
+Only ONE block runs - the first matching one.
+Order matters - check most specific conditions first.
 else is optional but recommended as a safety catch-all.
 You can have as many elif blocks as you need.`,
           example: `score = 73
@@ -1236,7 +1236,7 @@ else:
     print('F - Please Retry')
 # Output: C - Good
 
-# Why order matters — WRONG way:
+# Why order matters - WRONG way:
 # if score >= 60:   # score 73 matches here first!
 #     print('D')
 # elif score >= 70:  # never reached for 73
@@ -1306,20 +1306,20 @@ else:
             debuggingTip: `Common mistakes:
 • Wrong order? if score >= 70 before if score >= 90 means 95 gets caught by the first branch (C instead of A).
 • Missing colon on elif or else? elif score >= 80 without : causes SyntaxError.
-• else without if? Every else must immediately follow an if or elif block — can't stand alone.
-• elif vs else: elif checks a new condition, else catches everything remaining. Don't use elif True: — just use else.`
+• else without if? Every else must immediately follow an if or elif block - can't stand alone.
+• elif vs else: elif checks a new condition, else catches everything remaining. Don't use elif True: - just use else.`
           }
         },
         {
           id: "python-phase2-m1-l4",
-          title: "While Loops — Repeating Until Done",
+          title: "While Loops - Repeating Until Done",
           explanation: `A while loop keeps executing its block of code as long as a condition 
-remains True. Think of it as a persistent if statement — it checks, 
+remains True. Think of it as a persistent if statement - it checks, 
 runs, checks again, runs again, until the condition is finally False. 
 This is perfect for "keep doing this until something changes" situations: 
 retry until the user enters valid input, process until the queue is 
 empty, run the game until the player quits. The critical responsibility 
-is ensuring the condition CAN become False — forgetting to update 
+is ensuring the condition CAN become False - forgetting to update 
 the condition creates an infinite loop that freezes your program.`,
           concept: `while condition:
     # runs while condition is True
@@ -1365,7 +1365,7 @@ while countdown > 0:
     countdown -= 1
 print('Blast off! 🚀')`,
           exercise: {
-            prompt: `Master while loops:
+            prompt: `Practice while loops:
 1. Create num = 1. Loop while num <= 10: print num, then increment by 1
 2. After the loop, print the sum of numbers 1 to 10 (accumulate while looping)
 3. Print the average after the loop (sum / 10)
@@ -1416,16 +1416,16 @@ while True:
 • Off by one? while num < 10 stops at 9. Use <= 10 to include 10.
 • Sum wrong? Make sure total += num is inside the loop, before num += 1.
 • Average calculated inside loop? The average should be calculated AFTER the loop when total is complete.
-• while True without break? Your program will run forever — always have a break condition.`
+• while True without break? Your program will run forever - always have a break condition.`
           }
         },
         {
           id: "python-phase2-m1-l5",
-          title: "For Loops with range() — Counted Repetition",
+          title: "For Loops with range() - Counted Repetition",
           explanation: `The for loop is Python's most versatile loop, and range() is its best 
 companion for counted repetition. When you know exactly how many times 
-you want to repeat something — print 10 lines, process 100 items, 
-count from 1 to 1000 — for with range() is the tool. range() is 
+you want to repeat something - print 10 lines, process 100 items, 
+count from 1 to 1000 - for with range() is the tool. range() is 
 incredibly flexible: one argument gives you 0 to n-1, two arguments 
 give you a custom start and stop, and a third argument lets you 
 control the step size. Understanding range() well unlocks elegant 
@@ -1437,12 +1437,12 @@ range(10, 0, -1)   → 10, 9, 8, ..., 1 (counting down!)
 for i in range(5): → i takes values 0, 1, 2, 3, 4
 Loop variable (i) is available inside the loop
 If you don't need the variable, use _ by convention: for _ in range(5):`,
-          example: `# range(n) — 0 to n-1
+          example: `# range(n) - 0 to n-1
 for i in range(5):
     print(i)
 # Prints: 0 1 2 3 4
 
-# range(start, stop) — start to stop-1
+# range(start, stop) - start to stop-1
 for i in range(1, 6):
     print(i)
 # Prints: 1 2 3 4 5
@@ -1471,7 +1471,7 @@ for i in range(1, 101):
     total += i
 print(f'Sum 1-100: {total}')  # 5050`,
           exercise: {
-            prompt: `Master range() and for loops:
+            prompt: `Practice range() and for loops:
 1. Print numbers 0 through 7 using for and range()
 2. Print numbers 10 through 15 using range(10, 16)
 3. Print a multiplication table for 5: "5 x 1 = 5" through "5 x 10 = 50" using an f-string
@@ -1509,18 +1509,18 @@ print('Blast off!')`,
             ],
             debuggingTip: `Common mistakes:
 • range(8) gives 0-7, not 0-8! The stop value is EXCLUDED. For 0 to 7, use range(8). For 1 to 7, use range(1, 8).
-• range(10, 15) gives 10, 11, 12, 13, 14 — not 15! Use range(10, 16) to include 15.
+• range(10, 15) gives 10, 11, 12, 13, 14 - not 15! Use range(10, 16) to include 15.
 • Counting down requires negative step: range(5, 0, -1) gives 5, 4, 3, 2, 1. range(5, 0) gives nothing!
-• Step of 2 for evens: range(0, 21, 2) — the stop must be 21 to include 20. range(0, 20, 2) stops at 18.`
+• Step of 2 for evens: range(0, 21, 2) - the stop must be 21 to include 20. range(0, 20, 2) stops at 18.`
           }
         },
         {
           id: "python-phase2-m1-l6",
           title: "For Loops with Collections",
-          explanation: `For loops become even more powerful when iterating directly over collections 
+          explanation: `For loops are especially useful when iterating directly over collections 
 like lists, strings, and dictionaries. Instead of using range() and 
 index access, you can iterate directly over elements. This is one of 
-Python's most celebrated features — the ability to write for item in 
+Python's most celebrated features - the ability to write for item in 
 collection: reads like plain English. You can also use enumerate() 
 to get both the index and the value when you need them, and zip() 
 to iterate two collections in parallel. These patterns appear in 
@@ -1549,7 +1549,7 @@ for name in scores:                    # keys only
 for name, score in scores.items():    # key-value pairs
     print(f'{name}: {score}')
 
-# enumerate — get index AND value
+# enumerate - get index AND value
 colors = ['red', 'green', 'blue']
 for i, color in enumerate(colors):
     print(f'{i}: {color}')
@@ -1559,7 +1559,7 @@ for i, color in enumerate(colors, start=1):  # start at 1
     print(f'{i}. {color}')
 # 1. red, 2. green, 3. blue
 
-# zip — iterate two lists together
+# zip - iterate two lists together
 names = ['Alice', 'Bob', 'Charlie']
 grades = [95, 87, 92]
 for name, grade in zip(names, grades):
@@ -1611,20 +1611,20 @@ for name, age in zip(names, ages):
 • for item in dict: gives keys, not values. Use dict.items() for key-value pairs.
 • zip() stops at the shorter list! If lists have different lengths, extra items are ignored.
 • enumerate() default starts at 0. Use enumerate(list, start=1) to start at 1.
-• Variable name must match inside loop: for color in colors: then print(colour) will crash — spelling must match exactly.`
+• Variable name must match inside loop: for color in colors: then print(colour) will crash - spelling must match exactly.`
           }
         },
         {
           id: "python-phase2-m1-l7",
-          title: "Break and Continue — Loop Control",
-          explanation: `Sometimes you need to exit a loop early — you found what you were looking 
+          title: "Break and Continue - Loop Control",
+          explanation: `Sometimes you need to exit a loop early - you found what you were looking 
 for and continuing would waste time. Sometimes you need to skip certain 
-items — processing only valid records, skipping blanks, or ignoring 
+items - processing only valid records, skipping blanks, or ignoring 
 comments in a file. break and continue give you precise control over 
 loop execution that simple conditions can't always provide. break is 
 used heavily in search algorithms (stop when found), validation loops 
 (keep asking until valid), and game loops (stop when game over). 
-continue is used for filtering — process only items that meet certain 
+continue is used for filtering - process only items that meet certain 
 criteria without nesting another if inside.`,
           concept: `break    → immediately exits the ENTIRE loop
 continue → skips REST of current iteration, goes to next one
@@ -1633,7 +1633,7 @@ Break use cases: searching (stop when found), early exit on error
 Continue use cases: filtering (skip invalid items), skipping special cases
 else clause on loops: runs if loop completed WITHOUT hitting break
 for...else and while...else are unique Python features`,
-          example: `# break — exit loop early
+          example: `# break - exit loop early
 for i in range(10):
     if i == 5:
         print(f'Found 5! Stopping.')
@@ -1641,7 +1641,7 @@ for i in range(10):
     print(i)
 # Prints: 0 1 2 3 4 Found 5! Stopping.
 
-# continue — skip to next iteration
+# continue - skip to next iteration
 for i in range(10):
     if i % 2 == 0:
         continue    # skip even numbers
@@ -1657,7 +1657,7 @@ for i in range(10):
     print(i)
 # Prints: 0 1 2 3 5 6 7
 
-# Loop else — runs if loop didn't break
+# Loop else - runs if loop didn't break
 target = 15
 for i in range(10):
     if i == target:
@@ -1678,10 +1678,10 @@ else:
     print(f'{search} not in list')`,
           exercise: {
             prompt: `Practice break and continue:
-1. Loop 0 to 9: use continue to skip 4, use break to stop at 8 — print the rest. Expected: 0 1 2 3 5 6 7
+1. Loop 0 to 9: use continue to skip 4, use break to stop at 8 - print the rest. Expected: 0 1 2 3 5 6 7
 2. Loop through range(1, 21) using continue to print ONLY numbers divisible by 3
 3. Use break to find and print the first number between 1 and 100 divisible by both 7 and 11
-4. Bonus: use a for/else to search for 'Eve' in names = ['Alice', 'Bob', 'Charlie'] — print 'Found' or 'Not found'`,
+4. Bonus: use a for/else to search for 'Eve' in names = ['Alice', 'Bob', 'Charlie'] - print 'Found' or 'Not found'`,
             starterCode: `# Step 1: Skip 4, stop at 8
 
 
@@ -1723,9 +1723,9 @@ else:
             ],
             debuggingTip: `Common mistakes:
 • print BEFORE break/continue? The print runs before the skip/stop. Put it AFTER the checks.
-• continue in while loop without updating counter? If the increment is AFTER continue, it's skipped — infinite loop!
+• continue in while loop without updating counter? If the increment is AFTER continue, it's skipped - infinite loop!
 • for/else indentation? The else must be at the SAME level as the for, not inside it.
-• break exits only the innermost loop — in nested loops, outer loop continues.`
+• break exits only the innermost loop - in nested loops, outer loop continues.`
           }
         },
         {
@@ -1735,7 +1735,7 @@ else:
 first project because it naturally requires every concept you've learned: 
 a variable stores the secret, a while loop keeps the game going, 
 int(input()) gets and converts user guesses, and if/elif handles the 
-feedback. This is stateful programming — the game remembers the secret 
+feedback. This is stateful programming - the game remembers the secret 
 across many loop iterations and tracks attempts. The same pattern 
 appears in login systems (keep asking until correct), retry logic 
 (keep trying until success), and many interactive programs.`,
@@ -1809,7 +1809,7 @@ print(f'It took you {attempts} attempt(s).')`,
             debuggingTip: `Common mistakes:
 • Infinite loop? Make sure guess = int(input(...)) is INSIDE the while loop. If it's outside, guess never changes.
 • Feedback backwards? If guess < secret the number is too low, player should go HIGHER.
-• Forgot int()? input() returns a string. '3' != 5 will always be True — loop never ends. Wrap with int().
+• Forgot int()? input() returns a string. '3' != 5 will always be True - loop never ends. Wrap with int().
 • attempts not counting? Make sure attempts += 1 is inside the while loop.
 • Victory message inside loop? The 'You got it!' should be AFTER the while loop (not indented under it).`
           }
@@ -1818,18 +1818,18 @@ print(f'It took you {attempts} attempt(s).')`,
     },
     {
       id: "python-phase3-m1",
-      title: "Phase 3 — Functions and Data Structures",
+      title: "Phase 3 - Functions and Data Structures",
       duration: "3.5 hours",
       lessons: [
         {
           id: "python-phase3-m1-l1",
-          title: "Defining Functions — Reusable Code Blocks",
+          title: "Defining Functions - Reusable Code Blocks",
           explanation: `Functions are the single most important organizational tool in programming. 
 A function packages a block of code under a name so you can run it 
 whenever you need it, as many times as you need it, without rewriting 
 anything. This is the DRY principle: Don't Repeat Yourself. If you find 
 yourself writing the same code in three places, that's a function waiting 
-to be written. Functions also make code dramatically easier to read — 
+to be written. Functions also make code dramatically easier to read - 
 a well-named function like calculate_tax() or validate_email() tells 
 you exactly what it does without reading every line. Every Python program 
 beyond the simplest scripts is built from functions working together.`,
@@ -1841,17 +1841,17 @@ function_name()  → call (execute) the function
 def keyword starts the definition
 Function name uses snake_case: say_hello, calculate_total
 Colon and indentation are required (same as if/for/while)
-Define BEFORE calling — Python reads top to bottom
+Define BEFORE calling - Python reads top to bottom
 Functions without return give back None automatically
-Call as many times as needed — that's the whole point`,
+Call as many times as needed - that's the whole point`,
           example: `# Basic function definition and call
 def say_hello():
     print('Hello!')
     print('Welcome to Python.')
 
-# Calling the function — runs all code inside
+# Calling the function - runs all code inside
 say_hello()
-say_hello()   # call it again — same code, no repetition!
+say_hello()   # call it again - same code, no repetition!
 
 # Functions can call other functions
 def print_separator():
@@ -1868,7 +1868,7 @@ def print_menu():
 
 print_menu()
 
-# Docstrings — documenting what your function does
+# Docstrings - documenting what your function does
 def greet_user():
     """Prints a friendly greeting to the user."""
     print('Hello, welcome!')
@@ -1877,8 +1877,8 @@ def greet_user():
 print(greet_user.__doc__)  # Prints a friendly greeting to the user.`,
           exercise: {
             prompt: `Build a collection of useful functions:
-1. Define say_motto() that prints 'Keep coding!' and 'Never give up!' — call it twice
-2. Define print_header() that prints 20 asterisks, then 'PYTHON PROGRAM', then 20 more asterisks — call it once
+1. Define say_motto() that prints 'Keep coding!' and 'Never give up!' - call it twice
+2. Define print_header() that prints 20 asterisks, then 'PYTHON PROGRAM', then 20 more asterisks - call it once
 3. Define count_down() that uses a for loop with range to print 3, 2, 1, then 'Blast off!'
 4. Add a docstring to one of your functions and print it with function.__doc__`,
             starterCode: `# Step 1: Define say_motto and call twice
@@ -1920,9 +1920,9 @@ print(say_motto.__doc__)`,
               { type: "contains", value: "say_motto()" }
             ],
             debuggingTip: `Common mistakes:
-• Calling before defining? Python reads top to bottom — define the function first, call it after.
+• Calling before defining? Python reads top to bottom - define the function first, call it after.
 • Forgot the colon? def say_motto() without : causes SyntaxError.
-• Code not indented inside function? It won't be part of the function — it runs immediately when Python sees it.
+• Code not indented inside function? It won't be part of the function - it runs immediately when Python sees it.
 • Function name has spaces? Use underscores: say_motto not say motto.
 • Calling without parentheses? say_motto references the function object. say_motto() actually calls it.`
           }
@@ -1930,13 +1930,13 @@ print(say_motto.__doc__)`,
         {
           id: "python-phase3-m1-l2",
           title: "Parameters and Arguments",
-          explanation: `Parameters make functions flexible — instead of always doing the same 
+          explanation: `Parameters make functions flexible - instead of always doing the same 
 thing, a function can accept input values and behave differently based 
 on what you pass in. Think of a function as a coffee machine: the 
 machine (function) always does the same process, but the beans you put 
 in (parameters) determine what comes out. Without parameters, every 
 function call produces identical output. With parameters, one function 
-can handle infinitely many cases. Parameters are local variables — 
+can handle infinitely many cases. Parameters are local variables - 
 they exist only inside the function and disappear when the function ends.`,
           concept: `def function_name(param1, param2):
     # use param1 and param2 here
@@ -1945,7 +1945,7 @@ function_name(arg1, arg2)  → call with arguments
 
 Parameters: variables in the function definition (placeholders)
 Arguments: actual values passed when calling the function
-Parameters are LOCAL — they don't exist outside the function
+Parameters are LOCAL - they don't exist outside the function
 Multiple parameters separated by commas
 *args: accepts any number of positional arguments as a tuple
 **kwargs: accepts any number of keyword arguments as a dictionary`,
@@ -1971,7 +1971,7 @@ def print_square(n):
 for i in range(1, 6):
     print_square(i)   # reuse with different values!
 
-# *args — any number of arguments
+# *args - any number of arguments
 def add_all(*numbers):
     total = sum(numbers)
     print(f'Sum of {numbers} = {total}')
@@ -1984,7 +1984,7 @@ add_all(10, 20, 30, 40)   # Sum of (10, 20, 30, 40) = 100`,
 2. Call it with your name and 'Python', then with someone else's name and 'coding'
 3. Define calculate_rectangle(width, height) that prints both area and perimeter
 4. Call it with width=7, height=12
-5. Define print_border(char, length) — print char repeated length times — test with ('*', 20) and ('-', 15)
+5. Define print_border(char, length) - print char repeated length times - test with ('*', 20) and ('-', 15)
 6. Bonus: define sum_all(*numbers) using *args and test with different numbers of arguments`,
             starterCode: `# Step 1 & 2: greet_user with two parameters
 
@@ -2029,20 +2029,20 @@ sum_all(10, 20, 30, 40, 50)`,
             ],
             debuggingTip: `Common mistakes:
 • Wrong number of arguments? Python raises TypeError: missing required argument. Count your parameters and match them.
-• Argument order matters! greet_user('Python', 'Alex') passes them in wrong order — they match left to right.
-• Using parameter outside function? Parameters only exist inside the function — NameError if accessed outside.
-• *args collects into a tuple — use sum(numbers) not sum(*numbers) inside the function.
+• Argument order matters! greet_user('Python', 'Alex') passes them in wrong order - they match left to right.
+• Using parameter outside function? Parameters only exist inside the function - NameError if accessed outside.
+• *args collects into a tuple - use sum(numbers) not sum(*numbers) inside the function.
 • Forgetting to pass arguments? greet_user() with no args crashes if no defaults are set.`
           }
         },
         {
           id: "python-phase3-m1-l3",
-          title: "Return Values — Functions That Answer Questions",
+          title: "Return Values - Functions That Answer Questions",
           explanation: `So far functions have been doing things (printing, drawing boxes). But 
 the real power comes when functions produce values you can use. The 
 return keyword sends a value back to wherever the function was called, 
 and immediately exits the function. Think of return as the function's 
-answer — you ask it a question (give it inputs), it returns the answer 
+answer - you ask it a question (give it inputs), it returns the answer 
 (gives back a result). You can then store that result, use it in 
 another calculation, pass it to another function, or print it. 
 Functions that return values are the building blocks of all 
@@ -2065,8 +2065,8 @@ def add(a, b):
 
 result = add(5, 3)
 print(result)         # 8
-print(add(10, 20))    # 30 — used directly
-print(add(2, 3) * 10) # 50 — used in expression
+print(add(10, 20))    # 30 - used directly
+print(add(2, 3) * 10) # 50 - used in expression
 
 # Multiple return statements (early returns)
 def get_grade(score):
@@ -2090,7 +2090,7 @@ def min_max(numbers):
 low, high = min_max([3, 1, 4, 1, 5, 9, 2, 6])
 print(f'Min: {low}, Max: {high}')  # Min: 1, Max: 9
 
-# Boolean return — very common pattern
+# Boolean return - very common pattern
 def is_even(n):
     return n % 2 == 0
 
@@ -2105,11 +2105,11 @@ total_area = circle_area(5) + circle_area(3)
 print(f'Total area: {total_area:.2f}')`,
           exercise: {
             prompt: `Build functions that return values:
-1. Define multiply(a, b) that returns the product — call with (4, 7), store and print result
-2. Define celsius_to_fahrenheit(c) that returns (c * 9/5) + 32 — test with 0, 100, 37
+1. Define multiply(a, b) that returns the product - call with (4, 7), store and print result
+2. Define celsius_to_fahrenheit(c) that returns (c * 9/5) + 32 - test with 0, 100, 37
 3. Define is_palindrome(word) that returns True if word equals its reverse (word == word[::-1])
 4. Test is_palindrome with 'racecar', 'hello', 'level'
-5. Define clamp(value, minimum, maximum) that returns value kept within the range — test edge cases`,
+5. Define clamp(value, minimum, maximum) that returns value kept within the range - test edge cases`,
             starterCode: `# Step 1: multiply returns product
 def multiply(a, b):
     
@@ -2162,9 +2162,9 @@ print(clamp(15, 1, 10))`,
             debuggingTip: `Common mistakes:
 • Used print inside function instead of return? You see the number but can't use it. Use return for values you need outside.
 • Forgot to capture return value? product = multiply(4, 7) captures it. Just multiply(4, 7) throws it away.
-• return exits immediately — code after return in same block never runs.
+• return exits immediately - code after return in same block never runs.
 • Returning multiple values? Python packs them into a tuple: return a, b. Unpack with: x, y = function()
-• Temperature formula: (c * 9/5) + 32 — Python 3 always does float division so 9/5 = 1.8 correctly.`
+• Temperature formula: (c * 9/5) + 32 - Python 3 always does float division so 9/5 = 1.8 correctly.`
           }
         },
         {
@@ -2175,7 +2175,7 @@ fallback values that are used when the caller doesn't provide an argument.
 This lets you create functions that work sensibly with minimal input 
 but can be customized when needed. Keyword arguments let callers 
 specify which parameter gets which value by name, regardless of order. 
-These two features together make Python functions incredibly flexible — 
+These two features together make Python functions incredibly flexible - 
 you'll see them everywhere in Python libraries: print(end='\\n'), 
 range(start=0, stop=10), sorted(key=None, reverse=False).`,
           concept: `def function(param=default_value):  → default parameter
@@ -2208,7 +2208,7 @@ print(get_page(data))          # first 10 items [1..10]
 print(get_page(data, page=2))  # second page [11..20]
 print(get_page(data, page=1, per_page=5))  # 5 per page
 
-# Default mutable argument GOTCHA — common bug!
+# Default mutable argument GOTCHA - common bug!
 # WRONG: def add_item(item, lst=[]):  # same list every call!
 # RIGHT:
 def add_item(item, lst=None):
@@ -2218,14 +2218,14 @@ def add_item(item, lst=None):
     return lst
 
 print(add_item('apple'))   # ['apple']
-print(add_item('banana'))  # ['banana'] — new list!`,
+print(add_item('banana'))  # ['banana'] - new list!`,
           exercise: {
             prompt: `Practice default parameters and keyword arguments:
 1. Define power(base, exponent=2) that returns base ** exponent
-2. Call power(5) — should give 25. Call power(3, 4) — should give 81. Print both.
-3. Define describe_person(name, age=0, city='Unknown') — print a sentence about the person
+2. Call power(5) - should give 25. Call power(3, 4) - should give 81. Print both.
+3. Define describe_person(name, age=0, city='Unknown') - print a sentence about the person
 4. Call it three ways: with just name, with name and age, with all three using keyword args
-5. Define repeat_print(message, times=1, separator='') — print message 'times' times with separator between
+5. Define repeat_print(message, times=1, separator='') - print message 'times' times with separator between
 6. Test with ('Hello', 3, '-') and ('Python', 5)`,
             starterCode: `# Step 1 & 2: power with default exponent
 def power(base, exponent=2):
@@ -2274,15 +2274,15 @@ repeat_print('Python', 5)`,
         },
         {
           id: "python-phase3-m1-l5",
-          title: "Lists — Ordered Collections",
+          title: "Lists - Ordered Collections",
           explanation: `A list is Python's most versatile and widely used data structure. It's an 
-ordered, mutable collection that can hold any mix of data types — numbers, 
+ordered, mutable collection that can hold any mix of data types - numbers, 
 strings, booleans, even other lists. "Ordered" means items have a fixed 
 position (index). "Mutable" means you can change items after creation. 
 Lists are used for everything: storing user records, processing data 
 sets, building queues and stacks, collecting results from loops. 
-Understanding lists deeply — especially slicing and the distinction 
-between copy and reference — is fundamental to Python mastery.`,
+Understanding lists deeply - especially slicing and the distinction 
+between copy and reference - is fundamental to Python mastery.`,
           concept: `my_list = [item1, item2, item3]  → create with square brackets
 my_list[0]                        → first item (zero-indexed)
 my_list[-1]                       → last item
@@ -2291,7 +2291,7 @@ my_list[::2]                      → every other item
 len(my_list)                      → number of items
 my_list[0] = new_value            → modify item
 in keyword: 'apple' in my_list    → True/False membership test
-Lists are mutable — methods modify the list in place
+Lists are mutable - methods modify the list in place
 copy = my_list[:]  or list(my_list) → create a true copy`,
           example: `# Creating lists
 fruits = ['apple', 'banana', 'cherry']
@@ -2330,14 +2330,14 @@ original = [1, 2, 3]
 bad_copy = original      # same list! changes affect both
 good_copy = original[:]  # true copy
 good_copy.append(4)
-print(original)   # [1, 2, 3] — unchanged`,
+print(original)   # [1, 2, 3] - unchanged`,
           exercise: {
-            prompt: `Master list operations:
+            prompt: `Practice list operations:
 1. Create planets = ['Mercury', 'Venus', 'Earth', 'Mars']
 2. Print the first planet (index 0) and last planet (index -1)
 3. Print a slice of the middle two planets (index 1 and 2)
 4. Change the second planet (index 1) to 'Jupiter' and print the whole list
-5. Check if 'Earth' is in the list and if 'Pluto' is in the list — print both
+5. Check if 'Earth' is in the list and if 'Pluto' is in the list - print both
 6. Print len, min, and max of numbers = [15, 3, 42, 8, 27]
 7. Create a reversed copy of numbers using slicing and print it`,
             starterCode: `# Step 1: Create planets list
@@ -2382,18 +2382,18 @@ print(reversed_numbers)`,
             ],
             debuggingTip: `Common mistakes:
 • Index 0 is first, not 1! planets[1] is Venus (second item), not Mercury.
-• Slice end is exclusive: planets[1:3] gives index 1 and 2 — not 3.
-• Modifying during iteration? Don't change a list while looping over it — use a copy or list comprehension.
+• Slice end is exclusive: planets[1:3] gives index 1 and 2 - not 3.
+• Modifying during iteration? Don't change a list while looping over it - use a copy or list comprehension.
 • Copy vs reference: bad_copy = original shares the same object. Use original[:] or list(original) for true copy.
 • Negative index: [-1] is last, [-2] is second to last, etc. Very useful!`
           }
         },
         {
           id: "python-phase3-m1-l6",
-          title: "List Methods — Adding, Removing, Sorting",
-          explanation: `Python lists come with a powerful set of built-in methods that let you 
+          title: "List Methods - Adding, Removing, Sorting",
+          explanation: `Python lists come with a useful set of built-in methods that let you 
 add, remove, find, sort, and transform items. Since lists are mutable, 
-most methods modify the list in place and return None — a common source 
+most methods modify the list in place and return None - a common source 
 of confusion when beginners write sorted_list = my_list.sort() and get 
 None. Understanding which operations modify in place versus which return 
 new values is essential. These methods make lists incredibly practical 
@@ -2432,26 +2432,26 @@ print(numbers)                  # [1, 1, 2, 3, 4, 5, 6, 9]
 numbers.sort(reverse=True)      # descending
 print(numbers)
 
-# sorted() returns new list — original unchanged
+# sorted() returns new list - original unchanged
 original = [3, 1, 4, 1, 5]
 new_sorted = sorted(original)
-print(original)    # [3, 1, 4, 1, 5] — unchanged!
-print(new_sorted)  # [1, 1, 3, 4, 5] — new list
+print(original)    # [3, 1, 4, 1, 5] - unchanged!
+print(new_sorted)  # [1, 1, 3, 4, 5] - new list
 
 # Common mistake!
 wrong = fruits.sort()   # sort returns None!
-print(wrong)            # None — not what you wanted
+print(wrong)            # None - not what you wanted
 # Right way:
 fruits.sort()           # modify in place, don't capture
 # or: new_list = sorted(fruits)  # capture new sorted list`,
           exercise: {
             prompt: `Build a dynamic task list:
 1. Start with tasks = [] (empty list)
-2. Append 'Study' and 'Exercise' to the list — print it
-3. Insert 'Wake up' at index 0 — print it
-4. Remove 'Study' using .remove() — print it
+2. Append 'Study' and 'Exercise' to the list - print it
+3. Insert 'Wake up' at index 0 - print it
+4. Remove 'Study' using .remove() - print it
 5. Pop the last task, store it, and print the popped task and remaining list
-6. Create numbers = [5, 2, 8, 1, 9, 3] and sort it in place — print it
+6. Create numbers = [5, 2, 8, 1, 9, 3] and sort it in place - print it
 7. Create sorted_copy = sorted([5, 2, 8, 1, 9, 3]) and verify original is unchanged`,
             starterCode: `# Step 1: Empty list
 tasks = []
@@ -2499,7 +2499,7 @@ print(f'Sorted copy: {sorted_copy}')`,
               { type: "contains", value: "tasks.pop()" }
             ],
             debuggingTip: `Common mistakes:
-• Capturing .sort() result? sorted_list = my_list.sort() gives None — .sort() modifies in place and returns None.
+• Capturing .sort() result? sorted_list = my_list.sort() gives None - .sort() modifies in place and returns None.
 • remove() vs pop()? remove('Study') removes by VALUE. pop(0) removes by INDEX and returns the item.
 • remove() on non-existent value? ValueError. Check with 'if value in list' first.
 • pop() on empty list? IndexError. Check 'if list' or 'if len(list) > 0' first.
@@ -2508,8 +2508,8 @@ print(f'Sorted copy: {sorted_copy}')`,
         },
         {
           id: "python-phase3-m1-l7",
-          title: "Dictionaries — Key-Value Storage",
-          explanation: `A dictionary maps descriptive keys to values — like a real dictionary 
+          title: "Dictionaries - Key-Value Storage",
+          explanation: `A dictionary maps descriptive keys to values - like a real dictionary 
 maps words to definitions. Instead of remembering that index 0 is 
 a name and index 1 is an age (like with a list), a dictionary lets 
 you use meaningful keys: person['name'] and person['age']. Dictionaries 
@@ -2562,7 +2562,7 @@ values = [1, 2, 3]
 combined = dict(zip(keys, values))
 print(combined)   # {'a': 1, 'b': 2, 'c': 3}
 
-# Nested dictionary — very common in real data
+# Nested dictionary - very common in real data
 user = {
     'name': 'Alice',
     'scores': {'math': 95, 'english': 88},
@@ -2571,11 +2571,11 @@ user = {
 print(user['scores']['math'])   # 95
 print(user['hobbies'][0])       # coding`,
           exercise: {
-            prompt: `Master dictionary operations:
+            prompt: `Practice dictionary operations:
 1. Create book = {'title': '1984', 'author': 'Orwell', 'year': 1949}
 2. Print the title using key access
-3. Use .get() to safely access 'rating' with default 'No rating' — print it
-4. Add key 'pages' = 328 and update 'year' to 1948 — print the whole dict
+3. Use .get() to safely access 'rating' with default 'No rating' - print it
+4. Add key 'pages' = 328 and update 'year' to 1948 - print the whole dict
 5. Use .items() in a for loop to print each key-value pair as "key: value"
 6. Create a nested dict: person with name, address (dict with city and country), hobbies (list). Access city and first hobby.`,
             starterCode: `# Step 1: Create book dictionary
@@ -2625,7 +2625,7 @@ print(person['hobbies'][0])`,
 • KeyError? The key doesn't exist. Use .get() for safe access or check 'key in dict' first.
 • Key names are case-sensitive: book['Title'] won't find 'title'.
 • for key in dict: gives keys only. Use .items() for key-value pairs.
-• Nested access: user['scores']['math'] — access outer key first, then inner key.
+• Nested access: user['scores']['math'] - access outer key first, then inner key.
 • dict.get('key') returns None if missing. dict['key'] raises KeyError if missing. Choose based on whether missing is expected.`
           }
         },
@@ -2634,11 +2634,11 @@ print(person['hobbies'][0])`,
           title: "Tuples and Sets",
           explanation: `Python gives you four built-in collection types, each with a specific 
 purpose. Lists are ordered and mutable. Dictionaries are key-value 
-and mutable. Tuples are like frozen lists — ordered but immutable, 
+and mutable. Tuples are like frozen lists - ordered but immutable, 
 meaning you can't change them after creation. This makes them perfect 
 for data that should never change: coordinates, RGB color values, 
 database records, function return values. Sets are unordered collections 
-of unique items — they automatically eliminate duplicates and provide 
+of unique items - they automatically eliminate duplicates and provide 
 lightning-fast membership testing. Sets shine for deduplication, 
 finding common elements, and checking membership in large collections.`,
           concept: `Tuple: point = (3, 4)        → ordered, IMMUTABLE (can't change)
@@ -2654,13 +2654,13 @@ Set: tags = {'python', 'code'}  → unordered, unique items, MUTABLE
   set1 & set2               → intersection (items in both)
   set1 | set2               → union (all items)
   set1 - set2               → difference (in set1 but not set2)`,
-          example: `# Tuples — immutable sequences
+          example: `# Tuples - immutable sequences
 point = (3, 4)
 print(point[0])        # 3
 print(point[1])        # 4
 # point[0] = 10       # TypeError! tuples are immutable
 
-# Tuple unpacking — very common Python pattern
+# Tuple unpacking - very common Python pattern
 x, y = point
 print(f'x={x}, y={y}')
 
@@ -2671,25 +2671,25 @@ def get_stats(numbers):
 low, high, avg = get_stats([5, 2, 8, 1, 9])
 print(f'Min:{low} Max:{high} Avg:{avg:.1f}')
 
-# Sets — unique, unordered
+# Sets - unique, unordered
 numbers = {1, 2, 3, 2, 1, 3}
-print(numbers)          # {1, 2, 3} — duplicates removed!
+print(numbers)          # {1, 2, 3} - duplicates removed!
 
 tags = {'python', 'coding', 'beginner'}
 tags.add('fun')
 tags.discard('beginner')
 print(tags)
 
-# Membership test — much faster than list for large data
+# Membership test - much faster than list for large data
 print('python' in tags)   # True
 print('java' in tags)     # False
 
-# Set operations — powerful!
+# Set operations - powerful!
 a = {1, 2, 3, 4}
 b = {3, 4, 5, 6}
-print(a & b)    # {3, 4} — intersection (in both)
-print(a | b)    # {1, 2, 3, 4, 5, 6} — union (all)
-print(a - b)    # {1, 2} — difference (in a not b)
+print(a & b)    # {3, 4} - intersection (in both)
+print(a | b)    # {1, 2, 3, 4, 5, 6} - union (all)
+print(a - b)    # {1, 2} - difference (in a not b)
 
 # Deduplication use case
 with_dups = [1, 2, 2, 3, 3, 3, 4]
@@ -2698,11 +2698,11 @@ print(unique)   # [1, 2, 3, 4] (order may vary)`,
           exercise: {
             prompt: `Explore tuples and sets:
 1. Create dimensions = (1920, 1080) and print width and height using tuple unpacking
-2. Create a tuple rgb = (255, 128, 0) and try to modify it (observe the error) — wrap in try/except
-3. Create tags = {'python', 'coding', 'python', 'beginner'} — print it (notice duplicate removed)
-4. Add 'fun' to tags, check if 'coding' is in tags, discard 'beginner' — print final tags
-5. Create sets a = {1,2,3,4,5} and b = {4,5,6,7,8} — print intersection, union, and difference
-6. Deduplicate this list: data = [3,1,4,1,5,9,2,6,5,3,5] — print unique values`,
+2. Create a tuple rgb = (255, 128, 0) and try to modify it (observe the error) - wrap in try/except
+3. Create tags = {'python', 'coding', 'python', 'beginner'} - print it (notice duplicate removed)
+4. Add 'fun' to tags, check if 'coding' is in tags, discard 'beginner' - print final tags
+5. Create sets a = {1,2,3,4,5} and b = {4,5,6,7,8} - print intersection, union, and difference
+6. Deduplicate this list: data = [3,1,4,1,5,9,2,6,5,3,5] - print unique values`,
             starterCode: `# Step 1 & 2: Tuple operations
 dimensions = (1920, 1080)
 
@@ -2753,7 +2753,7 @@ print(sorted(unique))`,
             debuggingTip: `Common mistakes:
 • Empty set: {} creates an empty DICT, not a set! Use set() for empty set.
 • Single-item tuple: (42) is just 42 in parentheses. Use (42,) with trailing comma.
-• Sets are unordered — don't rely on print order being consistent.
+• Sets are unordered - don't rely on print order being consistent.
 • discard() vs remove(): discard silently ignores missing items. remove() raises KeyError.
 • Converting set back to list loses order. Sort with sorted(set(data)) for predictable order.`
           }
@@ -2761,7 +2761,7 @@ print(sorted(unique))`,
         {
           id: "python-phase3-m1-l9",
           title: "List Comprehensions",
-          explanation: `List comprehensions are one of Python's most celebrated features — they 
+          explanation: `List comprehensions are one of Python's most celebrated features - they 
 let you create new lists in a single, readable line instead of writing 
 a for loop that builds a list piece by piece. They're faster than 
 equivalent loops (Python optimizes them internally) and, once you're 
@@ -2816,14 +2816,14 @@ nested = [[1,2], [3,4], [5,6]]
 flat = [x for sublist in nested for x in sublist]
 print(flat)   # [1, 2, 3, 4, 5, 6]`,
           exercise: {
-            prompt: `Master list comprehensions:
+            prompt: `Practice list comprehensions:
 1. Given nums = [1,2,3,4,5,6,7,8,9,10]:
    - Create 'doubled' where each number is multiplied by 2
    - Create 'odds' containing only odd numbers
-   - Create 'odd_squares' — squares of only odd numbers (filter AND transform)
+   - Create 'odd_squares' - squares of only odd numbers (filter AND transform)
 2. Given words = ['apple','banana','cherry','date','elderberry']:
    - Create 'long_words' containing only words longer than 5 characters
-   - Create 'upper_long' — uppercase versions of words longer than 5 chars
+   - Create 'upper_long' - uppercase versions of words longer than 5 chars
 3. Create a dict comprehension mapping numbers 1-5 to their cubes
 4. Given temperatures_c = [0, 20, 37, 100], create fahrenheit list using comprehension`,
             starterCode: `nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -2846,7 +2846,7 @@ words = ['apple', 'banana', 'cherry', 'date', 'elderberry']
 # Step 2b: upper_long
 
 
-# Step 3: Dict comprehension — numbers 1-5 to cubes
+# Step 3: Dict comprehension - numbers 1-5 to cubes
 
 
 # Step 4: Temperature conversion
@@ -2875,9 +2875,9 @@ print(fahrenheit)`,
             ],
             debuggingTip: `Common mistakes:
 • Order wrong? It's [expression for item in iterable], not [for item in iterable expression].
-• Filter placement: the if goes at the END: [x for x in data if x > 0] — not [x if x > 0 for x in data].
-• Ternary in comprehension is different: [x if x > 0 else 0 for x in data] — maps all items with conditional value.
-• Dict comprehension uses {}: {k: v for k, v in items} — with colon separating key and value.`
+• Filter placement: the if goes at the END: [x for x in data if x > 0] - not [x if x > 0 for x in data].
+• Ternary in comprehension is different: [x if x > 0 else 0 for x in data] - maps all items with conditional value.
+• Dict comprehension uses {}: {k: v for k, v in items} - with colon separating key and value.`
           }
         },
         {
@@ -2919,11 +2919,11 @@ list_all()`,
           exercise: {
             prompt: `Build the complete contact book:
 1. Create empty dict 'contacts'
-2. Define add_contact(name, phone) — adds to dict, prints confirmation
-3. Define lookup_contact(name) — uses .get() to return phone or 'Not found'
-4. Define delete_contact(name) — removes if exists, prints result
-5. Define list_all() — loops with .items() to print all contacts formatted
-6. Define search_contacts(query) — returns list of names containing query (use list comprehension)
+2. Define add_contact(name, phone) - adds to dict, prints confirmation
+3. Define lookup_contact(name) - uses .get() to return phone or 'Not found'
+4. Define delete_contact(name) - removes if exists, prints result
+5. Define list_all() - loops with .items() to print all contacts formatted
+6. Define search_contacts(query) - returns list of names containing query (use list comprehension)
 7. Test all functions: add 3 contacts, lookup one, delete one, list all, search for partial name`,
             starterCode: `# Step 1: Empty contacts dictionary
 contacts = {}
@@ -2987,38 +2987,38 @@ print(search_contacts('ali'))`,
             ],
             debuggingTip: `Common mistakes:
 • Global dict not updated inside function? Make sure you're modifying contacts (the dict itself), not reassigning the variable.
-• del on non-existent key? KeyError — always check 'if name in contacts' before deleting.
+• del on non-existent key? KeyError - always check 'if name in contacts' before deleting.
 • list_all not showing anything? Verify contacts has items. Use 'if not contacts:' for empty check.
 • Search case sensitivity? Use .lower() on both query and name for case-insensitive search.
-• Function order matters? Define functions before calling them — or put all calls at the bottom.`
+• Function order matters? Define functions before calling them - or put all calls at the bottom.`
           }
         }
       ]
     },
     {
       id: "python-phase4-m1",
-      title: "Phase 4 — Intermediate Python",
+      title: "Phase 4 - Intermediate Python",
       duration: "3.5 hours",
       lessons: [
         {
           id: "python-phase4-m1-l1",
           title: "Lambda Functions",
           explanation: `Lambda functions are small, anonymous functions defined in a single line. 
-The word "anonymous" means they have no name — they're defined and often 
+The word "anonymous" means they have no name - they're defined and often 
 used inline, right where they're needed. While regular functions use 
 def and have a name, lambdas use the lambda keyword and are typically 
 assigned to a variable or passed directly as an argument. Lambdas are 
 most useful as the key parameter in sorted(), or as the function 
 argument in map() and filter(). They're not a replacement for regular 
-functions — use def for anything complex, lambda for simple one-liners.`,
+functions - use def for anything complex, lambda for simple one-liners.`,
           concept: `lambda parameters: expression
 
 lambda x: x * 2          → takes x, returns x * 2
 lambda x, y: x + y       → two parameters
 lambda x: x ** 2 == 0    → returns boolean
 
-No return keyword — the expression IS the return value
-No multi-line support — just one expression
+No return keyword - the expression IS the return value
+No multi-line support - just one expression
 Assigned: square = lambda x: x * x
 Inline: sorted(data, key=lambda x: x['age'])
 map(lambda x: x*2, [1,2,3]) → applies to each item
@@ -3059,8 +3059,8 @@ squared = list(map(lambda x: x ** 2, numbers))
 print(positives)  # [1, 3, 5]
 print(squared)    # [1, 4, 9, 16, 25, 36]`,
           exercise: {
-            prompt: `Master lambda functions:
-1. Create lambda 'square' that returns x squared — test with square(4) and square(9)
+            prompt: `Practice lambda functions:
+1. Create lambda 'square' that returns x squared - test with square(4) and square(9)
 2. Create lambda 'full_name' that takes first and last and returns them combined with a space
 3. Sort words = ['banana', 'fig', 'apple', 'kiwi', 'date'] by length using sorted() with lambda key
 4. Sort students = [{'name':'Alice','grade':85},{'name':'Bob','grade':92},{'name':'Charlie','grade':78}] by grade descending
@@ -3123,22 +3123,22 @@ print(fahrenheit)`,
               { type: "contains", value: "square(9)" }
             ],
             debuggingTip: `Common mistakes:
-• Lambda has return keyword? Remove it — the expression after the colon IS automatically returned.
+• Lambda has return keyword? Remove it - the expression after the colon IS automatically returned.
 • map() and filter() are lazy in Python 3! They return iterators, not lists. Wrap with list(): list(map(...)).
 • Sorting descending? Add reverse=True to sorted(): sorted(data, key=lambda x: x['age'], reverse=True).
-• Lambda for complex logic? Use a regular def function instead — lambdas should be simple one-liners.
+• Lambda for complex logic? Use a regular def function instead - lambdas should be simple one-liners.
 • Accessing dict key in lambda: lambda p: p['age'] is correct. lambda p: p.age only works for objects with attributes.`
           }
         },
         {
           id: "python-phase4-m1-l2",
-          title: "Error Handling — try/except/finally",
-          explanation: `Errors are a normal part of programming — files don't exist, users type 
+          title: "Error Handling - try/except/finally",
+          explanation: `Errors are a normal part of programming - files don't exist, users type 
 unexpected input, networks fail, calculations hit edge cases. Without 
 error handling, any of these crashes your entire program with a scary 
 traceback. Python's try/except lets you anticipate these failures, 
 handle them gracefully, and keep your program running. The finally 
-block is especially powerful — it ALWAYS runs whether an error occurred 
+block is especially powerful - it ALWAYS runs whether an error occurred 
 or not, making it perfect for cleanup (closing files, releasing 
 resources, logging). Professional Python code uses comprehensive 
 error handling to create robust, production-ready software.`,
@@ -3154,7 +3154,7 @@ except Exception as e:
 else:
     # runs ONLY if NO exception occurred
 finally:
-    # ALWAYS runs — error or not
+    # ALWAYS runs - error or not
 
 raise ValueError('message')  → manually raise an exception
 raise  → re-raise current exception (inside except block)`,
@@ -3180,7 +3180,7 @@ print(safe_divide(10, 2))    # 5.0
 print(safe_divide(10, 0))    # Cannot divide by zero! None
 print(safe_divide(10, 'x'))  # Both arguments must be numbers! None
 
-# else clause — runs only if no error
+# else clause - runs only if no error
 try:
     value = int('42')
 except ValueError:
@@ -3188,7 +3188,7 @@ except ValueError:
 else:
     print(f'Successfully converted: {value}')  # runs!
 
-# finally — always runs
+# finally - always runs
 def read_data(filename):
     f = None
     try:
@@ -3211,11 +3211,11 @@ def set_age(age):
     return age`,
           exercise: {
             prompt: `Practice comprehensive error handling:
-1. Write try/except that converts 'abc' to int — catch ValueError, print 'Not a number!'
-2. Write try/except/finally — try dividing 10/0, catch ZeroDivisionError, always print 'Done.'
+1. Write try/except that converts 'abc' to int - catch ValueError, print 'Not a number!'
+2. Write try/except/finally - try dividing 10/0, catch ZeroDivisionError, always print 'Done.'
 3. Write try/except/else: try converting '42', if successful print 'Got: [value]', if error print 'Failed'
-4. Define safe_list_access(lst, index) — returns lst[index] or 'Index out of range' using IndexError
-5. Define validate_score(score) — raises ValueError if score < 0 or > 100, test with try/except`,
+4. Define safe_list_access(lst, index) - returns lst[index] or 'Index out of range' using IndexError
+5. Define validate_score(score) - raises ValueError if score < 0 or > 100, test with try/except`,
             starterCode: `# Step 1: Convert 'abc' to int
 try:
     
@@ -3297,19 +3297,19 @@ except ValueError as e:
             debuggingTip: `Common mistakes:
 • Catching too broadly? bare 'except:' catches everything including keyboard interrupts. Use 'except Exception' at minimum.
 • else clause confusion? else runs when NO exception occurs. It's the "success" path.
-• finally always runs — even if try has a return statement! Good for cleanup.
+• finally always runs - even if try has a return statement! Good for cleanup.
 • Catching wrong exception type? Read the error message to find the right exception name.
 • Re-raising: 'raise' inside except re-raises the current exception. 'raise ValueError()' raises a new one.`
           }
         },
         {
           id: "python-phase4-m1-l3",
-          title: "File Handling — Reading and Writing",
-          explanation: `Programs that can't save data are like calculators — useful but forgetful. 
+          title: "File Handling - Reading and Writing",
+          explanation: `Programs that can't save data are like calculators - useful but forgetful. 
 File handling lets your Python programs persist data between runs, read 
 configuration, process large datasets, write logs, and communicate with 
 other programs. Python's 'with' statement is the modern, safe way to 
-work with files — it guarantees the file is properly closed even if an 
+work with files - it guarantees the file is properly closed even if an 
 exception occurs. Understanding file modes (r for reading, w for writing, 
 a for appending) and the difference between text and binary modes 
 prepares you for all kinds of real-world data processing.`,
@@ -3371,8 +3371,8 @@ with open('output.txt', 'w') as f:
 1. Write a file 'data.txt' with three lines: 'Hello', 'World', 'Python' (each on its own line)
 2. Read the entire file and print it
 3. Read it again line by line, stripping whitespace, printing each line
-4. Append 'Goodbye' to the file — then read and print all 4 lines
-5. Try to open 'missing.txt' — catch FileNotFoundError and print a helpful message
+4. Append 'Goodbye' to the file - then read and print all 4 lines
+5. Try to open 'missing.txt' - catch FileNotFoundError and print a helpful message
 6. Write a list of numbers [1,2,3,4,5] to 'numbers.txt' (one per line) and read them back as integers`,
             starterCode: `# Step 1: Write three lines to data.txt
 
@@ -3434,15 +3434,15 @@ with open('numbers.txt', 'r') as f:
             debuggingTip: `Common mistakes:
 • 'w' mode overwrites! If file exists, all content is deleted. Use 'a' to append.
 • Forgot newline character? f.write('Hello') followed by f.write('World') gives 'HelloWorld'. Add '\n'.
-• Reading after writing without reopening? File position is at end — reopen to read from start.
+• Reading after writing without reopening? File position is at end - reopen to read from start.
 • readlines() includes '\n' at end of each line: ['Hello\n', 'World\n']. Use .strip() to remove.
-• Always use 'with' statement — it guarantees file closure even if an error occurs.`
+• Always use 'with' statement - it guarantees file closure even if an error occurs.`
           }
         },
         {
           id: "python-phase4-m1-l4",
           title: "Modules and Imports",
-          explanation: `Python's standard library is one of its greatest strengths — "batteries 
+          explanation: `Python's standard library is one of its greatest strengths - "batteries 
 included" means thousands of pre-built modules for everything from math 
 to networking to data processing. Knowing which modules exist and how 
 to import them saves hours of writing code from scratch. Beyond the 
@@ -3454,7 +3454,7 @@ from module import * should be avoided.`,
           concept: `import math                → import module, use as math.sqrt()
 from math import sqrt      → import specific name, use as sqrt()
 from math import sqrt, pi  → import multiple names
-from math import *         → import all (avoid — pollutes namespace)
+from math import *         → import all (avoid - pollutes namespace)
 import numpy as np         → import with alias (common for long names)
 
 Standard library highlights:
@@ -3500,10 +3500,10 @@ tomorrow = now + timedelta(days=1)
 print(tomorrow.date())`,
           exercise: {
             prompt: `Explore Python's standard library:
-1. Import math — print sqrt(144), pi to 4 decimal places, and factorial(7)
-2. Import random — generate a random int 1-100, pick a random choice from ['rock','paper','scissors'], shuffle a list [1,2,3,4,5]
-3. Use from datetime import datetime — print the current date formatted as 'YYYY-MM-DD'
-4. Import os — print whether 'data.txt' exists (use os.path.exists)
+1. Import math - print sqrt(144), pi to 4 decimal places, and factorial(7)
+2. Import random - generate a random int 1-100, pick a random choice from ['rock','paper','scissors'], shuffle a list [1,2,3,4,5]
+3. Use from datetime import datetime - print the current date formatted as 'YYYY-MM-DD'
+4. Import os - print whether 'data.txt' exists (use os.path.exists)
 5. Create a function roll_dice(sides=6) that uses random.randint to simulate a die roll`,
             starterCode: `# Step 1: math operations
 import math
@@ -3553,9 +3553,9 @@ print(roll_dice(20))`,
               { type: "contains", value: "import random" }
             ],
             debuggingTip: `Common mistakes:
-• from math import * pollutes your namespace — avoid it for anything beyond quick experiments.
-• random.randint(1, 6) includes BOTH endpoints — different from range() where end is excluded.
-• random.choice() needs a non-empty sequence — IndexError on empty list.
+• from math import * pollutes your namespace - avoid it for anything beyond quick experiments.
+• random.randint(1, 6) includes BOTH endpoints - different from range() where end is excluded.
+• random.choice() needs a non-empty sequence - IndexError on empty list.
 • math.pow(x, y) returns float. x ** y uses Python's int if both are ints (different behavior).
 • Circular imports: if file A imports file B and B imports A, you'll get ImportError. Restructure your code.`
           }
@@ -3622,7 +3622,7 @@ students = json.loads(students_json)
 for student in students:
     print(f"{student['name']}: {student['grade']}")`,
           exercise: {
-            prompt: `Master JSON in Python:
+            prompt: `Practice JSON in Python:
 1. Create a dict 'product' with: name='Laptop', price=999.99, in_stock=True, tags=['electronics','computer']
 2. Convert to JSON string using json.dumps() and print it
 3. Print the pretty-printed version with indent=2
@@ -3689,9 +3689,9 @@ for person in people:
             ],
             debuggingTip: `Common mistakes:
 • json.dumps vs json.dump? dumps returns a STRING. dump writes to a FILE object. Don't mix them up.
-• JSON uses double quotes — json.loads("{'name': 'Alice'}") fails! Valid JSON uses " not '.
+• JSON uses double quotes - json.loads("{'name': 'Alice'}") fails! Valid JSON uses " not '.
 • Boolean values: Python True/False become JSON true/false. Python None becomes JSON null.
-• Accessing parsed JSON? json.loads() returns dict/list — access like normal Python: data['key'].
+• Accessing parsed JSON? json.loads() returns dict/list - access like normal Python: data['key'].
 • Pretty print for humans, compact for transmission: indent=2 for readability, no indent for smaller files.`
           }
         }
@@ -3699,17 +3699,17 @@ for person in people:
     },
     {
       id: "python-phase5-m1",
-      title: "Phase 5 — Object-Oriented Programming",
+      title: "Phase 5 - Object-Oriented Programming",
       duration: "3 hours",
       lessons: [
         {
           id: "python-phase5-m1-l1",
-          title: "Classes and Objects — The Blueprint Pattern",
-          explanation: `Object-oriented programming is a way of organizing code around "objects" — 
+          title: "Classes and Objects - The Blueprint Pattern",
+          explanation: `Object-oriented programming is a way of organizing code around "objects" - 
 bundles of data and the functions that work with that data. A class is 
 the blueprint. An object (instance) is a specific thing built from that 
 blueprint. Think of a class as the cookie cutter and objects as the 
-cookies — one cutter, infinite cookies, each with their own data. OOP 
+cookies - one cutter, infinite cookies, each with their own data. OOP 
 helps you model real-world things naturally: a BankAccount with a 
 balance, a Car with a speed, a User with a name. The code becomes 
 organized around meaningful concepts rather than scattered functions 
@@ -3727,7 +3727,7 @@ Every method must take self as first parameter (Python passes it automatically)
 class attributes: shared by all instances (defined at class level)
 instance attributes: unique to each instance (defined in methods with self.)`,
           example: `class Dog:
-    # Class attribute — shared by all instances
+    # Class attribute - shared by all instances
     species = 'Canis familiaris'
     
     def bark(self):
@@ -3750,7 +3750,7 @@ print(isinstance(dog1, Dog))   # True
 print(dog1.species)   # Canis familiaris
 print(dog2.species)   # Canis familiaris
 
-# Adding instance attributes directly (not recommended — use __init__)
+# Adding instance attributes directly (not recommended - use __init__)
 dog1.name = 'Rex'
 print(dog1.name)   # Rex
 # print(dog2.name)   # AttributeError! dog2 doesn't have name`,
@@ -3816,15 +3816,15 @@ print(my_car.color)`,
         },
         {
           id: "python-phase5-m1-l2",
-          title: "__init__ — Initializing Objects",
-          explanation: `The __init__ method is Python's constructor — a special method that runs 
+          title: "__init__ - Initializing Objects",
+          explanation: `The __init__ method is Python's constructor - a special method that runs 
 automatically whenever you create a new object with ClassName(). 
 It's where you set up each object's initial state: storing the data 
 that makes this particular instance unique. The double underscores 
-around __init__ indicate it's a "dunder" (double-underscore) method — 
+around __init__ indicate it's a "dunder" (double-underscore) method - 
 special methods that Python calls automatically. self.attribute = value 
 is how you attach data to the specific instance being created. 
-Without __init__, every instance would be identical at creation — 
+Without __init__, every instance would be identical at creation - 
 with it, each can start with its own data.`,
           concept: `def __init__(self, param1, param2):
     self.attribute1 = param1
@@ -3833,7 +3833,7 @@ with it, each can start with its own data.`,
 Called automatically when: obj = ClassName(arg1, arg2)
 self refers to the new object being created
 self.attribute creates an INSTANCE attribute (unique per object)
-Always use __init__ to set up instance data — never rely on adding attributes later
+Always use __init__ to set up instance data - never rely on adding attributes later
 Two underscores on each side: __init__ not _init_ or init_
 Can do validation, computation, or call other methods in __init__`,
           example: `class Student:
@@ -3852,7 +3852,7 @@ Can do validation, computation, or call other methods in __init__`,
         print(f'Grade: {self.grade} | Year: {self.year}')
         print(f'Courses: {self.courses}')
 
-# Creating instances — __init__ runs automatically
+# Creating instances - __init__ runs automatically
 alice = Student('Alice', 90)
 bob = Student('Bob', 85, year=2)
 
@@ -3870,10 +3870,10 @@ bob.show_info()
 # Each instance has its own data
 print(alice.name)   # Alice
 print(bob.name)     # Bob
-print(alice.courses is bob.courses)  # False — different lists!`,
+print(alice.courses is bob.courses)  # False - different lists!`,
           exercise: {
             prompt: `Build a proper Book class with __init__:
-1. Define class Book with __init__(self, title, author, pages) — store all three as instance attributes
+1. Define class Book with __init__(self, title, author, pages) - store all three as instance attributes
 2. Add method describe(self) that prints: "Title: Author (pages pages)"
 3. Add method is_long(self) that returns True if pages > 300, False otherwise
 4. Create book1 = Book('1984', 'Orwell', 328) and book2 = Book('Dune', 'Herbert', 412)
@@ -3940,14 +3940,14 @@ book1.read(30)`,
 • Forgot self in __init__ parameters? def __init__(title, author) causes TypeError when Python passes the instance.
 • Using variable name instead of self.name? Assigning name = title inside __init__ creates a local variable that disappears. Use self.title = title.
 • Two underscores! __init__ not _init_ or __init. Count: two before, two after.
-• Mutable default in __init__? Never do self.courses = [] as a CLASS attribute — each instance gets the SAME list. Define in __init__.
+• Mutable default in __init__? Never do self.courses = [] as a CLASS attribute - each instance gets the SAME list. Define in __init__.
 • Accessing attribute before setting? Call __init__ via ClassName(args) to trigger setup.`
           }
         },
         {
           id: "python-phase5-m1-l3",
-          title: "Methods — Giving Objects Behavior",
-          explanation: `Instance methods are the behaviors of your objects — what they can DO. 
+          title: "Methods - Giving Objects Behavior",
+          explanation: `Instance methods are the behaviors of your objects - what they can DO. 
 Beyond __init__, you can add as many methods as make sense for your class. 
 Good OOP design means each method does one thing well, and together 
 the methods give the object a complete, logical interface. Python also 
@@ -3955,10 +3955,10 @@ has special "dunder" methods (double-underscore methods) that let your
 objects work with Python's built-in syntax: __str__ for print(), 
 __len__ for len(), __eq__ for ==, __add__ for +. Implementing these 
 makes your objects feel like natural parts of Python.`,
-          concept: `Instance method: def method(self, params): — has access to self
-Class method: @classmethod def method(cls, params): — receives class, not instance
-Static method: @staticmethod def method(params): — no self, no class
-Property: @property def attr(self): — access like attribute, not method()
+          concept: `Instance method: def method(self, params): - has access to self
+Class method: @classmethod def method(cls, params): - receives class, not instance
+Static method: @staticmethod def method(params): - no self, no class
+Property: @property def attr(self): - access like attribute, not method()
 
 Key dunder methods:
 __str__(self)    → called by str() and print()
@@ -3967,7 +3967,7 @@ __len__(self)    → called by len()
 __eq__(self, other) → called by ==
 __lt__(self, other) → called by <`,
           example: `class BankAccount:
-    # Class attribute — tracks all accounts
+    # Class attribute - tracks all accounts
     total_accounts = 0
     
     def __init__(self, owner, balance=0):
@@ -4089,21 +4089,21 @@ account.show_history()`,
               { type: "contains", value: "account.get_balance()" }
             ],
             debuggingTip: `Common mistakes:
-• Forgot self in method? def deposit(amount) causes TypeError — Python passes the instance automatically.
+• Forgot self in method? def deposit(amount) causes TypeError - Python passes the instance automatically.
 • Not updating self.balance? balance += amount only changes a local variable. Use self.balance += amount.
 • __str__ must return a string, not print it! Return the formatted string, caller prints it.
 • Transaction history empty? Make sure self.transactions.append() is called inside deposit/withdraw.
-• Return value from withdraw: return False for failure, return True (or nothing) for success — be consistent.`
+• Return value from withdraw: return False for failure, return True (or nothing) for success - be consistent.`
           }
         },
         {
           id: "python-phase5-m1-l4",
-          title: "Inheritance — Building on Existing Classes",
+          title: "Inheritance - Building on Existing Classes",
           explanation: `Inheritance is one of the most powerful OOP concepts. It lets you create 
 a new class that automatically gets all the attributes and methods of 
 an existing class, then adds or modifies what it needs. This models 
 "is-a" relationships: a SavingsAccount IS A BankAccount. A Dog IS AN 
-Animal. A Manager IS AN Employee. Inheritance eliminates code duplication — 
+Animal. A Manager IS AN Employee. Inheritance eliminates code duplication - 
 shared behavior lives in the parent once, all children benefit automatically. 
 When the parent changes, children automatically get the update. Python 
 supports multiple inheritance (a class can inherit from multiple parents), 
@@ -4261,8 +4261,8 @@ print(isinstance(cat, Dog))      # False`,
             ],
             debuggingTip: `Common mistakes:
 • Forgot super().__init__()? Parent attributes (name, sound) won't exist on the child object.
-• super().__init__() must be called BEFORE using self in child __init__ — Python needs the parent to set up first.
-• Parent class must be defined before child class — Python reads top to bottom.
+• super().__init__() must be called BEFORE using self in child __init__ - Python needs the parent to set up first.
+• Parent class must be defined before child class - Python reads top to bottom.
 • isinstance(dog, Animal) is True because Dog is a subclass. isinstance(cat, Dog) is False.
 • Overriding without super() completely replaces parent behavior. Include super().method() to extend it.`
           }
@@ -4277,7 +4277,7 @@ you can write code that works with the parent type, and it automatically
 does the right thing for each specific child type. animal.speak() calls 
 the Dog version for dogs and the Cat version for cats, even if your 
 code only knows it has an 'animal'. This is one of OOP's most powerful 
-features — code that works generically across many specific types.`,
+features - code that works generically across many specific types.`,
           concept: `# Override: define method with same name in child
 class Child(Parent):
     def same_method(self):    → overrides parent's version
@@ -4336,7 +4336,7 @@ shapes = [
 for shape in shapes:
     shape.describe()   # calls the RIGHT area() for each
 
-# Total area — works regardless of shape type
+# Total area - works regardless of shape type
 total = sum(shape.area() for shape in shapes)
 print(f'Total area: {total:.2f}')`,
           exercise: {
@@ -4346,7 +4346,7 @@ print(f'Total area: {total:.2f}')`,
 3. Create Cat overriding speak() to print 'Meow!'
 4. Create Cow overriding speak() to print 'Moo!'
 5. Create function animal_concert(animals) that calls speak() on each
-6. Create a list with one Dog, one Cat, and two Cows — pass to animal_concert
+6. Create a list with one Dog, one Cat, and two Cows - pass to animal_concert
 7. Bonus: add __str__ to each class and show how print() uses it polymorphically`,
             starterCode: `# Step 1: Base Animal
 class Animal:
@@ -4413,10 +4413,10 @@ animal_concert(farm)`,
               { type: "contains", value: "print('Meow!')" }
             ],
             debuggingTip: `Common mistakes:
-• Method name must match EXACTLY: speak() in parent, speek() in child is not an override — it's a new method.
+• Method name must match EXACTLY: speak() in parent, speek() in child is not an override - it's a new method.
 • Forgot to call super().__init__()? If parent has __init__ and child doesn't call super(), parent attributes won't exist.
-• Polymorphism only works through the method name — if Animal has speak() and Dog has speak(), they're linked.
-• Type checking instead of polymorphism? Avoid if isinstance(x, Dog): x.speak() — just call x.speak() and let polymorphism work.`
+• Polymorphism only works through the method name - if Animal has speak() and Dog has speak(), they're linked.
+• Type checking instead of polymorphism? Avoid if isinstance(x, Dog): x.speak() - just call x.speak() and let polymorphism work.`
           }
         },
         {
@@ -4599,17 +4599,17 @@ bank.show_all()`,
             ],
             debuggingTip: `Common mistakes:
 • Using self.balance instead of self._balance inside methods? Use the private _balance directly inside the class. The property is for external access.
-• SavingsAccount withdraw fails? It inherits BankAccount.withdraw() — which is fine. Only override when behavior needs to change.
-• CheckingAccount balance going negative? That's correct if overdraft is used — balance can be negative up to overdraft_limit.
-• Bank.get_account returning None? Check owner name spelling exactly — comparison is case-sensitive.
-• total_assets using list comprehension with generator: sum(acc.balance for acc in self.accounts) — clean Python style.`
+• SavingsAccount withdraw fails? It inherits BankAccount.withdraw() - which is fine. Only override when behavior needs to change.
+• CheckingAccount balance going negative? That's correct if overdraft is used - balance can be negative up to overdraft_limit.
+• Bank.get_account returning None? Check owner name spelling exactly - comparison is case-sensitive.
+• total_assets using list comprehension with generator: sum(acc.balance for acc in self.accounts) - clean Python style.`
           }
         }
       ]
     },
     {
       id: "python-phase6-m1",
-      title: "Phase 6 — Real World Python",
+      title: "Phase 6 - Real World Python",
       duration: "2.5 hours",
       lessons: [
         {
@@ -4684,7 +4684,7 @@ print(f'Readable: {len(readable)} chars')`,
             prompt: `Work with real JSON data:
 1. Create a Python dict 'catalog' with: store='BookShop', books (list of 3 dicts each with title, author, price, available=True)
 2. Serialize to JSON string with indent=2 and print it
-3. Parse it back and filter to get only books where price < 20 — print their titles
+3. Parse it back and filter to get only books where price < 20 - print their titles
 4. Add a new book to the parsed data, update the count
 5. Write the updated catalog to 'catalog.json'
 6. Read it back and print the number of books`,
@@ -4747,8 +4747,8 @@ with open('catalog.json', 'r') as f:
             ],
             debuggingTip: `Common mistakes:
 • json.loads vs json.load? loads takes a STRING. load takes a FILE object. Don't mix them.
-• JSON syntax vs Python: JSON requires double quotes — json.loads("{'name': 'Alice'}") fails.
-• Modifying parsed JSON? json.loads() gives you regular Python dicts/lists — modify them normally.
+• JSON syntax vs Python: JSON requires double quotes - json.loads("{'name': 'Alice'}") fails.
+• Modifying parsed JSON? json.loads() gives you regular Python dicts/lists - modify them normally.
 • Forgetting to re-serialize after modification? Changes to parsed dict won't automatically update the file.
 • indent=None vs indent=2: None gives compact single-line output. Use indent=2 for human-readable files.`
           }
@@ -4757,12 +4757,12 @@ with open('catalog.json', 'r') as f:
           id: "python-phase6-m1-l2",
           title: "Regular Expressions",
           explanation: `Regular expressions (regex) are a powerful language for pattern matching 
-in strings. They sound intimidating but unlock capabilities that would 
+in strings. They sound intimidating but handle tasks that would 
 take hundreds of lines of string methods to replicate: validating email 
 addresses, extracting phone numbers from text, finding all URLs in a 
 page, cleaning up messy data. Python's re module provides the interface. 
 Learning even basic regex makes you dramatically more capable at text 
-processing — it's one of those tools that feels like a superpower once 
+processing - it's one of those tools that feels like a superpower once 
 you understand it. Used in data science, web scraping, log analysis, 
 and form validation.`,
           concept: `import re
@@ -4810,7 +4810,7 @@ sample = 'Contact alice@ex.com or bob@test.org for help'
 emails = re.findall(r'[\\w.]+@[\\w]+\\.[\\w]+', sample)
 print(emails)   # ['alice@ex.com', 'bob@test.org']
 
-# Replace — clean phone numbers
+# Replace - clean phone numbers
 messy = 'Call me at (555) 123-4567 or 555.987.6543'
 clean = re.sub(r'[^\\d]', '', messy)
 print(clean)   # 5551234567555987654
@@ -4882,22 +4882,22 @@ print(items)`,
             debuggingTip: `Common mistakes:
 • Use raw strings for patterns: r'\\d+' not '\\d+'. Without r, \\d is an escape sequence.
 • re.search finds anywhere in string. re.match only matches at the START. Use ^ and $ anchors with re.search for full string match.
-• re.findall returns a list of strings. re.search returns a Match object — use .group() to get the text.
-• Character class confusion: [0-9] matches digits. (0-9) is a group — different!
-• Test your regex at regex101.com before using in code — invaluable for debugging patterns.`
+• re.findall returns a list of strings. re.search returns a Match object - use .group() to get the text.
+• Character class confusion: [0-9] matches digits. (0-9) is a group - different!
+• Test your regex at regex101.com before using in code - invaluable for debugging patterns.`
           }
         },
         {
           id: "python-phase6-m1-l3",
           title: "Unit Testing with unittest",
-          explanation: `Professional developers write tests for their code — not as an afterthought, 
+          explanation: `Professional developers write tests for their code - not as an afterthought, 
 but as a core part of development. Tests give you confidence that your 
 code works correctly, catch regressions when you make changes, and 
 document expected behavior. Python's unittest module (inspired by JUnit) 
 provides a full testing framework. You write test classes with test methods, 
 use assert methods to verify expected behavior, and run the test suite to 
-get a pass/fail report. Test-Driven Development (TDD) — writing tests 
-BEFORE code — is a powerful practice that many professional teams use.`,
+get a pass/fail report. Test-Driven Development (TDD) - writing tests 
+BEFORE code - is a powerful practice that many professional teams use.`,
           concept: `import unittest
 
 class TestMyFunction(unittest.TestCase):
@@ -5066,9 +5066,9 @@ if __name__ == '__main__':
             ],
             debuggingTip: `Common mistakes:
 • Test method name must start with 'test_': test_square works, square_test doesn't get picked up by unittest.
-• Inheriting wrong class? Must be unittest.TestCase — not just object or nothing.
+• Inheriting wrong class? Must be unittest.TestCase - not just object or nothing.
 • Comparing floats with assertEqual? Floating point imprecision makes assertEqual(0.1+0.2, 0.3) fail! Use assertAlmostEqual.
-• setUp runs before EVERY test — not just once. Use setUpClass for one-time setup.
+• setUp runs before EVERY test - not just once. Use setUpClass for one-time setup.
 • assertRaises as context manager: with self.assertRaises(ValueError): is cleaner than assertRaises(ValueError, func, args).`
           }
         }

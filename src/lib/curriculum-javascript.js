@@ -4,26 +4,26 @@ export const javascriptCurriculum = {
   modules: [
     {
       id: "javascript-phase0-m1",
-      title: "Phase 0 — Welcome to JavaScript",
+      title: "Phase 0 - Welcome to JavaScript",
       duration: "15 min",
       lessons: [
         {
           id: "javascript-phase0-m1-l1",
           title: "Your First JavaScript Program",
-          explanation: `JavaScript is the language of the web — it runs in every browser on the planet 
+          explanation: `JavaScript is the language of the web - it runs in every browser on the planet 
 and powers everything from simple websites to complex applications like Google 
 Maps, Twitter, and Netflix. Unlike most languages where you need to set up a 
 compiler or environment, JavaScript runs instantly in any browser's developer 
-console. Your very first tool is console.log() — think of it as JavaScript's 
+console. Your very first tool is console.log() - think of it as JavaScript's 
 megaphone. Whatever you put inside the parentheses gets announced to the 
 console. Every professional JavaScript developer uses console.log() dozens 
 of times a day for testing and debugging. You're starting exactly where 
 every great developer started.`,
           concept: `console.log() prints any value to the console (browser DevTools or terminal).
 Each console.log() call creates a new line of output.
-Text must be wrapped in quotes — single ('text'), double ("text"), or backticks (\`text\`).
+Text must be wrapped in quotes - single ('text'), double ("text"), or backticks (\`text\`).
 Semicolons at the end of statements are optional but strongly recommended.
-JavaScript runs top to bottom — each line executes in order.`,
+JavaScript runs top to bottom - each line executes in order.`,
           example: `// console.log is JavaScript's way of talking to you
 console.log('Hello, world!');
 console.log('I am learning JavaScript!');
@@ -62,9 +62,9 @@ console.log(5 + 3);`,
             ],
             debuggingTip: `Common mistakes:
 • Forgot the quotes around your message? JavaScript will think it's a variable name and throw a ReferenceError.
-• Used mismatched quotes? 'Hello" won't work — opening and closing quotes must match.
-• Nothing printing? Check you actually called console.log() — just writing text in quotes does nothing.
-• console.Log() with capital L? JavaScript is case-sensitive — it must be lowercase log.
+• Used mismatched quotes? 'Hello" won't work - opening and closing quotes must match.
+• Nothing printing? Check you actually called console.log() - just writing text in quotes does nothing.
+• console.Log() with capital L? JavaScript is case-sensitive - it must be lowercase log.
 • Semicolon missing? JavaScript usually handles this but add them as good practice.`
           }
         }
@@ -72,17 +72,17 @@ console.log(5 + 3);`,
     },
     {
       id: "javascript-phase1-m1",
-      title: "Phase 1 — Fundamentals",
+      title: "Phase 1 - Fundamentals",
       duration: "3 hours",
       lessons: [
         {
           id: "javascript-phase1-m1-l1",
-          title: "console.log() — Your Communication Tool",
+          title: "console.log() - Your Communication Tool",
           explanation: `Every program needs a way to show results. console.log() is JavaScript's primary 
-output tool — it prints to the browser's developer console or the terminal when 
+output tool - it prints to the browser's developer console or the terminal when 
 running with Node.js. Professional developers have the console open constantly 
 while coding. Unlike some languages, JavaScript's console.log() is remarkably 
-flexible — it can print text, numbers, boolean values, arrays, objects, and 
+flexible - it can print text, numbers, boolean values, arrays, objects, and 
 even multiple values at once separated by commas. Understanding all the ways 
 to use it will save you hours of debugging time.`,
           concept: `console.log('text')    → prints text (string)
@@ -90,8 +90,8 @@ console.log(42)        → prints a number (no quotes)
 console.log(true)      → prints a boolean
 console.log(a, b, c)   → prints multiple values separated by spaces
 console.log('label:', value) → common debugging pattern
-Each call creates a new line — multiple values in one call stay on the same line.
-Semicolons (;) end each statement — JavaScript sometimes inserts them automatically
+Each call creates a new line - multiple values in one call stay on the same line.
+Semicolons (;) end each statement - JavaScript sometimes inserts them automatically
 but explicit semicolons prevent subtle bugs.`,
           example: `// Basic output
 console.log('Hello');          // Hello
@@ -146,35 +146,35 @@ console.log('My score:', 95);`,
             debuggingTip: `Common mistakes:
 • Putting math in quotes? console.log('100 - 37') prints the text "100 - 37", not 63. Remove quotes for math.
 • Using + to combine in one log? console.log('Score:' + 95) prints "Score:95" (no space). Use commas instead: console.log('Score:', 95).
-• console with capital C? Must be lowercase console.log() — JavaScript is case-sensitive.
+• console with capital C? Must be lowercase console.log() - JavaScript is case-sensitive.
 • Missing parentheses? console.log without () just references the function without calling it.`
           }
         },
         {
           id: "javascript-phase1-m1-l2",
           title: "Variables with let and const",
-          explanation: `A variable is a named container for storing data. Think of it like a labeled box — 
+          explanation: `A variable is a named container for storing data. Think of it like a labeled box - 
 you put something in the box, write a name on it, and later you can find it by 
 name. JavaScript has two modern ways to create variables: let for values that 
 will change (your score during a game, the current page number), and const for 
 values that should never change (the number of days in a week, a tax rate, 
 your app's name). Using const by default and let when you need to change 
-something is the professional approach — it prevents accidental changes 
+something is the professional approach - it prevents accidental changes 
 to values you didn't intend to modify.`,
           concept: `let variableName = value;   → creates a variable that CAN be changed
 const variableName = value; → creates a variable that CANNOT be changed (constant)
-var is the old way — avoid it in modern JavaScript
+var is the old way - avoid it in modern JavaScript
 Variable names: camelCase (firstName, totalScore, isLoggedIn)
 Cannot start with a number: 1name is invalid, name1 is fine
 JavaScript is CASE-SENSITIVE: city and City are different variables
 Uninitialized variables have value: undefined`,
-          example: `// let — can be reassigned
+          example: `// let - can be reassigned
 let city = 'Paris';
 console.log(city);   // Paris
 city = 'London';     // changing the value
 console.log(city);   // London
 
-// const — cannot be reassigned
+// const - cannot be reassigned
 const PI = 3.14159;
 const DAYS_IN_WEEK = 7;
 console.log(PI);          // 3.14159
@@ -189,7 +189,7 @@ let score = 98.5;        // decimal number
 console.log(name, age, isStudent, score);
 // Output: Alice 28 true 98.5
 
-// Undefined — declared but not assigned
+// Undefined - declared but not assigned
 let emptyBox;
 console.log(emptyBox);   // undefined`,
           exercise: {
@@ -229,19 +229,19 @@ console.log(myName, luckyNumber, likesCoding);`,
             ],
             debuggingTip: `Common mistakes:
 • Trying to reassign a const? TypeError: Assignment to constant variable. Use let if the value will change.
-• Used var? It works but has confusing scoping rules — use let and const in modern JavaScript.
-• Variable name has spaces? let my name won't work — use camelCase: let myName.
+• Used var? It works but has confusing scoping rules - use let and const in modern JavaScript.
+• Variable name has spaces? let my name won't work - use camelCase: let myName.
 • Printed variable name in quotes? console.log('city') prints the text "city", not Paris. Remove the quotes.
-• Used a variable before declaring it? JavaScript reads top to bottom — declare before using.`
+• Used a variable before declaring it? JavaScript reads top to bottom - declare before using.`
           }
         },
         {
           id: "javascript-phase1-m1-l3",
           title: "Strings and Template Literals",
-          explanation: `Strings are how JavaScript handles text — names, messages, URLs, error messages. 
+          explanation: `Strings are how JavaScript handles text - names, messages, URLs, error messages. 
 JavaScript gives you three ways to create strings, each with its own superpower. 
 Single and double quotes are traditional and interchangeable. But backtick strings 
-(template literals) are a game-changer introduced in modern JavaScript — they 
+(template literals) are a game-changer introduced in modern JavaScript - they 
 let you embed variables and even entire expressions directly inside a string 
 using \x24{} without messy concatenation. You'll use template literals constantly 
 in real JavaScript development for building messages, generating HTML, 
@@ -251,8 +251,8 @@ constructing URLs, and formatting output.`,
 \`Backtick template\`     → template literal (most powerful)
 \`Hello, \x24{variable}!\`  → embeds the variable's value directly
 \`Result: \x24{2 + 2}\`     → can embed ANY expression inside \x24{}
-String concatenation with +: 'Hello ' + name (old way — template literals are cleaner)
-Strings are immutable — methods return new strings, they don't change the original.`,
+String concatenation with +: 'Hello ' + name (old way - template literals are cleaner)
+Strings are immutable - methods return new strings, they don't change the original.`,
           example: `let name = 'Alice';
 let age = 28;
 let city = 'Barcelona';
@@ -281,7 +281,7 @@ console.log(message);
 let sentence = "It's a great day!";   // ← use double quotes
 console.log(sentence);`,
           exercise: {
-            prompt: `Master template literals:
+            prompt: `Practice template literals:
 1. Create variables: item = 'headphones', price = 79, quantity = 2
 2. Use a template literal to print: "Item: headphones"
 3. Use a template literal to print: "Price: $79"
@@ -318,26 +318,26 @@ console.log(\`After discount: \$\x24{quantity * price - discount}\`);`,
             ],
             debuggingTip: `Common mistakes:
 • Using single or double quotes instead of backticks? \x24{variable} only works inside backtick strings (\`\`).
-• Getting the literal text \x24{name} printed? You used single/double quotes — switch to backticks.
-• Math not calculating? Make sure it's inside \x24{} — \`Total: price * quantity\` is just text.
-• Dollar sign confusion? \$\x24{price} — the first \$ is the literal dollar symbol, \x24{price} is the variable.
+• Getting the literal text \x24{name} printed? You used single/double quotes - switch to backticks.
+• Math not calculating? Make sure it's inside \x24{} - \`Total: price * quantity\` is just text.
+• Dollar sign confusion? \$\x24{price} - the first \$ is the literal dollar symbol, \x24{price} is the variable.
 • Backtick key location? It's usually in the top-left of keyboard, same key as tilde (~).`
           }
         },
         {
           id: "javascript-phase1-m1-l4",
           title: "Numbers and Arithmetic",
-          explanation: `JavaScript handles numbers differently from most other languages — it has just 
+          explanation: `JavaScript handles numbers differently from most other languages - it has just 
 ONE number type that handles both integers (whole numbers) and decimals. 
 This is convenient but comes with a famous quirk: 0.1 + 0.2 doesn't equal 
 exactly 0.3 in JavaScript (it gives 0.30000000000000004). This is a 
 floating-point precision issue that affects all languages using IEEE 754 
-math — you'll learn to handle it with methods like toFixed(). JavaScript 
+math - you'll learn to handle it with methods like toFixed(). JavaScript 
 also supports special values like Infinity (when you divide by zero) and 
 NaN (Not a Number, when math on non-numbers fails). Understanding these 
 makes you a much more confident programmer.`,
           concept: `+ (add), - (subtract), * (multiply), / (divide), % (remainder/modulo), ** (exponent)
-Unlike Java, JavaScript does NOT have integer division — 7 / 2 = 3.5 always
+Unlike Java, JavaScript does NOT have integer division - 7 / 2 = 3.5 always
 % gives remainder: 10 % 3 = 1 (used to check even/odd: n % 2 === 0)
 ** is exponent: 2 ** 8 = 256
 Shorthand: x += 5, x -= 3, x *= 2, x /= 4, x++, x--
@@ -372,7 +372,7 @@ console.log(score);  // 109
 // Special values
 console.log(1 / 0);         // Infinity
 console.log('abc' * 2);     // NaN (Not a Number)
-console.log(isNaN('abc'));   // true — check for NaN`,
+console.log(isNaN('abc'));   // true - check for NaN`,
           exercise: {
             prompt: `Build a shopping calculator:
 1. Create: price = 120, taxRate = 8 (as a percentage), quantity = 3
@@ -418,9 +418,9 @@ console.log(Math.ceil(grandTotal));`,
               { type: "contains", value: "toFixed" }
             ],
             debuggingTip: `Common mistakes:
-• toFixed() returns a STRING not a number — don't do math after calling it.
+• toFixed() returns a STRING not a number - don't do math after calling it.
 • 8 / 100 = 0.08 which works, but taxRate/100 is clearer than 0.08.
-• Modulo (%) checks remainder — n % 2 === 0 means even, n % 2 === 1 means odd.
+• Modulo (%) checks remainder - n % 2 === 0 means even, n % 2 === 1 means odd.
 • Got NaN? Something in your calculation used a non-number. Check variable names for typos.
 • ** is exponent (power): 2**3 = 8. Don't confuse with * (multiply).`
           }
@@ -431,9 +431,9 @@ console.log(Math.ceil(grandTotal));`,
           explanation: `Every decision in programming comes down to a yes/no question. Boolean values 
 (true and false) are the foundation of all logic in JavaScript. Comparison 
 operators evaluate two values and return a boolean. JavaScript has TWO equality 
-operators — this confuses almost every beginner. === (triple equals, strict 
+operators - this confuses almost every beginner. === (triple equals, strict 
 equality) checks that both the value AND the type match. == (double equals, 
-loose equality) does type coercion before comparing — it converts values 
+loose equality) does type coercion before comparing - it converts values 
 to make them match, which leads to bizarre results: '5' == 5 is true, 
 '' == false is true. Always use === in modern JavaScript. This is one 
 of the most important habits to build from the start.`,
@@ -444,14 +444,14 @@ of the most important habits to build from the start.`,
 && (AND): both must be true → age > 18 && hasID
 || (OR): at least one must be true → isStudent || isSenior
 ! (NOT): flips the value → !true = false
-Truthy/falsy: 0, '', null, undefined, NaN, false are falsy — everything else is truthy`,
+Truthy/falsy: 0, '', null, undefined, NaN, false are falsy - everything else is truthy`,
           example: `let age = 20;
 let hasID = true;
 
 // Strict equality (always use ===)
 console.log(5 === 5);        // true
 console.log('5' === 5);      // false (different types!)
-console.log(5 == '5');       // true (loose — avoid this!)
+console.log(5 == '5');       // true (loose - avoid this!)
 
 // Comparison operators
 console.log(age >= 18);      // true
@@ -525,21 +525,21 @@ console.log('85' == 85);`,
             ],
             debuggingTip: `Common mistakes:
 • Used = instead of ===? Single = is assignment. Always use === for comparison.
-• Using == instead of ===? '5' == 5 is true in JS — use === to avoid surprises.
+• Using == instead of ===? '5' == 5 is true in JS - use === to avoid surprises.
 • Confused && and ||? && needs BOTH true. || needs ONE true.
-• Chaining comparisons? 10 < x < 20 doesn't work in JS — write x > 10 && x < 20.
+• Chaining comparisons? 10 < x < 20 doesn't work in JS - write x > 10 && x < 20.
 • Boolean check on variable directly? if (name) checks if name is truthy (not empty/null/undefined).`
           }
         },
         {
           id: "javascript-phase1-m1-l6",
-          title: "Type Conversion — Changing Data Types",
+          title: "Type Conversion - Changing Data Types",
           explanation: `JavaScript is unusual because it automatically converts between types in many 
-situations — this is called type coercion. Sometimes it helps (like when you 
+situations - this is called type coercion. Sometimes it helps (like when you 
 use + with a string and number), but it often causes bugs. Understanding both 
 explicit conversion (you control it) and implicit coercion (JavaScript does it 
 automatically) is essential. User input from forms and prompt() always comes 
-as a string — even if the user typed a number. Forgetting to convert it before 
+as a string - even if the user typed a number. Forgetting to convert it before 
 doing math is one of the most common beginner bugs: '5' + 3 gives '53', 
 not 8. Always convert explicitly when you need specific types.`,
           concept: `Number('42')     → converts string to number: 42
@@ -552,11 +552,11 @@ String(42)       → '42'
 Boolean(0)       → false (also: '', null, undefined, NaN)
 Boolean('hello') → true (any non-empty string)
 isNaN(value)     → true if the value is NaN`,
-          example: `// String to number — MUST do this with user input!
+          example: `// String to number - MUST do this with user input!
 let userInput = '95';
 let score = Number(userInput);
 console.log(score + 5);     // 100 (math!)
-console.log(userInput + 5); // '955' (concatenation — wrong!)
+console.log(userInput + 5); // '955' (concatenation - wrong!)
 
 // parseInt vs Number
 console.log(parseInt('42.9'));    // 42 (truncates decimal)
@@ -587,8 +587,8 @@ console.log(isNaN('42'));       // false (coerces '42' to 42 first)`,
 2. Show what happens WITHOUT converting: print scoreStr + 5 (notice the bug!)
 3. Use parseInt on '200px' and print the result
 4. Convert the number 1000 to a string using String(), concatenate ' dollars', print it
-5. Print Boolean(0), Boolean(''), Boolean('hello'), Boolean(null) — what pattern do you see?
-6. Convert '3.99' using both parseInt and parseFloat — print both and notice the difference`,
+5. Print Boolean(0), Boolean(''), Boolean('hello'), Boolean(null) - what pattern do you see?
+6. Convert '3.99' using both parseInt and parseFloat - print both and notice the difference`,
             starterCode: `// Step 1: Convert scoreStr to number
 let scoreStr = '95';
 
@@ -627,18 +627,18 @@ console.log(parseFloat('3.99'));`,
             ],
             debuggingTip: `Common mistakes:
 • '95' + 5 giving '955' instead of 100? That's string concatenation not math. Convert first: Number('95') + 5.
-• isNaN('42') returning false when you expected true? isNaN coerces the string to a number first — use Number.isNaN() for strict checking.
+• isNaN('42') returning false when you expected true? isNaN coerces the string to a number first - use Number.isNaN() for strict checking.
 • parseInt vs Number: parseInt('42abc') = 42, Number('42abc') = NaN. parseInt is more lenient.
 • Implicit conversion with +: '5' + 3 = '53' (string wins). With other operators: '5' - 3 = 2 (becomes number).
-• Boolean('false') is TRUE — the string 'false' is truthy because it's non-empty. Only actual false boolean is falsy.`
+• Boolean('false') is TRUE - the string 'false' is truthy because it's non-empty. Only actual false boolean is falsy.`
           }
         },
         {
           id: "javascript-phase1-m1-l7",
-          title: "String Methods — Built-in Text Tools",
-          explanation: `JavaScript strings come loaded with powerful built-in methods that make text 
+          title: "String Methods - Built-in Text Tools",
+          explanation: `JavaScript strings have useful built-in methods that make text 
 processing straightforward. Since strings are immutable (they can't be changed 
-in place), all these methods return NEW strings — the original is always 
+in place), all these methods return NEW strings - the original is always 
 preserved. You'll use these methods constantly in real development: 
 .trim() to clean up form input, .includes() to search text, 
 .split() to break a sentence into words, .replace() to swap text, 
@@ -692,7 +692,7 @@ console.log(words.length);  // 5`,
 2. Print the length (includes spaces)
 3. Print the trimmed version and its length
 4. Print it in UPPERCASE and lowercase
-5. Check if it includes 'World' and if it starts with '  Hello' — print both
+5. Check if it includes 'World' and if it starts with '  Hello' - print both
 6. Extract just the word 'Hello' using .slice() (after trimming)
 7. Replace 'World' with 'JavaScript' and print the result`,
             starterCode: `// String methods exploration
@@ -732,11 +732,11 @@ console.log(greeting.replace('World', 'JavaScript'));`,
               { type: "contains", value: ".trim()" }
             ],
             debuggingTip: `Common mistakes:
-• Called .length()? length is a PROPERTY not a method — no parentheses: str.length not str.length()
-• Methods not changing the original? Correct — strings are immutable. Always capture the result: let clean = str.trim()
-• slice(0, 5) gives characters 0,1,2,3,4 — end index is NOT included.
+• Called .length()? length is a PROPERTY not a method - no parentheses: str.length not str.length()
+• Methods not changing the original? Correct - strings are immutable. Always capture the result: let clean = str.trim()
+• slice(0, 5) gives characters 0,1,2,3,4 - end index is NOT included.
 • .includes() is case-sensitive: 'Hello'.includes('hello') is false.
-• Chaining order matters: greeting.trim().slice(0,5) trims FIRST then slices — different from greeting.slice(0,5).trim()`
+• Chaining order matters: greeting.trim().slice(0,5) trims FIRST then slices - different from greeting.slice(0,5).trim()`
           }
         },
         {
@@ -746,16 +746,16 @@ console.log(greeting.replace('World', 'JavaScript'));`,
 provides prompt() which opens a popup dialog asking the user for text. This 
 is the simplest form of user interaction for learning purposes. In real 
 web applications, you'd use HTML form inputs instead, but the same principles 
-apply — you get a string back and often need to convert it. Understanding 
+apply - you get a string back and often need to convert it. Understanding 
 input handling is the bridge from one-way programs (that just print things) 
 to two-way programs (that respond to what the user does), which is the 
 foundation of all interactive applications.`,
           concept: `prompt('question')  → opens dialog, returns whatever user typed as a STRING
                     → returns null if user clicks Cancel
-Always returns a string — convert with Number() for math
+Always returns a string - convert with Number() for math
 confirm('question') → returns true (OK) or false (Cancel)
 alert('message')    → shows a popup (no return value)
-In Node.js environments, prompt may not be available — use readline instead
+In Node.js environments, prompt may not be available - use readline instead
 Always handle the case where user might click Cancel (null check)`,
           example: `// Basic prompt
 let name = prompt('What is your name?');
@@ -766,13 +766,13 @@ let ageInput = prompt('How old are you?');
 let age = Number(ageInput);  // MUST convert to number!
 console.log(\`In 10 years you will be \\x24{age + 10}\`);
 
-// Wrong way — forgetting to convert:
+// Wrong way - forgetting to convert:
 let wrong = prompt('Enter a number:');
-console.log(wrong + 5);  // '425' if user typed 42 — concatenation!
+console.log(wrong + 5);  // '425' if user typed 42 - concatenation!
 
 // Right way:
 let right = Number(prompt('Enter a number:'));
-console.log(right + 5);  // 47 — actual math!
+console.log(right + 5);  // 47 - actual math!
 
 // Handling cancel
 let color = prompt('Favorite color?');
@@ -816,10 +816,10 @@ console.log(\`You counted \\x24{letters} letters!\`);`,
               { type: "contains", value: "letters" }
             ],
             debuggingTip: `Common mistakes:
-• Forgot to convert prompt result to number? prompt() always returns a string — use Number() before math.
-• Program seems frozen? It might be waiting for prompt input — check if dialog appeared.
+• Forgot to convert prompt result to number? prompt() always returns a string - use Number() before math.
+• Program seems frozen? It might be waiting for prompt input - check if dialog appeared.
 • prompt() showing 'undefined'? You called prompt without parentheses or without a question string.
-• Adding prompt result to numbers giving weird output? 'prompt() returns string — convert with Number() first.
+• Adding prompt result to numbers giving weird output? 'prompt() returns string - convert with Number() first.
 • Null error? If user clicks Cancel, prompt returns null. Add a null check before using the value.`
           }
         }
@@ -827,20 +827,20 @@ console.log(\`You counted \\x24{letters} letters!\`);`,
     },
     {
       id: "javascript-phase2-m1",
-      title: "Phase 2 — Control Flow",
+      title: "Phase 2 - Control Flow",
       duration: "2.5 hours",
       lessons: [
         {
           id: "javascript-phase2-m1-l1",
-          title: "If / Else If / Else — Making Decisions",
+          title: "If / Else If / Else - Making Decisions",
           explanation: `Every interesting program makes decisions. Should it show a discount? Has the 
 user reached the high score? Is the password correct? JavaScript's if/else 
-chain evaluates conditions one by one — the first true condition wins, and 
+chain evaluates conditions one by one - the first true condition wins, and 
 the rest are skipped entirely. The final else is your safety net that runs 
 when nothing else matched. This is fundamentally different from writing 
 separate if statements (all of which would be checked independently). 
 Mastering conditional logic is one of the most important skills in 
-programming — you'll use it in virtually every program you write.`,
+programming - you'll use it in virtually every program you write.`,
           concept: `if (condition) {
     // runs ONLY if condition is true
 } else if (anotherCondition) {
@@ -848,10 +848,10 @@ programming — you'll use it in virtually every program you write.`,
 } else {
     // runs if ALL conditions above were false
 }
-Only ONE branch runs — the first matching one, then JavaScript skips the rest.
+Only ONE branch runs - the first matching one, then JavaScript skips the rest.
 Curly braces { } are technically optional for single statements but ALWAYS use them.
 Ternary operator: condition ? valueIfTrue : valueIfFalse (one-line shorthand).
-Truthy/falsy values work directly as conditions: if (username) — true if not empty.`,
+Truthy/falsy values work directly as conditions: if (username) - true if not empty.`,
           example: `let score = 73;
 let temperature = 22;
 let isRaining = false;
@@ -875,7 +875,7 @@ if (temperature > 20) {
   if (!isRaining) {
     console.log('Perfect day for a walk!');
   } else {
-    console.log('Warm but rainy — take an umbrella.');
+    console.log('Warm but rainy - take an umbrella.');
   }
 }
 
@@ -947,30 +947,30 @@ if (username) {
               { type: "contains", value: ":" }
             ],
             debuggingTip: `Common mistakes:
-• Conditions in wrong order? Put most specific first — if (score >= 70) before (score >= 60), otherwise 73 hits the wrong branch.
-• Missing curly braces? Without {}, only the next single line is in the if block — easy source of bugs.
-• Used = instead of ===? if (weather = 'sunny') assigns instead of comparing — always use ===.
-• Ternary missing colon? condition ? trueValue : falseValue — both ? and : are required.
+• Conditions in wrong order? Put most specific first - if (score >= 70) before (score >= 60), otherwise 73 hits the wrong branch.
+• Missing curly braces? Without {}, only the next single line is in the if block - easy source of bugs.
+• Used = instead of ===? if (weather = 'sunny') assigns instead of comparing - always use ===.
+• Ternary missing colon? condition ? trueValue : falseValue - both ? and : are required.
 • Else without if? Every else must follow a closing } of an if block.`
           }
         },
         {
           id: "javascript-phase2-m1-l2",
-          title: "While Loops — Repeating Until Done",
+          title: "While Loops - Repeating Until Done",
           explanation: `A while loop keeps executing a block of code as long as a condition remains true. 
 Think of it as an automatic repeat button that checks a condition before each 
 press. "While the cart is not empty, process the next item." "While the user 
 hasn't guessed correctly, ask again." "While there's data to read, process it." 
 The critical responsibility: you MUST change something inside the loop that 
 will eventually make the condition false. Forget this and you create an 
-infinite loop — a program that runs forever and freezes the browser tab. 
+infinite loop - a program that runs forever and freezes the browser tab. 
 Infinite loops are one of the most common beginner bugs.`,
           concept: `while (condition) {
     // code runs while condition is true
     // MUST update something to eventually make condition false!
 }
-Condition checked BEFORE each iteration — if false from start, body never runs.
-do { } while (condition) — runs body ONCE then checks condition.
+Condition checked BEFORE each iteration - if false from start, body never runs.
+do { } while (condition) - runs body ONCE then checks condition.
 Common patterns: counting (i++), accumulating (sum += n), consuming input.
 break exits the loop immediately.
 continue skips rest of current iteration.`,
@@ -1014,7 +1014,7 @@ do {
           exercise: {
             prompt: `Practice while loops:
 1. Print numbers 1 to 10 using a while loop
-2. Inside the same loop, accumulate a running sum — print sum after the loop
+2. Inside the same loop, accumulate a running sum - print sum after the loop
 3. Print the average (sum / 10) after the loop
 4. Create a second while loop that finds and prints the first number over 50 that is divisible by 7
 5. Bonus: use a do-while loop to print "Checking..." at least once even if condition starts false`,
@@ -1059,7 +1059,7 @@ do {
               { type: "contains", value: "num++" }
             ],
             debuggingTip: `Common mistakes:
-• Infinite loop (tab freezes)? You forgot to increment inside the loop — add num++ or num += 1.
+• Infinite loop (tab freezes)? You forgot to increment inside the loop - add num++ or num += 1.
 • Off by one? while (num < 10) stops at 9. Use <= 10 to include 10.
 • Sum not accumulating? Use sum += num not sum = num (which replaces instead of adds).
 • Average calculated inside loop? Calculate it AFTER the loop when sum is complete.
@@ -1068,7 +1068,7 @@ do {
         },
         {
           id: "javascript-phase2-m1-l3",
-          title: "For Loops — Precise Counted Repetition",
+          title: "For Loops - Precise Counted Repetition",
           explanation: `The for loop is the most used loop in JavaScript. It bundles the three things 
 you always need for a counted loop into one clean line: where to start, when 
 to stop, and how to step. This makes it perfect when you know exactly how 
@@ -1083,8 +1083,8 @@ the right tool for every iteration need.`,
 Part 1 - initialization: let i = 0 (runs once at start)
 Part 2 - condition: i < 5 (checked before EACH iteration)
 Part 3 - update: i++ (runs AFTER each iteration)
-for...of: for (const item of array) — iterate array values (modern, clean)
-for...in: for (const key in object) — iterate object keys
+for...of: for (const item of array) - iterate array values (modern, clean)
+for...in: for (const key in object) - iterate object keys
 i++ is shorthand for i = i + 1
 i-- decrements; i += 2 skips by 2`,
           example: `// Basic for loop
@@ -1108,13 +1108,13 @@ for (let i = 1; i <= 10; i++) {
   console.log(\`4 × \\x24{i} = \\x24{4 * i}\`);
 }
 
-// for...of — iterate array values (very common in modern JS)
+// for...of - iterate array values (very common in modern JS)
 const fruits = ['apple', 'banana', 'cherry'];
 for (const fruit of fruits) {
   console.log(fruit.toUpperCase());
 }
 
-// Nested loops — multiplication grid
+// Nested loops - multiplication grid
 for (let row = 1; row <= 3; row++) {
   for (let col = 1; col <= 3; col++) {
     process.stdout.write(\`\\x24{row * col} \`);  // no newline
@@ -1122,7 +1122,7 @@ for (let row = 1; row <= 3; row++) {
   console.log();  // newline after each row
 }`,
           exercise: {
-            prompt: `Master the for loop:
+            prompt: `Practice the for loop:
 1. Print numbers 0 through 7 with a for loop
 2. Print numbers 10 through 15 with a second for loop
 3. Print a multiplication table for 5: "5 x 1 = 5" through "5 x 10 = 50" using template literals
@@ -1174,20 +1174,20 @@ for (let i = 1; i <= 19; i += 2) {
         },
         {
           id: "javascript-phase2-m1-l4",
-          title: "Break and Continue — Controlling Loop Flow",
-          explanation: `Sometimes a loop needs to exit early — you found the item you were searching 
+          title: "Break and Continue - Controlling Loop Flow",
+          explanation: `Sometimes a loop needs to exit early - you found the item you were searching 
 for and continuing would waste time. Sometimes you need to skip certain 
-iterations — processing only valid records, ignoring comments in a file. 
-break and continue are your precision tools. break is an emergency exit — 
+iterations - processing only valid records, ignoring comments in a file. 
+break and continue are your precision tools. break is an emergency exit - 
 it stops the loop entirely and jumps to the first line after the closing }. 
-continue is a skip button — it abandons the current iteration and jumps 
+continue is a skip button - it abandons the current iteration and jumps 
 back to the loop's condition check. Both are used heavily in search 
 algorithms, data filtering, and input validation.`,
           concept: `break    → immediately exits the entire loop
 continue → skips rest of current iteration, goes back to check condition
 Both work in for, while, and do-while loops.
 In nested loops, break/continue only affects the INNERMOST loop.
-Labeled statements (outerLoop:) allow breaking outer loops — rare but useful.
+Labeled statements (outerLoop:) allow breaking outer loops - rare but useful.
 Alternative to break: set a flag variable that makes condition false.`,
           example: `// continue: skip specific iterations
 for (let i = 0; i < 10; i++) {
@@ -1200,7 +1200,7 @@ let target = 7;
 for (let i = 0; i <= 100; i++) {
   if (i === target) {
     console.log(\`Found \\x24{target} at index \\x24{i}\`);
-    break;  // stop searching — we found it!
+    break;  // stop searching - we found it!
   }
 }
 
@@ -1224,8 +1224,8 @@ for (const word of words) {
 console.log(\`First long word: \\x24{longWord}\`);  // programming`,
           exercise: {
             prompt: `Practice break and continue:
-1. Loop from 0 to 9: skip 4 with continue, stop at 8 with break — print the rest
-2. Use break to find the first number between 1 and 100 that is divisible by both 3 and 11 — print it
+1. Loop from 0 to 9: skip 4 with continue, stop at 8 with break - print the rest
+2. Use break to find the first number between 1 and 100 that is divisible by both 3 and 11 - print it
 3. Use continue to print only numbers from 1 to 20 that are NOT divisible by 3
 4. Bonus: given words = ['cat', 'elephant', 'dog', 'hippopotamus', 'ant'], find and print the first word longer than 6 characters using break`,
             starterCode: `// Step 1: Loop 0-9, skip 4, break at 8
@@ -1272,8 +1272,8 @@ for (const word of words) {
             debuggingTip: `Common mistakes:
 • console.log BEFORE continue/break? The log runs before the skip/stop. Put the log AFTER the checks.
 • break in nested loop? Only exits the innermost loop. You need labeled breaks or a flag to exit outer loops.
-• continue in a while loop? Make sure the increment runs — if it's after continue, it'll be skipped causing infinite loop.
-• Searching and not finding? Check your condition — maybe no element matches. Add a default after the loop.
+• continue in a while loop? Make sure the increment runs - if it's after continue, it'll be skipped causing infinite loop.
+• Searching and not finding? Check your condition - maybe no element matches. Add a default after the loop.
 • Off by one in loop range? If searching 1-100, use i <= 100 not i < 100.`
           }
         },
@@ -1284,14 +1284,14 @@ for (const word of words) {
 game is a classic beginner project because it naturally combines every concept: 
 a variable stores the secret number, a while loop keeps the game going, 
 an if/else chain gives feedback, and prompt() gets input each time. This 
-is stateful programming — the game remembers the secret and tracks attempts 
+is stateful programming - the game remembers the secret and tracks attempts 
 across multiple loop iterations. The same pattern appears in login systems 
 (retry until correct), games (play until game over), and search UIs 
 (keep searching until result found).`,
           concept: `This capstone combines: variables (secret, guess, attempts), while loop 
 (continue while guess is wrong), Number(prompt()) for input conversion, 
 if/else if for feedback, and template literals for the final message.
-Key insight: guess must be updated INSIDE the loop — otherwise it never changes.
+Key insight: guess must be updated INSIDE the loop - otherwise it never changes.
 attempts++ inside the loop counts how many tries it took.`,
           example: `// Complete guessing game
 let secret = 42;
@@ -1362,52 +1362,52 @@ console.log(\`It took \\x24{attempts} attempt(s).\`);`,
               { type: "contains", value: "console.log('You got it!')" }
             ],
             debuggingTip: `Common mistakes:
-• Infinite loop? Make sure guess = Number(prompt(...)) is INSIDE the while loop — not outside.
+• Infinite loop? Make sure guess = Number(prompt(...)) is INSIDE the while loop - not outside.
 • Wrong feedback direction? If guess < secret the number is too low so player should go HIGHER.
-• Forgot Number()? prompt returns a string — '5' !== 5 in strict comparison, loop never ends.
+• Forgot Number()? prompt returns a string - '5' !== 5 in strict comparison, loop never ends.
 • attempts not counting? Make sure attempts++ is inside the loop body.
-• Game ends immediately? guess starts at 0 and secret is 5, so 0 !== 5 should keep looping — check your condition.`
+• Game ends immediately? guess starts at 0 and secret is 5, so 0 !== 5 should keep looping - check your condition.`
           }
         }
       ]
     },
     // ============================================================
-    // Phase 3 — Functions
+    // Phase 3 - Functions
     // ============================================================
     {
       id: "javascript-phase3-m1",
-      title: "Phase 3 — Functions",
+      title: "Phase 3 - Functions",
       duration: "2.5 hours",
       lessons: [
         {
           id: "javascript-phase3-m1-l1",
-          title: "Defining Functions — Reusable Code Blocks",
+          title: "Defining Functions - Reusable Code Blocks",
           explanation: `Functions are the single most important concept in JavaScript. A function 
 packages a block of code under a name so you can run it whenever you need it, 
 as many times as you need it, without rewriting it. This is the DRY principle: 
 Don't Repeat Yourself. Instead of writing the same calculation in five places, 
 write it once as a function and call it five times. Functions also make code 
-dramatically easier to read — a well-named function like calculateTax() or 
+dramatically easier to read - a well-named function like calculateTax() or 
 validateEmail() communicates its purpose instantly. Every piece of real 
-JavaScript code — from simple scripts to React apps to Node.js servers — 
+JavaScript code - from simple scripts to React apps to Node.js servers - 
 is built from functions working together.`,
           concept: `function functionName() {
     // code here
 }
 functionName();  → call (execute) the function
 
-Function declaration: hoisted — can be called BEFORE it's defined in the file.
-Function expression: const fn = function() { } — NOT hoisted, define before calling.
+Function declaration: hoisted - can be called BEFORE it's defined in the file.
+Function expression: const fn = function() { } - NOT hoisted, define before calling.
 Functions without return give back undefined automatically.
 Function names use camelCase: calculateArea, printHeader, getUserName.
 Parameters go inside the parentheses: function greet(name) { }`,
-          example: `// Function declaration (hoisted — can call before defining)
+          example: `// Function declaration (hoisted - can call before defining)
 function sayHello() {
   console.log('Hello!');
   console.log('Welcome to JavaScript.');
 }
 
-// Calling it multiple times — same code, no repetition
+// Calling it multiple times - same code, no repetition
 sayHello();
 sayHello();
 sayHello();
@@ -1429,7 +1429,7 @@ function printMenu() {
 
 printMenu();
 
-// Hoisting example — works even though function is below
+// Hoisting example - works even though function is below
 greetEarly();  // Works! Function declarations are hoisted
 
 function greetEarly() {
@@ -1437,9 +1437,9 @@ function greetEarly() {
 }`,
           exercise: {
             prompt: `Build a collection of useful functions:
-1. Define function sayMotto() that prints 'Keep coding!' and 'Never give up!' — call it twice
-2. Define function printHeader() that prints 20 asterisks, then 'JAVASCRIPT PROGRAM', then 20 more asterisks — call it once
-3. Define function countDown() that uses a for loop to print 3, 2, 1, then 'Blast off!' — call it once
+1. Define function sayMotto() that prints 'Keep coding!' and 'Never give up!' - call it twice
+2. Define function printHeader() that prints 20 asterisks, then 'JAVASCRIPT PROGRAM', then 20 more asterisks - call it once
+3. Define function countDown() that uses a for loop to print 3, 2, 1, then 'Blast off!' - call it once
 4. Bonus: define function printDivider(char, length) that prints any character repeated any number of times`,
             starterCode: `// Step 1: Define sayMotto and call twice
 
@@ -1485,21 +1485,21 @@ printDivider('-', 25);`,
               { type: "contains", value: "sayMotto();" }
             ],
             debuggingTip: `Common mistakes:
-• Defined a function but nothing prints? Defining it doesn't run it — you must CALL it: sayMotto()
-• Function not found error? Check spelling — JavaScript is case-sensitive: sayMotto() not SayMotto()
-• Code inside function running on its own? It shouldn't — only runs when called. Check you didn't accidentally call it.
-• Function expression called before it's defined? const fn = function(){} is NOT hoisted — define before calling.
-• Missing parentheses on call? sayMotto without () just references the function — it doesn't call it.`
+• Defined a function but nothing prints? Defining it doesn't run it - you must CALL it: sayMotto()
+• Function not found error? Check spelling - JavaScript is case-sensitive: sayMotto() not SayMotto()
+• Code inside function running on its own? It shouldn't - only runs when called. Check you didn't accidentally call it.
+• Function expression called before it's defined? const fn = function(){} is NOT hoisted - define before calling.
+• Missing parentheses on call? sayMotto without () just references the function - it doesn't call it.`
           }
         },
         {
           id: "javascript-phase3-m1-l2",
           title: "Parameters and Return Values",
-          explanation: `A function without parameters always does the exact same thing — useful, but 
+          explanation: `A function without parameters always does the exact same thing - useful, but 
 limited. Parameters make functions flexible: you give them input, they 
 do something with it. Return values make functions powerful: they calculate 
 something and hand you back the result so you can use it however you want. 
-Think of a function as a vending machine — parameters are what you put in, 
+Think of a function as a vending machine - parameters are what you put in, 
 the return value is what comes out. The return statement does two things: 
 it sends a value back to whoever called the function, AND it immediately 
 exits the function. Code after return never runs. This pattern of 
@@ -1509,10 +1509,10 @@ input → process → output is the foundation of all functional thinking.`,
 }
 const result = name(arg1, arg2);  // capture return value
 
-Parameters are LOCAL to the function — they don't exist outside it.
+Parameters are LOCAL to the function - they don't exist outside it.
 return without a value returns undefined.
 A function can have multiple return statements (early returns are common).
-Default parameters: function greet(name = 'friend') — used if argument not provided.
+Default parameters: function greet(name = 'friend') - used if argument not provided.
 Excess arguments are ignored. Missing arguments are undefined.`,
           example: `// Basic parameter and return
 function add(a, b) {
@@ -1554,11 +1554,11 @@ console.log(divide(10, 2));  // 5
 console.log(divide(10, 0));  // Cannot divide by zero`,
           exercise: {
             prompt: `Build functions with parameters and return values:
-1. Write function multiply(a, b) that returns the product — call with (4, 7), store and print result
-2. Write function celsiusToFahrenheit(c) that returns (c * 9/5) + 32 — test with 0, 100, and 37
-3. Write function isEven(n) that returns true if n is even, false if odd — test with 4 and 7
-4. Write function clamp(value, min, max) that returns value if in range, min if too low, max if too high — test with (5, 1, 10), (-3, 1, 10), (15, 1, 10)
-5. Write function greetUser(name = 'stranger') with a default parameter — call with and without an argument`,
+1. Write function multiply(a, b) that returns the product - call with (4, 7), store and print result
+2. Write function celsiusToFahrenheit(c) that returns (c * 9/5) + 32 - test with 0, 100, and 37
+3. Write function isEven(n) that returns true if n is even, false if odd - test with 4 and 7
+4. Write function clamp(value, min, max) that returns value if in range, min if too low, max if too high - test with (5, 1, 10), (-3, 1, 10), (15, 1, 10)
+5. Write function greetUser(name = 'stranger') with a default parameter - call with and without an argument`,
             starterCode: `// Step 1: multiply
 function multiply(a, b) {
   
@@ -1620,16 +1620,16 @@ console.log(greetUser());`,
 • Used console.log inside function instead of return? You can't capture that value. Use return for values you need outside.
 • Forgot to capture return value? const result = multiply(4, 7) captures it. Just multiply(4, 7) throws it away.
 • Temperature formula wrong? 9/5 in JS = 1.8 (not integer division like Java). Still double-check the formula: (c * 9/5) + 32.
-• Default parameter overriding? greetUser(undefined) uses the default. greetUser(null) uses null — null is not undefined.
-• Parameters are local — trying to use them outside the function gives ReferenceError.`
+• Default parameter overriding? greetUser(undefined) uses the default. greetUser(null) uses null - null is not undefined.
+• Parameters are local - trying to use them outside the function gives ReferenceError.`
           }
         },
         {
           id: "javascript-phase3-m1-l3",
-          title: "Arrow Functions — Modern JavaScript Syntax",
+          title: "Arrow Functions - Modern JavaScript Syntax",
           explanation: `Arrow functions are one of the most important features of modern JavaScript, 
 introduced in ES6. They provide a shorter, cleaner syntax for writing functions. 
-You'll see them absolutely everywhere in real JavaScript code — in React 
+You'll see them absolutely everywhere in real JavaScript code - in React 
 components, array methods, event handlers, and callbacks. Beyond being shorter, 
 arrow functions also behave differently with the 'this' keyword (they don't 
 have their own 'this'), which makes them preferred in many modern patterns. 
@@ -1639,17 +1639,17 @@ contemporary JavaScript.`,
 function add(a, b) { return a + b; }
 
 // Arrow function equivalents:
-const add = (a, b) => a + b;           // single expression — implicit return
-const add = (a, b) => { return a + b; } // block body — explicit return needed
+const add = (a, b) => a + b;           // single expression - implicit return
+const add = (a, b) => { return a + b; } // block body - explicit return needed
 
-// Single parameter — parentheses optional:
+// Single parameter - parentheses optional:
 const double = x => x * 2;
 const double = (x) => x * 2;  // both work
 
-// No parameters — parentheses required:
+// No parameters - parentheses required:
 const greet = () => 'Hello!';
 
-// Multi-line — use curly braces and explicit return:
+// Multi-line - use curly braces and explicit return:
 const process = (x) => {
   const doubled = x * 2;
   return doubled + 1;
@@ -1689,7 +1689,7 @@ const doubled = numbers.map(n => n * 2);
 console.log(doubled);  // [2, 4, 6, 8, 10]`,
           exercise: {
             prompt: `Convert and create arrow functions:
-1. Create arrow function 'square' that takes one argument and returns its square — test with 4 and 9
+1. Create arrow function 'square' that takes one argument and returns its square - test with 4 and 9
 2. Create arrow function 'fullName' that takes firstName and lastName and returns them combined with a space
 3. Create arrow function 'isAdult' that returns true if age >= 18
 4. Create arrow function 'clamp' (no parentheses trick: use (val, min, max)) that returns val kept between min and max
@@ -1757,28 +1757,28 @@ console.log(describeNumber(0));`,
 • Forgot parentheses for multiple parameters? x, y => x + y is invalid. Use (x, y) => x + y.
 • Arrow function assigned to const but called before declaration? Unlike function declarations, const arrow functions are NOT hoisted.
 • Multi-line arrow without return? With curly braces { }, you need explicit return for every path.
-• Using 'this' inside arrow function unexpectedly? Arrow functions inherit 'this' from surrounding scope — important in classes and event handlers.`
+• Using 'this' inside arrow function unexpectedly? Arrow functions inherit 'this' from surrounding scope - important in classes and event handlers.`
           }
         },
         {
           id: "javascript-phase3-m1-l4",
-          title: "Scope — Where Variables Live",
-          explanation: `Scope is one of the most important concepts to understand in JavaScript — and 
+          title: "Scope - Where Variables Live",
+          explanation: `Scope is one of the most important concepts to understand in JavaScript - and 
 one of the most confusing for beginners. Scope determines which parts of your 
 code can access which variables. JavaScript has three levels: global scope 
 (accessible everywhere), function scope (accessible only inside the function), 
 and block scope (accessible only inside the { } block, with let and const). 
 Understanding scope prevents a whole category of bugs: accidentally using a 
 variable from the wrong context, naming conflicts, and unexpected values. 
-The old var keyword had confusing scope rules — another reason to always 
+The old var keyword had confusing scope rules - another reason to always 
 use let and const.`,
-          concept: `Global scope: variable declared outside any function or block — accessible everywhere.
-Function scope: variable declared inside a function — only accessible inside that function.
-Block scope: variable declared with let/const inside { } — only accessible inside that block.
-var ignores block scope (only has function scope) — avoid it!
+          concept: `Global scope: variable declared outside any function or block - accessible everywhere.
+Function scope: variable declared inside a function - only accessible inside that function.
+Block scope: variable declared with let/const inside { } - only accessible inside that block.
+var ignores block scope (only has function scope) - avoid it!
 Closure: a function that remembers variables from its outer scope even after that scope ends.
-Variable shadowing: inner variable with same name as outer — inner one takes precedence.`,
-          example: `// Global scope — accessible everywhere
+Variable shadowing: inner variable with same name as outer - inner one takes precedence.`,
+          example: `// Global scope - accessible everywhere
 const appName = 'FluentlyCode';
 
 function showApp() {
@@ -1786,7 +1786,7 @@ function showApp() {
 }
 showApp();  // FluentlyCode
 
-// Function scope — only inside the function
+// Function scope - only inside the function
 function calculate() {
   let result = 42;  // only exists inside calculate()
   console.log(result);  // 42
@@ -1802,13 +1802,13 @@ if (true) {
 }
 // console.log(blockVar);  // ReferenceError! outside the block
 
-// var IGNORES block scope (confusing — avoid var!)
+// var IGNORES block scope (confusing - avoid var!)
 if (true) {
   var leakyVar = 'I leak out of blocks!';
 }
-console.log(leakyVar);  // Works — this is why var causes bugs!
+console.log(leakyVar);  // Works - this is why var causes bugs!
 
-// Closure — function remembers its outer scope
+// Closure - function remembers its outer scope
 function makeCounter() {
   let count = 0;  // lives in makeCounter's scope
   return function() {
@@ -1819,14 +1819,14 @@ function makeCounter() {
 const counter = makeCounter();
 console.log(counter());  // 1
 console.log(counter());  // 2
-console.log(counter());  // 3 — count persists!`,
+console.log(counter());  // 3 - count persists!`,
           exercise: {
             prompt: `Explore scope in JavaScript:
 1. Create a global variable 'appVersion' = '1.0.0'
-2. Create a function showVersion() that accesses and prints appVersion — call it
-3. Inside showVersion, create a local variable 'message' — try to access it outside (observe the error)
-4. Use a for loop with let i: after the loop, try to log i — what happens?
-5. Create function makeGreeter(greeting) that returns an arrow function taking a name — returning greeting + name. Call it to create a 'hello' greeter and a 'hi' greeter, then test both`,
+2. Create a function showVersion() that accesses and prints appVersion - call it
+3. Inside showVersion, create a local variable 'message' - try to access it outside (observe the error)
+4. Use a for loop with let i: after the loop, try to log i - what happens?
+5. Create function makeGreeter(greeting) that returns an arrow function taking a name - returning greeting + name. Call it to create a 'hello' greeter and a 'hi' greeter, then test both`,
             starterCode: `// Step 1: Global variable
 const appVersion = '1.0.0';
 
@@ -1847,7 +1847,7 @@ for (let i = 0; i < 3; i++) {
 }
 // Try this (it will error): console.log(i);
 
-// Step 5: Closure — makeGreeter
+// Step 5: Closure - makeGreeter
 function makeGreeter(greeting) {
   
 }
@@ -1881,9 +1881,9 @@ console.log(hi('Bob'));`,
             ],
             debuggingTip: `Common mistakes:
 • ReferenceError accessing variable outside its scope? Variables declared with let/const inside {} don't exist outside.
-• Variable from outer scope not accessible inside function? Check spelling — it might be a new variable shadowing the outer one.
-• Used var in a for loop and confused by i existing after? That's why we use let — it's properly block-scoped.
-• Closure returning wrong value? The inner function captures the variable REFERENCE, not the value — changes to the variable affect the closure.
+• Variable from outer scope not accessible inside function? Check spelling - it might be a new variable shadowing the outer one.
+• Used var in a for loop and confused by i existing after? That's why we use let - it's properly block-scoped.
+• Closure returning wrong value? The inner function captures the variable REFERENCE, not the value - changes to the variable affect the closure.
 • Global variables overused? Too many globals cause naming conflicts and make code hard to debug. Keep variables as local as possible.`
           }
         }
@@ -1891,15 +1891,15 @@ console.log(hi('Bob'));`,
     },
     {
       id: "javascript-phase4-m1",
-      title: "Phase 4 — Arrays and Objects",
+      title: "Phase 4 - Arrays and Objects",
       duration: "2.5 hours",
       lessons: [
         {
           id: "javascript-phase4-m1-l1",
-          title: "Arrays — Ordered Collections",
+          title: "Arrays - Ordered Collections",
           explanation: `An array is an ordered list of values. Instead of creating ten separate variables 
 for ten scores (score1, score2... score10), you create one array that holds all 
-ten. Arrays are one of the most used data structures in all of programming — 
+ten. Arrays are one of the most used data structures in all of programming - 
 shopping carts, search results, user lists, playlist songs, leaderboard scores. 
 JavaScript arrays are flexible in a way other languages aren't: they can hold 
 mixed types (numbers, strings, booleans, even other arrays and objects), and 
@@ -1923,7 +1923,7 @@ const mixed = ['hello', 42, true, null];  // mixed types!
 
 // Accessing elements
 console.log(fruits[0]);    // apple (first)
-console.log(fruits[2]);    // cherry (last — index 2)
+console.log(fruits[2]);    // cherry (last - index 2)
 console.log(fruits[fruits.length - 1]);  // cherry (safe last)
 console.log(fruits[-1]);   // undefined (JS doesn't support negative indices directly)
 
@@ -1939,11 +1939,11 @@ console.log(fruits.includes('banana')); // true
 console.log(fruits.indexOf('cherry')); // 2
 console.log(fruits.join(' | '));      // apple | banana | cherry
 
-// Spread operator — copy or combine arrays
+// Spread operator - copy or combine arrays
 const moreFruits = [...fruits, 'elderberry', 'fig'];
 console.log(moreFruits);
 
-// Destructuring — extract values into variables
+// Destructuring - extract values into variables
 const [first, second, ...rest] = moreFruits;
 console.log(first);   // apple
 console.log(second);  // banana
@@ -1996,22 +1996,22 @@ console.log(colors.join(' -> '));`,
               { type: "contains", value: ".includes(" }
             ],
             debuggingTip: `Common mistakes:
-• Used colors[-1] for last element? JavaScript doesn't support negative indices — use colors[colors.length - 1].
+• Used colors[-1] for last element? JavaScript doesn't support negative indices - use colors[colors.length - 1].
 • push vs unshift? push adds to END. unshift adds to BEGINNING. pop removes from END. shift removes from BEGINNING.
 • Trying to use const array but getting error on push? const means the variable can't be REASSIGNED, but you can still modify array contents.
-• indexOf returning -1? The value isn't in the array — check spelling and case (case-sensitive).
+• indexOf returning -1? The value isn't in the array - check spelling and case (case-sensitive).
 • join vs toString? join lets you specify separator. toString uses commas. arr.join('') combines with no separator.`
           }
         },
         {
           id: "javascript-phase4-m1-l2",
-          title: "Array Methods — map, filter, reduce",
+          title: "Array Methods - map, filter, reduce",
           explanation: `JavaScript's array methods are among its most powerful features. Instead of 
 writing manual for loops to transform data, these methods let you express 
 what you want clearly and concisely. map() transforms every element and 
-returns a new array — perfect for converting data formats. filter() 
-keeps only elements matching a condition — perfect for searching. 
-reduce() collapses an array into a single value — perfect for totals, 
+returns a new array - perfect for converting data formats. filter() 
+keeps only elements matching a condition - perfect for searching. 
+reduce() collapses an array into a single value - perfect for totals, 
 maximums, or building objects from lists. In modern JavaScript and 
 React development, these three methods replace most loops. 
 Mastering them is a major step toward professional-level code.`,
@@ -2027,21 +2027,21 @@ arr.flat()       → flattens nested arrays one level
 None of these modify the original array (except sort and splice).`,
           example: `const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-// map — transform every element
+// map - transform every element
 const doubled = numbers.map(n => n * 2);
 console.log(doubled);  // [2,4,6,8,10,12,14,16,18,20]
 
 const squared = numbers.map(n => n ** 2);
 console.log(squared);  // [1,4,9,16,25,36,49,64,81,100]
 
-// filter — keep matching elements
+// filter - keep matching elements
 const evens = numbers.filter(n => n % 2 === 0);
 console.log(evens);    // [2,4,6,8,10]
 
 const bigNums = numbers.filter(n => n > 7);
 console.log(bigNums);  // [8,9,10]
 
-// reduce — collapse to single value
+// reduce - collapse to single value
 const sum = numbers.reduce((total, n) => total + n, 0);
 console.log(sum);      // 55
 
@@ -2071,10 +2071,10 @@ const names = people.map(p => p.name);
 console.log(adults);  // Alice and Charlie
 console.log(names);   // ['Alice', 'Bob', 'Charlie']`,
           exercise: {
-            prompt: `Master array methods:
-1. Given nums = [1,2,3,4,5], use map() to create an array of squares — print it
-2. Use filter() to keep only numbers greater than 3 — print it
-3. Use reduce() to calculate the sum of all numbers — print it
+            prompt: `Practice array methods:
+1. Given nums = [1,2,3,4,5], use map() to create an array of squares - print it
+2. Use filter() to keep only numbers greater than 3 - print it
+3. Use reduce() to calculate the sum of all numbers - print it
 4. Chain: filter numbers > 2, then map to double them, then print the result
 5. Given people = [{name:'Alice',age:28},{name:'Bob',age:17},{name:'Eve',age:22}]:
    - Filter for adults (age >= 18) and print their names using map()
@@ -2146,21 +2146,21 @@ console.log(allOver16);`,
 • map() returning undefined for each element? Your arrow function doesn't return a value. Add return or remove curly braces.
 • filter() returning empty array? Your condition is never true. Log each element to check.
 • reduce() without initial value? reduce((acc, n) => acc + n) works but fails on empty arrays. Always provide initial value: reduce((acc, n) => acc + n, 0).
-• Chaining order matters! filter().map() filters first then transforms. map().filter() transforms first — different results.
-• sort() modifying original? Yes — sort() mutates. Use [...arr].sort() to sort a copy.`
+• Chaining order matters! filter().map() filters first then transforms. map().filter() transforms first - different results.
+• sort() modifying original? Yes - sort() mutates. Use [...arr].sort() to sort a copy.`
           }
         },
         {
           id: "javascript-phase4-m1-l3",
-          title: "Objects — Key-Value Data Structures",
+          title: "Objects - Key-Value Data Structures",
           explanation: `Objects are JavaScript's most versatile data structure. Where arrays are for 
 ordered lists of similar things (a list of scores, a list of names), objects 
 are for structured data about ONE thing (a user's profile, a product, a 
 configuration). Every meaningful piece of data in a JavaScript application 
 is typically represented as an object: a user with name, email, and age; 
 a product with title, price, and stock; a request with url, method, and 
-headers. Understanding objects — how to create them, access their data, 
-update them, and iterate through them — is absolutely fundamental to 
+headers. Understanding objects - how to create them, access their data, 
+update them, and iterate through them - is absolutely fundamental to 
 JavaScript development.`,
           concept: `const obj = { key: value, key2: value2 };  → object literal
 obj.key           → dot notation access (preferred when key is known)
@@ -2204,11 +2204,11 @@ for (const [key, value] of Object.entries(person)) {
   console.log(\`\\x24{key}: \\x24{value}\`);
 }
 
-// Destructuring — extract into variables
+// Destructuring - extract into variables
 const { name, age, city = 'Unknown' } = person;
 console.log(name, age, city);  // Sofia 30 Rome
 
-// Spread — copy object
+// Spread - copy object
 const personCopy = { ...person, age: 31 };  // copy and override age
 console.log(personCopy.age);  // 31
 console.log(person.age);      // 30 (original unchanged)`,
@@ -2217,9 +2217,9 @@ console.log(person.age);      // 30 (original unchanged)`,
 1. Create const book = { title: '1984', author: 'Orwell', pages: 328 }
 2. Print the title using dot notation
 3. Print the author using bracket notation with a variable: const key = 'author'
-4. Add property 'year' = 1949 and update 'pages' to 400 — print the whole object
+4. Add property 'year' = 1949 and update 'pages' to 400 - print the whole object
 5. Use Object.keys() to print all keys, Object.values() to print all values
-6. Use destructuring to extract title, author, and year into variables — print them
+6. Use destructuring to extract title, author, and year into variables - print them
 7. Iterate over Object.entries() and print each as "key: value"`,
             starterCode: `// Step 1: Create book object
 const book = { title: '1984', author: 'Orwell', pages: 328 };
@@ -2264,17 +2264,17 @@ for (const [k, v] of Object.entries(book)) {
             ],
             debuggingTip: `Common mistakes:
 • obj.key vs obj[key]? obj.key looks for property named literally "key". obj[key] uses the variable's value as the property name.
-• Spreading object but original changes? Spread creates a SHALLOW copy — nested objects are still shared.
-• Destructuring with wrong name? const { Title } = book finds property named "Title" (not "title") — case matters.
-• for...in instead of Object.entries()? for...in iterates keys but also inherited properties — Object.entries() is safer.
+• Spreading object but original changes? Spread creates a SHALLOW copy - nested objects are still shared.
+• Destructuring with wrong name? const { Title } = book finds property named "Title" (not "title") - case matters.
+• for...in instead of Object.entries()? for...in iterates keys but also inherited properties - Object.entries() is safer.
 • Deleting a property? delete obj.key removes it. Setting to undefined keeps the key but with value undefined.`
           }
         },
         {
           id: "javascript-phase4-m1-l4",
-          title: "Arrays of Objects — Real-World Data",
+          title: "Arrays of Objects - Real-World Data",
           explanation: `In real applications, data almost never comes as simple numbers or strings alone. 
-It comes as arrays of objects — a list of users, a collection of products, 
+It comes as arrays of objects - a list of users, a collection of products, 
 search results with multiple properties each. This combination is how JSON 
 (the universal data format of the web) works, and how every API response is 
 structured. Mastering how to create, filter, map, find, and sort arrays of 
@@ -2386,15 +2386,15 @@ console.log(sorted.map(s => s.name));`,
 • sort() modifying original? Use [...students].sort() to sort a copy and keep original intact.
 • sort((a,b) => a.grade - b.grade) → ascending (low to high). b.grade - a.grade → descending (high to low).
 • map() after filter() on objects? Filter returns objects so map receives objects: .filter(...).map(s => s.name).
-• find() returning undefined? No element matched — check your condition logic.
-• reduce() for average — divide by students.length AFTER reduce, not inside it.`
+• find() returning undefined? No element matched - check your condition logic.
+• reduce() for average - divide by students.length AFTER reduce, not inside it.`
           }
         }
       ]
     },
     {
       id: "javascript-phase5-m1",
-      title: "Phase 5 — Intermediate JavaScript",
+      title: "Phase 5 - Intermediate JavaScript",
       duration: "2.5 hours",
       lessons: [
         {
@@ -2404,8 +2404,8 @@ console.log(sorted.map(s => s.name));`,
 APIs return unexpected responses, JSON is malformed. Without error handling, 
 any of these crashes your program with an ugly message. JavaScript's try/catch 
 lets you attempt risky code, catch any errors gracefully, and either recover 
-or inform the user helpfully. The finally block always runs — whether there 
-was an error or not — making it perfect for cleanup like hiding a loading 
+or inform the user helpfully. The finally block always runs - whether there 
+was an error or not - making it perfect for cleanup like hiding a loading 
 spinner or closing a connection. You can also throw your own errors with 
 custom messages, which is how you enforce rules in your own functions.`,
           concept: `try {
@@ -2415,15 +2415,15 @@ custom messages, which is how you enforce rules in your own functions.`,
     // error.message → description
     // error.name    → type (TypeError, RangeError, etc.)
 } finally {
-    // ALWAYS runs — error or not
+    // ALWAYS runs - error or not
 }
 throw new Error('message')     → manually throw an error
 throw new TypeError('message') → throw specific error type
-try/catch doesn't catch async errors — use .catch() or try/catch with async/await.
+try/catch doesn't catch async errors - use .catch() or try/catch with async/await.
 Errors from JSON.parse, undefined property access, and type mismatches are common.`,
           example: `// Basic try/catch
 try {
-  const result = 10 / 0;  // Infinity in JS — not an error!
+  const result = 10 / 0;  // Infinity in JS - not an error!
   console.log(result);
   JSON.parse('not json');  // This DOES throw SyntaxError
 } catch (error) {
@@ -2438,7 +2438,7 @@ try {
 } catch (e) {
   console.log('Error caught:', e.message);
 } finally {
-  console.log('This ALWAYS runs — cleanup here!');
+  console.log('This ALWAYS runs - cleanup here!');
 }
 
 // Throwing custom errors
@@ -2550,26 +2550,26 @@ console.log(getProperty(null, 'name'));`,
               { type: "contains", value: "throw" }
             ],
             debuggingTip: `Common mistakes:
-• Catching errors but still crashing? The throw must be inside the try block — errors thrown outside aren't caught.
-• finally not cleaning up? Finally runs even if you return inside try/catch — good for cleanup.
-• Catching too broadly? catch(e) catches EVERYTHING — sometimes you want to re-throw errors you didn't expect.
-• Null property access? null.anything throws TypeError — check for null first with optional chaining: obj?.property.
+• Catching errors but still crashing? The throw must be inside the try block - errors thrown outside aren't caught.
+• finally not cleaning up? Finally runs even if you return inside try/catch - good for cleanup.
+• Catching too broadly? catch(e) catches EVERYTHING - sometimes you want to re-throw errors you didn't expect.
+• Null property access? null.anything throws TypeError - check for null first with optional chaining: obj?.property.
 • JSON.parse vs JSON.stringify? parse converts string to object (can throw). stringify converts object to string (rarely throws).`
           }
         },
         {
           id: "javascript-phase5-m1-l2",
           title: "Promises and Async/Await",
-          explanation: `JavaScript is single-threaded — it can only do one thing at a time. But many 
+          explanation: `JavaScript is single-threaded - it can only do one thing at a time. But many 
 operations take time: fetching data from an API, reading a file, waiting for 
 user input. If these blocked the thread, your entire page would freeze. 
 Promises represent a value that will be available in the future. 
 Async/await is modern syntax that makes working with Promises look like 
 regular synchronous code, but without blocking. This is how every modern 
-JavaScript application works — fetching data from APIs, loading resources, 
+JavaScript application works - fetching data from APIs, loading resources, 
 handling slow operations. Understanding async programming is absolutely 
 essential for any real JavaScript development.`,
-          concept: `Promise: represents a future value — can be pending, fulfilled, or rejected.
+          concept: `Promise: represents a future value - can be pending, fulfilled, or rejected.
 promise.then(result => {})   → runs when promise succeeds
 promise.catch(error => {})   → runs when promise fails
 promise.finally(() => {})    → always runs
@@ -2593,7 +2593,7 @@ wait(1000)
   .then(() => console.log('1 second later!'))
   .catch(err => console.log('Error:', err));
 
-// async/await — cleaner syntax
+// async/await - cleaner syntax
 async function runAfterDelay() {
   console.log('Starting...');
   await wait(1000);
@@ -2722,7 +2722,7 @@ getDataFail();`,
               { type: "contains", value: "resolve" }
             ],
             debuggingTip: `Common mistakes:
-• await outside async function? SyntaxError — await only works inside async functions.
+• await outside async function? SyntaxError - await only works inside async functions.
 • Forgot to await a Promise? Without await, you get the Promise object itself, not the value.
 • async function returns what? It always returns a Promise, even if you return a plain value.
 • Unhandled promise rejection? Always add .catch() or use try/catch inside async functions.
@@ -2735,7 +2735,7 @@ getDataFail();`,
           explanation: `Modern JavaScript introduced powerful shorthand syntax that makes code cleaner 
 and more expressive. Destructuring lets you unpack values from arrays or 
 objects into variables in one line instead of multiple assignments. The 
-spread operator (...) lets you expand arrays and objects — for copying, 
+spread operator (...) lets you expand arrays and objects - for copying, 
 merging, and passing multiple arguments. The rest parameter (...) collects 
 remaining elements into an array. These features appear in virtually every 
 modern JavaScript codebase and are essential for working with React props, 
@@ -2805,13 +2805,13 @@ function displayUser({ name, age, city = 'Unknown' }) {
 }
 displayUser(user);  // Alice (28) from Paris`,
           exercise: {
-            prompt: `Master modern JavaScript syntax:
+            prompt: `Practice modern JavaScript syntax:
 1. Destructure const coords = [40.7128, -74.0060] into lat and lng variables
-2. Destructure const config = {host:'localhost', port:3000, debug:true} — get host and port, rename debug to isDebug
+2. Destructure const config = {host:'localhost', port:3000, debug:true} - get host and port, rename debug to isDebug
 3. Use spread to merge arr1 = [1,2,3] and arr2 = [4,5,6] into combined
 4. Use spread to create an updated object from const original = {name:'Alice', age:28} with age changed to 29
 5. Create function logAll(...args) that logs the count and all arguments
-6. Create function displayProduct({name, price, inStock = true}) that logs product details — call with {name:'Laptop', price:999}`,
+6. Create function displayProduct({name, price, inStock = true}) that logs product details - call with {name:'Laptop', price:999}`,
             starterCode: `// Step 1: Array destructuring
 const coords = [40.7128, -74.0060];
 
@@ -2873,20 +2873,20 @@ displayProduct({ name: 'Laptop', price: 999 });`,
               { type: "contains", value: "...original" }
             ],
             debuggingTip: `Common mistakes:
-• Destructuring order matters for arrays: const [a, b] = [1, 2] gives a=1, b=2 — order must match.
+• Destructuring order matters for arrays: const [a, b] = [1, 2] gives a=1, b=2 - order must match.
 • Object destructuring uses property names, not positions: const { name } = obj gets property named "name".
-• Spread copies are SHALLOW — nested objects are still references. Use structuredClone() for deep copy.
+• Spread copies are SHALLOW - nested objects are still references. Use structuredClone() for deep copy.
 • Rest must be LAST: function(a, ...rest) is valid. function(...rest, a) is a SyntaxError.
-• Renaming syntax: const { debug: isDebug } = config — left is original key, right is new variable name.`
+• Renaming syntax: const { debug: isDebug } = config - left is original key, right is new variable name.`
           }
         },
         {
           id: "javascript-phase5-m1-l4",
-          title: "Modules — import and export",
+          title: "Modules - import and export",
           explanation: `As applications grow, keeping all code in one file becomes unmanageable. 
 JavaScript modules let you split code across multiple files and explicitly 
 control what each file shares and what it keeps private. This is how every 
-real JavaScript project is organized — React components are modules, utility 
+real JavaScript project is organized - React components are modules, utility 
 functions are modules, constants are modules. The export keyword marks what 
 a file makes available to others. The import keyword brings those things 
 in. This separation makes code easier to find, test, reuse, and understand. 
@@ -2928,7 +2928,7 @@ export function circleArea(radius) {
   return PI * radius * radius;
 }
 
-// Default export — the "main" thing this module provides
+// Default export - the "main" thing this module provides
 export default function calculate(operation, a, b) {
   switch(operation) {
     case 'add': return add(a, b);
@@ -3044,18 +3044,18 @@ console.log(truncate('This is a very long string', 10));`,
               { type: "contains", value: "export function capitalize" }
             ],
             debuggingTip: `Common mistakes:
-• Named import with wrong name? import { Add } from './math.js' fails — must match exact export name (case-sensitive).
+• Named import with wrong name? import { Add } from './math.js' fails - must match exact export name (case-sensitive).
 • Default import with curly braces? import { calculate } from './math.js' imports named 'calculate', not the default. Omit braces for default.
-• Circular imports? File A imports from B and B imports from A — can cause issues. Restructure to avoid.
+• Circular imports? File A imports from B and B imports from A - can cause issues. Restructure to avoid.
 • Forgetting .js extension? In browser modules, .js is required. Bundlers like Webpack/Vite may allow omitting it.
 • Import path wrong? './utils.js' is relative. 'react' is a package from node_modules. Both work differently.`
           }
         },
         {
           id: "javascript-phase5-m1-l5",
-          title: "Classes — Object-Oriented JavaScript",
+          title: "Classes - Object-Oriented JavaScript",
           explanation: `JavaScript classes (introduced in ES6) provide a cleaner syntax for creating 
-objects that share behavior. Under the hood, JavaScript uses prototypes — 
+objects that share behavior. Under the hood, JavaScript uses prototypes - 
 classes are a cleaner way to work with that system. You'll use classes 
 constantly in React (class components, though functional components with 
 hooks are now preferred), in Node.js services, and whenever you need 
@@ -3072,8 +3072,8 @@ foundation for modern JavaScript development.`,
     
     static staticMethod() { }  // called on CLASS, not instance
     
-    get propertyName() { }  // getter — access like a property
-    set propertyName(val) { } // setter — validate before setting
+    get propertyName() { }  // getter - access like a property
+    set propertyName(val) { } // setter - validate before setting
 }
 
 class Child extends Parent {
@@ -3258,11 +3258,11 @@ console.log(savings.toString());`,
               { type: "contains", value: "get balance()" }
             ],
             debuggingTip: `Common mistakes:
-• Forgot super() in child constructor? Must call super() BEFORE accessing 'this' — ReferenceError otherwise.
+• Forgot super() in child constructor? Must call super() BEFORE accessing 'this' - ReferenceError otherwise.
 • Method not on prototype? Define methods inside class body without 'function' keyword: methodName() { } not function methodName() { }.
 • Getter called with ()? Getters are accessed like properties: account.balance not account.balance().
 • this is undefined? If you extract a method: const fn = account.deposit; fn(100) loses 'this'. Use arrow functions or bind.
-• instanceof checking parent type? new SavingsAccount() instanceof BankAccount is true — inheritance works both ways.`
+• instanceof checking parent type? new SavingsAccount() instanceof BankAccount is true - inheritance works both ways.`
           }
         }
       ]

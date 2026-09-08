@@ -29,7 +29,7 @@ import Navbar from "@/components/Navbar";
 const ease = [0.16, 1, 0.3, 1];
 
 // ---------------------------------------------------------------------------
-// Language list — inlined here so this component never depends on an async
+// Language list - inlined here so this component never depends on an async
 // export from curriculum.js. If you add a language, update this array too.
 // ---------------------------------------------------------------------------
 const LANGUAGES = [
@@ -216,7 +216,7 @@ export default function Courses() {
     <div className="min-h-screen bg-white">
       <Helmet>
         <title>Courses & Lessons | Learn Python Coding</title>
-        <meta name="description" content="Browse Python courses with interactive lessons, quizzes, and AI-powered code feedback. Progress tracking and structured learning paths." />
+        <meta name="description" content="Browse Python courses with interactive lessons, quizzes, and AI code feedback. Progress tracking and structured learning paths." />
         <meta property="og:title" content="Courses & Lessons | FluentlyCode" />
         <meta property="og:description" content="Interactive Python curriculum with hands-on coding lessons and instant feedback." />
       </Helmet>
@@ -257,9 +257,9 @@ export default function Courses() {
             curriculumVersion === 2 &&
             completedLessonCount < v1CompletedCount && (
               <p className="text-xs text-blue-500 mt-3">
-                ✨ You completed {v1CompletedCount} lessons in the previous
-                curriculum — the first {v1CompletedCount} lessons here are
-                unlocked for you.
+                You completed {v1CompletedCount} lessons in the previous
+                curriculum. The first {v1CompletedCount} lessons here are
+                already available.
               </p>
             )}
         </motion.div>
@@ -311,7 +311,7 @@ export default function Courses() {
               <div className="flex items-center gap-2.5 px-4 py-3 bg-blue-50 border border-blue-100 rounded-xl mb-6 text-sm text-blue-700">
                 <Smartphone size={14} className="text-blue-400 shrink-0" />
                 <span>
-                  Quiz mode works great on mobile — no typing needed, just tap your answers.
+                  Quiz mode is easy to use on mobile. Just tap an answer; no typing needed.
                 </span>
               </div>
             </motion.div>
@@ -514,7 +514,7 @@ function LessonRow({ lesson, index = 0, done, unlocked, lang, isGuest }) {
         <Lock size={14} className="text-zinc-300 shrink-0" />
         <span className="text-sm text-zinc-400 flex-1">{lesson.title}</span>
         <span className="text-xs text-zinc-300">
-          {isGuest ? "Sign up to unlock" : "Locked"}
+          {isGuest ? "Create an account to continue" : "Locked"}
         </span>
       </div>
     );
