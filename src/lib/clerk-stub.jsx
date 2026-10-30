@@ -5,6 +5,7 @@
 // instead of crashing at startup.
 
 /* eslint-disable react-refresh/only-export-components */
+import { useLanguage } from "@/lib/LanguageContext";
 
 const warnOnce = (() => {
   let warned = false;
@@ -57,15 +58,18 @@ const passthroughButton = ({ children }) => {
 export const SignInButton = passthroughButton;
 export const SignUpButton = passthroughButton;
 
-const AuthNotConfigured = () => (
+const AuthNotConfigured = () => {
+  const { language } = useLanguage();
+  return (
   <div className="min-h-[40vh] flex items-center justify-center text-center px-6">
     <div>
-      <p className="font-semibold text-zinc-900 mb-1">Auth not configured</p>
+      <p className="font-semibold text-zinc-900 mb-1">{language === "ru" ? "Вход не настроен" : "Auth not configured"}</p>
       <p className="text-sm text-zinc-500">
-        Set VITE_CLERK_PUBLISHABLE_KEY in .env.local to enable sign-in.
+        {language === "ru" ? "Чтобы включить вход, задайте VITE_CLERK_PUBLISHABLE_KEY в .env.local." : "Set VITE_CLERK_PUBLISHABLE_KEY in .env.local to enable sign-in."}
       </p>
     </div>
   </div>
-);
+  );
+};
 export const SignIn = AuthNotConfigured;
 export const SignUp = AuthNotConfigured;

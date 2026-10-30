@@ -1,3 +1,7 @@
+import { translateContent, translateFeedback } from "@/lib/translateContent";
+import LanguageSwitch from "@/components/LanguageSwitch";
+import LocalizedText from "@/components/LocalizedText";
+import { useLanguage } from "@/lib/LanguageContext";
 // src/pages/CodingPage.jsx
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
@@ -157,6 +161,7 @@ function emptyOutputHint(lang) {
 
 export default function CodingPage() {
   const { language, lessonId } = useParams();
+  const { language: uiLanguage } = useLanguage();
   const navigate = useNavigate();
   const { user, isLoaded: isUserLoaded, isSignedIn } = useUser();
   const { supabaseClient, getToken } = useAuth();
@@ -307,7 +312,7 @@ export default function CodingPage() {
   if (!result) {
     return (
       <div className="min-h-screen flex items-center justify-center text-zinc-400 bg-white">
-        <p>Lesson not found.</p>
+        <p>{<LocalizedText text="Lesson not found." />}</p>
       </div>
     );
   }
@@ -596,7 +601,7 @@ export default function CodingPage() {
 
     let aiResponse;
     try {
-      aiResponse = await evaluateCode(code, language, lesson, await getToken());
+      aiResponse = await evaluateCode(code, language, lesson, await getToken(), uiLanguage);
     } catch (err) {
       console.error("AI evaluation error:", err);
       setFeedback({
@@ -688,10 +693,10 @@ export default function CodingPage() {
   return (
     <div className="h-screen flex flex-col bg-white overflow-hidden">
       <Helmet>
-        <title>AI-Powered Code Editor | {lesson.title} - FluentlyCode</title>
+        <title>{uiLanguage === "ru" ? "Редактор кода с ИИ" : "AI-Powered Code Editor"} | {translateContent(lesson.title, uiLanguage)} - FluentlyCode</title>
         <meta
           name="description"
-          content="Write code and get instant AI-powered feedback. Practice Python with interactive exercises and AI guidance from FluentlyCode."
+          content={uiLanguage === "ru" ? "Пишите код, выполняйте интерактивные упражнения и получайте подсказки ИИ." : "Write code and get instant AI-powered feedback. Practice Python with interactive exercises and AI guidance from FluentlyCode."}
         />
       </Helmet>
 
@@ -741,12 +746,13 @@ export default function CodingPage() {
           className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-900 transition-colors"
         >
           <ArrowLeft size={13} />
-          {exerciseFirst ? "Courses" : "Lesson"}
+          {exerciseFirst ? (uiLanguage === "ru" ? "Курсы" : "Courses") : (uiLanguage === "ru" ? "Урок" : "Lesson")}
         </button>
 
         <div className="flex items-center gap-3">
+          <LanguageSwitch />
           <span className="text-xs text-zinc-400 hidden sm:block max-w-xs truncate">
-            {lesson.title}
+            {translateContent(lesson.title, uiLanguage)}
           </span>
           {aiRemaining !== null && !isGuest && (
             <span
@@ -756,18 +762,14 @@ export default function CodingPage() {
                   : "bg-zinc-100 text-zinc-500"
               }`}
             >
-              {aiRemaining} AI reviews left today
-            </span>
+              {aiRemaining}{<LocalizedText text=" AI reviews left today" />}</span>
           )}
           {isGuest && (
-            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">
-              Guest mode
-            </span>
+            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">{<LocalizedText text="Guest mode" />}</span>
           )}
           {exerciseFirst && failCount > 0 && !feedback?.isCorrect && (
             <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-50 text-red-500">
-              {failCount}/3 attempts
-            </span>
+              {failCount}{<LocalizedText text="/3 attempts" />}</span>
           )}
         </div>
 
@@ -776,15 +778,13 @@ export default function CodingPage() {
             <button
               onClick={handleNext}
               className="flex items-center gap-1.5 text-sm font-medium px-4 py-1.5 rounded-full bg-zinc-900 text-white hover:bg-zinc-700 transition-all duration-200"
-            >
-              Next <ArrowRight size={13} />
+            >{<LocalizedText text="Next " />}<ArrowRight size={13} />
             </button>
           ) : nextRequiresLogin ? (
             <button
               onClick={() => setShowSignupModal(true)}
               className="flex items-center gap-1.5 text-sm font-medium px-4 py-1.5 rounded-full bg-zinc-900 text-white hover:bg-zinc-700 transition-all duration-200"
-            >
-              Sign up <ArrowRight size={13} />
+            >{<LocalizedText text="Sign up " />}<ArrowRight size={13} />
             </button>
           ) : (
             <div className="w-20" />
@@ -794,9 +794,7 @@ export default function CodingPage() {
             onClick={() => setShowTheoryModal(true)}
             className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-900 transition-colors"
           >
-            <BookOpen size={13} />
-            Theory
-          </button>
+            <BookOpen size={13} />{<LocalizedText text="Theory" />}</button>
         ) : (
           <div className="w-20" />
         )}
@@ -805,7 +803,7 @@ export default function CodingPage() {
       {/* ── Exercise prompt ── */}
       <div className="px-4 py-3 border-b border-zinc-100 bg-zinc-50 shrink-0">
         <p className="text-sm text-zinc-600 leading-relaxed">
-          {lesson.exercise.prompt}
+          {translateContent(lesson.exercise.prompt, uiLanguage)}
         </p>
       </div>
 
@@ -838,41 +836,37 @@ export default function CodingPage() {
                   }`}
                 >
                   {feedback.isCorrect
-                    ? "🎉 Great job! Your code is correct!"
+                    ? (uiLanguage === "ru" ? "🎉 Отлично! Ваш код верен!" : "🎉 Great job! Your code is correct!")
                     : failCount >= 3 && exerciseFirst
-                    ? "Not quite — the theory below might help!"
-                    : "Not quite right — here's what to check:"}
+                    ? (uiLanguage === "ru" ? "Не совсем — теория ниже может помочь!" : "Not quite — the theory below might help!")
+                    : (uiLanguage === "ru" ? "Пока неверно — проверьте следующее:" : "Not quite right — here's what to check:")}
                 </p>
                 <p
                   className={`text-xs leading-relaxed whitespace-pre-wrap ${
                     feedback.isCorrect ? "text-emerald-600" : "text-red-600"
                   }`}
                 >
-                  {feedback.feedback}
+                  {translateFeedback(feedback.feedback, uiLanguage)}
                 </p>
                 {!feedback.isCorrect && feedback.suggestions?.length > 0 && (
                   <div className="mt-2 flex flex-col gap-1">
                     {feedback.suggestions.map((s, i) => (
                       <div key={i} className="flex items-start gap-1.5 text-xs text-red-500">
                         <Lightbulb size={11} className="shrink-0 mt-0.5" />
-                        <span>{s}</span>
+                        <span>{translateFeedback(s, uiLanguage)}</span>
                       </div>
                     ))}
                   </div>
                 )}
                 {feedback.isCorrect && isGuest && (
                   <p className="text-xs text-emerald-500 mt-2">
-                    <Sparkles size={11} className="inline mr-1" />
-                    Create a free account to unlock AI feedback on every exercise!
-                  </p>
+                    <Sparkles size={11} className="inline mr-1" />{<LocalizedText text="Create a free account to unlock AI feedback on every exercise!" />}</p>
                 )}
                 {feedback.isCorrect && exerciseFirst && (
                   <button
                     onClick={() => setShowTheoryModal(true)}
                     className="mt-2 text-xs text-emerald-600 underline underline-offset-2 hover:text-emerald-800 transition-colors"
-                  >
-                    See why this works →
-                  </button>
+                  >{<LocalizedText text="See why this works →" />}</button>
                 )}
               </div>
             </div>
@@ -884,15 +878,12 @@ export default function CodingPage() {
       {limitReached && !isGuest && (
         <div className="px-4 py-3 bg-amber-50 border-b border-amber-100 shrink-0">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-amber-700">
-              Daily AI limit reached. Come back tomorrow or support the project.
-            </p>
+            <p className="text-sm text-amber-700">{<LocalizedText text="Daily AI limit reached. Come back tomorrow or support the project." />}</p>
             <Link
               to="/upgrade"
               className="inline-flex items-center gap-1.5 text-xs font-medium bg-zinc-900 text-white px-3 py-1.5 rounded-full hover:bg-zinc-700 transition-all shrink-0 ml-3"
             >
-              <Heart size={11} /> Support
-            </Link>
+              <Heart size={11} />{<LocalizedText text=" Support" />}</Link>
           </div>
         </div>
       )}
@@ -910,13 +901,13 @@ export default function CodingPage() {
           <div className="h-36 border-t border-zinc-100 bg-zinc-950 overflow-y-auto shrink-0">
             <div className="flex items-center gap-2 px-4 py-2 border-b border-zinc-800">
               <div className={`w-2 h-2 rounded-full ${output ? "bg-green-500" : "bg-zinc-700"}`} />
-              <span className="text-xs text-zinc-500 font-mono">output</span>
+              <span className="text-xs text-zinc-500 font-mono">{<LocalizedText text="output" />}</span>
               {running && (
                 <Loader2 size={11} className="text-zinc-600 animate-spin ml-1" />
               )}
             </div>
             <pre className="text-xs text-zinc-400 font-mono px-4 py-3 leading-relaxed whitespace-pre-wrap">
-              {output || "Press ▶ Run to see output"}
+              {running ? (uiLanguage === "ru" ? `Загрузка среды ${runtimeLabel(language)}…` : `Loading ${runtimeLabel(language)} runtime…`) : (output || (uiLanguage === "ru" ? "Нажмите ▶ «Запустить», чтобы увидеть результат" : "Press ▶ Run to see output"))}
             </pre>
           </div>
 
@@ -933,17 +924,15 @@ export default function CodingPage() {
                 ) : (
                   <Play size={12} />
                 )}
-                {running ? "Running…" : "Run"}
+                {running ? (uiLanguage === "ru" ? "Выполняется…" : "Running…") : (uiLanguage === "ru" ? "Запустить" : "Run")}
               </button>
             ) : (
               <button
                 disabled
-                title={`Live execution for ${language} coming soon`}
+                title={uiLanguage === "ru" ? `Запуск ${language} скоро появится` : `Live execution for ${language} coming soon`}
                 className="flex items-center gap-1.5 px-4 py-2 border border-zinc-100 rounded-lg text-sm text-zinc-300 cursor-not-allowed"
               >
-                <Play size={12} />
-                Run
-              </button>
+                <Play size={12} />{<LocalizedText text="Run" />}</button>
             )}
 
             <button
@@ -957,10 +946,10 @@ export default function CodingPage() {
                 <Send size={12} />
               )}
               {submitting
-                ? "Checking…"
+                ? (uiLanguage === "ru" ? "Проверяем…" : "Checking…")
                 : limitReached && !isGuest
-                ? "Limit reached"
-                : "Submit"}
+                ? (uiLanguage === "ru" ? "Лимит исчерпан" : "Limit reached")
+                : (uiLanguage === "ru" ? "Отправить" : "Submit")}
             </button>
 
             {lesson.exercise?.debuggingTip && (
@@ -973,7 +962,7 @@ export default function CodingPage() {
                 }`}
               >
                 <Lightbulb size={12} />
-                {showHint ? "Hide hint" : "Hint"}
+                {showHint ? (uiLanguage === "ru" ? "Скрыть подсказку" : "Hide hint") : (uiLanguage === "ru" ? "Подсказка" : "Hint")}
               </button>
             )}
 
@@ -986,7 +975,7 @@ export default function CodingPage() {
               }`}
             >
               {showSolution ? <EyeOff size={13} /> : <Eye size={13} />}
-              {showSolution ? "Hide solution" : "Show solution"}
+              {showSolution ? (uiLanguage === "ru" ? "Скрыть решение" : "Hide solution") : (uiLanguage === "ru" ? "Показать решение" : "Show solution")}
             </button>
           </div>
 
@@ -1003,11 +992,9 @@ export default function CodingPage() {
                 <div className="bg-amber-50 px-4 py-4 flex gap-3">
                   <Lightbulb size={14} className="text-amber-500 shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-widest text-amber-600 mb-1">
-                      Hint
-                    </p>
+                    <p className="text-xs font-semibold uppercase tracking-widest text-amber-600 mb-1">{<LocalizedText text="Hint" />}</p>
                     <p className="text-sm text-amber-800 leading-relaxed">
-                      {lesson.exercise.debuggingTip}
+                      {translateContent(lesson.exercise.debuggingTip, uiLanguage)}
                     </p>
                   </div>
                 </div>
@@ -1026,9 +1013,7 @@ export default function CodingPage() {
                 className="overflow-hidden border-t border-zinc-100 shrink-0"
               >
                 <div className="bg-zinc-50 px-4 py-4">
-                  <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-2">
-                    Solution
-                  </p>
+                  <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-2">{<LocalizedText text="Solution" />}</p>
                   <pre className="text-sm font-mono text-zinc-700 leading-relaxed whitespace-pre-wrap">
                     {lesson.exercise.solution}
                   </pre>

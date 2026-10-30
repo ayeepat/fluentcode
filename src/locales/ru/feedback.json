@@ -1,0 +1,19 @@
+{
+  "Your output doesn't match the expected output yet.": "Ваш результат пока не совпадает с ожидаемым.",
+  "Your code is missing a required construct.": "В вашем коде отсутствует необходимая конструкция.",
+  "Your code produces the correct output. Great work!": "Ваш код выводит правильный результат. Отличная работа!",
+  "Read the error message carefully — it tells you the line number.": "Внимательно прочитайте сообщение об ошибке: в нём указан номер строки.",
+  "Check for typos in variable names or function calls.": "Проверьте имена переменных и вызовы функций на опечатки.",
+  "Re-read the exercise prompt carefully.": "Ещё раз внимательно прочитайте условие задания.",
+  "Compare your output to the expected output above.": "Сравните свой результат с ожидаемым выше.",
+  "Use the Hint button if you're stuck.": "Если не получается, воспользуйтесь кнопкой «Подсказка».",
+  "Something doesn't look right. Check the exercise prompt and compare your code with the example.": "Что-то не так. Проверьте условие задания и сравните свой код с примером.",
+  "Review the example code": "Ещё раз посмотрите пример кода",
+  "Check for typos": "Проверьте код на опечатки",
+  "You've used all your AI reviews for today. Come back tomorrow for more.": "Вы исчерпали дневной лимит проверок ИИ. Возвращайтесь завтра.",
+  "The AI evaluator had trouble responding. Please try again.": "Не удалось получить ответ от ИИ. Попробуйте ещё раз.",
+  "Try submitting once more in a moment.": "Попробуйте отправить код ещё раз через некоторое время.",
+  "Nice effort — keep going.": "Хорошая попытка — продолжайте.",
+  "Couldn't reach the AI right now. Please try again in a moment.": "Сейчас не удаётся связаться с ИИ. Попробуйте ещё раз чуть позже.",
+  "Check your internet connection and try again.": "Проверьте подключение к интернету и попробуйте ещё раз."
+}

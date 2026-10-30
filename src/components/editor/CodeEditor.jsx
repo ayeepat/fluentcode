@@ -1,8 +1,10 @@
+import { useLanguage } from "@/lib/LanguageContext";
 // src/components/editor/CodeEditor.jsx
 import { useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
 
 export default function CodeEditor({ value, onChange, language }) {
+  const { language: uiLanguage } = useLanguage();
   const editorRef = useRef(null);
   const [hasCleared, setHasCleared] = useState(false);
 
@@ -55,10 +57,11 @@ export default function CodeEditor({ value, onChange, language }) {
     <div className="h-full w-full border border-zinc-200 rounded-2xl overflow-hidden relative">
       {!value?.trim() && (
         <div className="absolute inset-0 pointer-events-none z-10 flex items-start justify-start pt-16 pl-[50px]">
-          <span className="text-zinc-500 text-sm font-mono">Type your code here</span>
+          <span className="text-zinc-500 text-sm font-mono">{uiLanguage === "ru" ? "Введите код здесь" : "Type your code here"}</span>
         </div>
       )}
       <Editor
+        loading={uiLanguage === "ru" ? "Загрузка…" : "Loading..."}
         height="100%"
         language={languageMap[language] || "python"}
         value={value}

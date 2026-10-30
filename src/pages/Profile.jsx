@@ -1,3 +1,6 @@
+import { useLanguage } from "@/lib/LanguageContext";
+import { translateFeedback } from "@/lib/translateContent";
+import LocalizedText from "@/components/LocalizedText";
 // src/pages/Profile.jsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +16,7 @@ import Navbar from "@/components/Navbar";
 const ease = [0.16, 1, 0.3, 1];
 
 export default function Profile() {
+  const { language } = useLanguage();
   const { user, isLoaded, isSignedIn } = useUser();
   const { signOut } = useClerk();
   const { supabaseClient } = useAuth();
@@ -92,10 +96,10 @@ export default function Profile() {
   return (
     <div className="min-h-screen bg-white">
       <Helmet>
-        <title>Your Profile | Learning Stats & Progress</title>
-        <meta name="description" content="View your learning profile. Track statistics, progress, and manage your FluentlyCode account." />
-        <meta property="og:title" content="Profile - FluentlyCode" />
-        <meta property="og:description" content="Your personalized learning profile and statistics." />
+        <title>{language === "ru" ? "Профиль и прогресс | FluentlyCode" : "Your Profile | Learning Stats & Progress"}</title>
+        <meta name="description" content={language === "ru" ? "Статистика обучения и настройки аккаунта FluentlyCode." : "View your learning profile. Track statistics, progress, and manage your FluentlyCode account."} />
+        <meta property="og:title" content={language === "ru" ? "Профиль и прогресс | FluentlyCode" : "Profile - FluentlyCode"} />
+        <meta property="og:description" content={language === "ru" ? "Статистика обучения и настройки аккаунта FluentlyCode." : "Your personalized learning profile and statistics."} />
       </Helmet>
       <Navbar streak={streak} hideProfile />
 
@@ -126,7 +130,7 @@ export default function Profile() {
             >
               <Icon size={15} className="text-zinc-300 mb-3" />
               <div className="text-2xl font-bold tracking-tight mb-0.5">{value}</div>
-              <div className="text-xs text-zinc-400">{label}</div>
+              <div className="text-xs text-zinc-400">{language === "ru" ? ({ "Day streak": "Дней подряд", Accuracy: "Точность", "Lessons done": "Уроков пройдено", Exercises: "Задания" }[label] || label) : label}</div>
             </div>
           ))}
         </motion.div>
@@ -138,7 +142,7 @@ export default function Profile() {
           className="mb-10"
         >
           <div className="flex justify-between text-xs text-zinc-400 mb-2">
-            <span>{languageLabel} progress</span>
+            <span>{languageLabel}{<LocalizedText text=" progress" />}</span>
             <span className="tabular-nums font-medium text-zinc-600">{progressPct}%</span>
           </div>
           <div className="h-1.5 bg-zinc-100 rounded-full overflow-hidden">
@@ -157,9 +161,7 @@ export default function Profile() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.21, ease }}
           >
-            <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-4">
-              Areas to improve
-            </p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-4">{<LocalizedText text="Areas to improve" />}</p>
             <div className="space-y-2">
               {progress.mistake_patterns.map((p, i) => (
                 <div
@@ -167,7 +169,7 @@ export default function Profile() {
                   className="flex items-center gap-3 text-sm text-zinc-600 px-4 py-3 bg-zinc-50 rounded-xl border border-zinc-100"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-zinc-300 shrink-0" />
-                  {p}
+                  {language === "ru" && p === "runtime_error" ? "Ошибка выполнения" : translateFeedback(p, language)}
                 </div>
               ))}
             </div>

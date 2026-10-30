@@ -1,3 +1,5 @@
+import { useLanguage } from "@/lib/LanguageContext";
+import LocalizedText from "@/components/LocalizedText";
 // src/components/editor/AIFeedbackPanel.jsx
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -19,6 +21,8 @@ export default function AIFeedbackPanel({
   language,
   isGuest = false,
 }) {
+  const { language: uiLanguage } = useLanguage();
+  const ru = uiLanguage === "ru";
   const { getToken } = useAuth();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -74,7 +78,7 @@ ${userCode || "(no code yet)"}
 
 Student's question: "${q}"
 
-Be concise, warm, and clear. Never reveal the full solution — guide instead. 2–4 sentences max unless the concept truly requires more.`;
+Respond in ${ru ? "Russian" : "English"}, preserving code and identifiers exactly. Be concise, warm, and clear. Never reveal the full solution — guide instead. 2–4 sentences max unless the concept truly requires more.`;
 
       const res = await fetch(`${SUPABASE_URL}/functions/v1/ai-chat`, {
         method: "POST",
@@ -144,27 +148,19 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
       <div className="flex flex-col h-full bg-white">
         <div className="px-5 py-4 border-b border-zinc-100 flex items-center gap-2.5 shrink-0">
           <Sparkles size={13} className="text-zinc-400" />
-          <span className="text-sm font-semibold tracking-tight text-zinc-900">
-            AI Assistant
-          </span>
+          <span className="text-sm font-semibold tracking-tight text-zinc-900">{<LocalizedText text="AI Assistant" />}</span>
         </div>
         <div className="flex-1 flex flex-col items-center justify-center text-center gap-4 p-6">
           <div className="w-12 h-12 rounded-full bg-zinc-50 border border-zinc-100 flex items-center justify-center">
             <Lock size={18} className="text-zinc-300" />
           </div>
           <div>
-            <p className="text-sm font-medium text-zinc-700 mb-1">
-              AI tutor available with a free account
-            </p>
-            <p className="text-xs text-zinc-400 max-w-[200px] mx-auto leading-relaxed">
-              Get personalized feedback, hints, and explanations for your code
-            </p>
+            <p className="text-sm font-medium text-zinc-700 mb-1">{<LocalizedText text="AI tutor available with a free account" />}</p>
+            <p className="text-xs text-zinc-400 max-w-[200px] mx-auto leading-relaxed">{<LocalizedText text="Get personalized feedback, hints, and explanations for your code" />}</p>
           </div>
           <SignUpButton mode="modal">
             <button className="inline-flex items-center gap-2 bg-zinc-900 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-zinc-700 transition-all duration-200">
-              <Sparkles size={12} />
-              Sign up free
-            </button>
+              <Sparkles size={12} />{<LocalizedText text="Sign up free" />}</button>
           </SignUpButton>
         </div>
       </div>
@@ -176,9 +172,7 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
     <>
       <div className="flex-1 flex flex-col items-center justify-center text-center gap-3 p-6">
         <Sparkles size={18} className="text-zinc-200" />
-        <p className="text-xs text-zinc-300 max-w-[160px] leading-relaxed">
-          Ask anything about this lesson or your code
-        </p>
+        <p className="text-xs text-zinc-300 max-w-[160px] leading-relaxed">{<LocalizedText text="Ask anything about this lesson or your code" />}</p>
         {remaining !== null && (
           <span
             className={`text-xs font-medium px-2 py-0.5 rounded-full ${
@@ -187,19 +181,18 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
                 : "bg-zinc-100 text-zinc-400"
             }`}
           >
-            {remaining} requests left today
-          </span>
+            {remaining}{<LocalizedText text=" requests left today" />}</span>
         )}
       </div>
       <div className="px-4 pb-3 flex flex-col gap-1.5 shrink-0">
         {QUICK_PROMPTS.map((p) => (
           <button
             key={p}
-            onClick={() => sendMessage(p)}
+            onClick={() => sendMessage(ru ? ({ "Give me a hint": "Дайте подсказку", "Why is this wrong?": "Почему это неверно?", "Explain the concept": "Объясните понятие" }[p]) : p)}
             disabled={limitReached}
             className="text-left text-xs text-zinc-500 hover:text-zinc-900 px-3 py-2 rounded-xl border border-zinc-100 hover:border-zinc-300 transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {p}
+            {ru ? ({ "Give me a hint": "Дайте подсказку", "Why is this wrong?": "Почему это неверно?", "Explain the concept": "Объясните понятие" }[p]) : p}
           </button>
         ))}
       </div>
@@ -212,9 +205,7 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
       <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2.5">
           <Sparkles size={13} className="text-zinc-400" />
-          <span className="text-sm font-semibold tracking-tight text-zinc-900">
-            AI Assistant
-          </span>
+          <span className="text-sm font-semibold tracking-tight text-zinc-900">{<LocalizedText text="AI Assistant" />}</span>
         </div>
         {remaining !== null && (
           <span
@@ -224,17 +215,13 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
                 : "bg-zinc-100 text-zinc-400"
             }`}
           >
-            {remaining} left
-          </span>
+            {remaining}{<LocalizedText text=" left" />}</span>
         )}
       </div>
 
       {limitReached && (
         <div className="mx-4 mt-4 bg-amber-50 border border-amber-200 rounded-2xl p-4 shrink-0">
-          <p className="text-xs text-amber-700 leading-relaxed">
-            You've reached your daily AI request limit. Come back tomorrow to
-            continue asking questions.
-          </p>
+          <p className="text-xs text-amber-700 leading-relaxed">{<LocalizedText text="You've reached your daily AI request limit. Come back tomorrow to continue asking questions." />}</p>
         </div>
       )}
 
@@ -264,7 +251,7 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
                           msg.isLimit ? "text-amber-600" : "text-zinc-700"
                         }`}
                       >
-                        {msg.content}
+                        {ru && msg.isLimit ? "Вы исчерпали дневной лимит запросов к ИИ. Возвращайтесь завтра." : ru && msg.content === "Sorry, I couldn't process that. Please try again." ? "Не удалось обработать запрос. Попробуйте ещё раз." : ru && msg.content === "Sorry, I'm having trouble right now. Please try again." ? "Сейчас не удаётся ответить. Попробуйте ещё раз." : msg.content}
                       </p>
                     </div>
                   </div>
@@ -307,11 +294,11 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
           {QUICK_PROMPTS.map((p) => (
             <button
               key={p}
-              onClick={() => sendMessage(p)}
+              onClick={() => sendMessage(ru ? ({ "Give me a hint": "Дайте подсказку", "Why is this wrong?": "Почему это неверно?", "Explain the concept": "Объясните понятие" }[p]) : p)}
               disabled={limitReached}
               className="text-left text-xs text-zinc-500 hover:text-zinc-900 px-3 py-2 rounded-xl border border-zinc-100 hover:border-zinc-300 transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {p}
+              {ru ? ({ "Give me a hint": "Дайте подсказку", "Why is this wrong?": "Почему это неверно?", "Explain the concept": "Объясните понятие" }[p]) : p}
             </button>
           ))}
         </div>
@@ -319,9 +306,7 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
 
       <div className="px-4 pb-4 pt-2 shrink-0">
         {limitReached ? (
-          <div className="text-center text-xs text-zinc-400 py-2">
-            Come back tomorrow for more free requests.
-          </div>
+          <div className="text-center text-xs text-zinc-400 py-2">{<LocalizedText text="Come back tomorrow for more free requests." />}</div>
         ) : (
           <div className="flex items-center gap-2 border border-zinc-200 rounded-2xl px-3.5 py-2.5 focus-within:border-zinc-400 transition-colors duration-200">
             <input
@@ -330,11 +315,12 @@ Be concise, warm, and clear. Never reveal the full solution — guide instead. 2
               onKeyDown={(e) =>
                 e.key === "Enter" && !e.shiftKey && sendMessage()
               }
-              placeholder="Ask the AI assistant…"
+              placeholder={ru ? "Спросите ИИ-помощника…" : "Ask the AI assistant…"}
               className="flex-1 text-sm outline-none bg-transparent text-zinc-800 placeholder-zinc-300"
             />
             <button
               onClick={() => sendMessage()}
+              aria-label={ru ? "Отправить сообщение" : "Send message"}
               disabled={loading || !input.trim()}
               className="w-6 h-6 bg-zinc-900 rounded-full flex items-center justify-center shrink-0 hover:bg-zinc-700 transition-colors disabled:opacity-20"
             >

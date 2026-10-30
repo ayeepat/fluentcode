@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { BookOpen, Heart, User, LogOut, Flame, ArrowLeft } from "lucide-react";
 import { useClerk, useUser, SignInButton, SignUpButton } from "@clerk/clerk-react";
 import Wordmark from "@/components/Wordmark";
+import LanguageSwitch from "@/components/LanguageSwitch";
+import { useLanguage } from "@/lib/LanguageContext";
 
 function StreakBadge({ streak }) {
   if (!streak) return null;
@@ -17,41 +19,44 @@ function StreakBadge({ streak }) {
 }
 
 export default function Navbar({ streak = 0, backTo = null, backLabel = null, moduleTitle = null, hideProfile = false }) {
+  const { language } = useLanguage();
+  const ru = language === "ru";
   const { signOut } = useClerk();
   const { isSignedIn } = useUser();
 
   if (backTo) {
     return (
-      <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-3.5 bg-white/85 backdrop-blur-xl border-b border-zinc-200/70">
+      <nav className="sticky top-0 z-40 flex flex-wrap items-center justify-between gap-y-2 px-4 sm:px-6 py-3.5 bg-white/85 backdrop-blur-xl border-b border-zinc-200/70">
         <Link
           to={backTo}
           className="flex items-center gap-1.5 text-sm font-medium text-zinc-500 hover:text-zinc-900 transition-colors"
         >
           <ArrowLeft size={14} />
-          {backLabel}
+          {ru && backLabel === "Courses" ? "Курсы" : backLabel}
         </Link>
         <span className="text-xs text-zinc-400 max-w-xs truncate hidden sm:block">
           {moduleTitle}
         </span>
-        <div className="flex items-center gap-3">
+        <div className="flex w-full sm:w-auto items-center justify-end gap-3">
           <StreakBadge streak={streak} />
+          <LanguageSwitch />
           {isSignedIn ? (
             <Link
               to="/dashboard"
               className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
             >
-              Dashboard
+              {ru ? "Личный кабинет" : "Dashboard"}
             </Link>
           ) : (
             <div className="flex items-center gap-2">
               <SignInButton mode="modal">
                 <button className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors">
-                  Log in
+                  {ru ? "Войти" : "Log in"}
                 </button>
               </SignInButton>
               <SignUpButton mode="modal">
                 <button className="text-sm font-medium bg-zinc-900 text-white px-3.5 py-1.5 rounded-full hover:bg-zinc-700 transition-all">
-                  Sign up
+                  {ru ? "Регистрация" : "Sign up"}
                 </button>
               </SignUpButton>
             </div>
@@ -62,25 +67,26 @@ export default function Navbar({ streak = 0, backTo = null, backLabel = null, mo
   }
 
   return (
-    <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-3.5 bg-white/85 backdrop-blur-xl border-b border-zinc-200/70">
+    <nav className="sticky top-0 z-40 flex flex-wrap items-center justify-between gap-y-2 px-4 sm:px-6 py-3.5 bg-white/85 backdrop-blur-xl border-b border-zinc-200/70">
       <div className="flex items-center gap-3">
         <Link to="/">
           <Wordmark />
         </Link>
         <StreakBadge streak={streak} />
       </div>
-      <div className="flex items-center gap-1">
+      <div className="flex w-full sm:w-auto items-center justify-end gap-1">
+        <LanguageSwitch />
         <NavBtn to="/courses" icon={<BookOpen size={12} />}>
-          Courses
+          {ru ? "Курсы" : "Courses"}
         </NavBtn>
         {isSignedIn ? (
           <>
             <NavBtn to="/upgrade" icon={<Heart size={12} className="text-rose-500" />}>
-              Support
+              {ru ? "Поддержать" : "Support"}
             </NavBtn>
             {!hideProfile && (
               <NavBtn to="/profile" icon={<User size={12} />}>
-                Profile
+                {ru ? "Профиль" : "Profile"}
               </NavBtn>
             )}
             <button
@@ -88,20 +94,20 @@ export default function Navbar({ streak = 0, backTo = null, backLabel = null, mo
               className="flex items-center gap-1 text-sm text-zinc-500 hover:text-red-500 px-3 py-1.5 rounded-full hover:bg-zinc-100 transition-all duration-150 ml-1"
             >
               <LogOut size={12} />
-              Log out
+              {ru ? "Выйти" : "Log out"}
             </button>
           </>
         ) : (
           <>
-            <div className="w-px h-4 bg-zinc-200 mx-2" />
+            <div className="w-px h-4 bg-zinc-200 mx-1" />
             <SignInButton mode="modal">
-              <button className="text-sm text-zinc-500 hover:text-zinc-900 px-3 py-1.5 rounded-full hover:bg-zinc-100 transition-all duration-150">
-                Log in
+              <button className="text-sm text-zinc-500 hover:text-zinc-900 px-1.5 sm:px-3 py-1.5 rounded-full hover:bg-zinc-100 transition-all duration-150">
+                {ru ? "Войти" : "Log in"}
               </button>
             </SignInButton>
             <SignUpButton mode="modal">
-              <button className="text-sm font-medium bg-zinc-900 text-white px-4 py-1.5 rounded-full hover:bg-zinc-700 transition-all duration-200 ml-1">
-                Sign up
+              <button className="text-sm font-medium bg-zinc-900 text-white px-3 sm:px-4 py-1.5 rounded-full hover:bg-zinc-700 transition-all duration-200 ml-1">
+                {ru ? "Регистрация" : "Sign up"}
               </button>
             </SignUpButton>
           </>
@@ -115,7 +121,7 @@ function NavBtn({ to, icon, children }) {
   return (
     <Link
       to={to}
-      className="flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-900 px-3 py-1.5 rounded-full hover:bg-zinc-100 transition-all duration-150"
+      className="flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-900 px-1.5 sm:px-3 py-1.5 rounded-full hover:bg-zinc-100 transition-all duration-150"
     >
       {icon}
       {children}

@@ -1,3 +1,6 @@
+import { useLanguage } from "@/lib/LanguageContext";
+import { translateContent } from "@/lib/translateContent";
+import LocalizedText from "@/components/LocalizedText";
 // src/pages/Dashboard.jsx
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -19,6 +22,8 @@ const stagger = (i) => ({
 });
 
 export default function Dashboard() {
+  const { language: uiLanguage } = useLanguage();
+  const ru = uiLanguage === "ru";
   const { user, isSignedIn, isLoaded } = useUser();
   const { supabaseClient } = useAuth();
   const [progress, setProgress] = useState(null);
@@ -78,14 +83,12 @@ export default function Dashboard() {
         <Navbar />
         <div className="max-w-2xl mx-auto px-6 py-14 flex flex-col items-center justify-center min-h-96">
           <div className="text-center">
-            <h2 className="text-xl font-bold text-red-600 mb-2">Loading Error</h2>
-            <p className="text-zinc-600 mb-4">{progress.error}</p>
+            <h2 className="text-xl font-bold text-red-600 mb-2">{<LocalizedText text="Loading Error" />}</h2>
+            <p className="text-zinc-600 mb-4">{ru ? "Не удалось загрузить прогресс. Обновите страницу." : progress.error}</p>
             <button
               onClick={() => window.location.reload()}
               className="px-4 py-2 bg-zinc-900 text-white rounded hover:bg-zinc-800"
-            >
-              Refresh Page
-            </button>
+            >{<LocalizedText text="Refresh Page" />}</button>
           </div>
         </div>
       </div>
@@ -112,9 +115,9 @@ export default function Dashboard() {
 
   const getGreeting = () => {
     const h = new Date().getHours();
-    if (h < 12) return "Good morning";
-    if (h < 18) return "Good afternoon";
-    return "Good evening";
+    if (h < 12) return ru ? "Доброе утро" : "Good morning";
+    if (h < 18) return ru ? "Добрый день" : "Good afternoon";
+    return ru ? "Добрый вечер" : "Good evening";
   };
 
   const displayName =
@@ -136,8 +139,8 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-white">
       <Helmet>
-        <title>Dashboard | Your Learning Progress</title>
-        <meta name="description" content="Track your learning progress. View your streak, completed exercises, and continue your coding journey with FluentlyCode." />
+        <title>{uiLanguage === "ru" ? "Мой прогресс | FluentlyCode" : "Dashboard | Your Learning Progress"}</title>
+        <meta name="description" content={uiLanguage === "ru" ? "Следите за серией занятий и выполненными упражнениями." : "Track your learning progress. View your streak, completed exercises, and continue your coding journey with FluentlyCode."} />
       </Helmet>
       <Navbar streak={streak} />
 
@@ -147,9 +150,7 @@ export default function Dashboard() {
           <h1 className="text-3xl font-bold tracking-tight">
             {displayName}
             {isPro && (
-              <span className="ml-2 text-xs font-semibold bg-emerald-500 text-white px-2 py-0.5 rounded-full align-middle uppercase tracking-wider">
-                Supporter
-              </span>
+              <span className="ml-2 text-xs font-semibold bg-emerald-500 text-white px-2 py-0.5 rounded-full align-middle uppercase tracking-wider">{<LocalizedText text="Supporter" />}</span>
             )}
           </h1>
         </motion.div>
@@ -164,14 +165,14 @@ export default function Dashboard() {
               <div className="text-2xl font-bold tracking-tight mb-0.5">
                 {value}
               </div>
-              <div className="text-xs text-zinc-400">{label}</div>
+              <div className="text-xs text-zinc-400">{ru ? ({ "Day streak": "Дней подряд", Accuracy: "Точность", Completed: "Пройдено" }[label] || label) : label}</div>
             </div>
           ))}
         </motion.div>
 
         <motion.div {...stagger(2)} className="mb-10">
           <div className="flex justify-between text-xs text-zinc-400 mb-2">
-            <span>{lang.toUpperCase()} progress</span>
+            <span>{lang.toUpperCase()}{<LocalizedText text=" progress" />}</span>
             <span className="tabular-nums font-medium text-zinc-600">
               {progressPct}%
             </span>
@@ -188,7 +189,7 @@ export default function Dashboard() {
 
         <motion.div {...stagger(3)}>
           <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-4">
-            {nextLesson ? "Continue learning" : "All done"}
+            {nextLesson ? (ru ? "Продолжить обучение" : "Continue learning") : (ru ? "Всё пройдено" : "All done")}
           </p>
           {nextLesson ? (
             <Link
@@ -197,10 +198,10 @@ export default function Dashboard() {
             >
               <div>
                 <div className="text-xs text-zinc-400 mb-1">
-                  {nextLesson.moduleTitle}
+                  {translateContent(nextLesson.moduleTitle, uiLanguage)}
                 </div>
                 <div className="text-base font-semibold text-zinc-900">
-                  {nextLesson.title}
+                  {translateContent(nextLesson.title, uiLanguage)}
                 </div>
               </div>
               <ArrowRight
@@ -211,10 +212,8 @@ export default function Dashboard() {
           ) : (
             <div className="text-center py-16 border border-zinc-100 rounded-2xl">
               <p className="text-2xl mb-2">🎉</p>
-              <p className="font-semibold text-zinc-900 mb-1">
-                All lessons complete!
-              </p>
-              <p className="text-sm text-zinc-400">More content coming soon.</p>
+              <p className="font-semibold text-zinc-900 mb-1">{<LocalizedText text="All lessons complete!" />}</p>
+              <p className="text-sm text-zinc-400">{<LocalizedText text="More content coming soon." />}</p>
             </div>
           )}
         </motion.div>

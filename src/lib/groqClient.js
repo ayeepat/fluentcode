@@ -2,7 +2,7 @@
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
-export const evaluateCode = async (code, language, lesson, clerkToken) => {
+export const evaluateCode = async (code, language, lesson, clerkToken, uiLanguage = "ru") => {
   try {
     const res = await fetch(
       `${SUPABASE_URL}/functions/v1/evaluate-code`,
@@ -13,7 +13,7 @@ export const evaluateCode = async (code, language, lesson, clerkToken) => {
           apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
           ...(clerkToken ? { Authorization: `Bearer ${clerkToken}` } : {}),
         },
-        body: JSON.stringify({ code, language, lesson }),
+        body: JSON.stringify({ code, language, lesson, uiLanguage }),
       }
     );
 

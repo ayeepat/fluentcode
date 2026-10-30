@@ -1,3 +1,6 @@
+import { useLanguage } from "@/lib/LanguageContext";
+import { translateContent } from "@/lib/translateContent";
+import LocalizedText from "@/components/LocalizedText";
 // src/pages/QuizHub.jsx
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -35,6 +38,7 @@ const LANGUAGES = [
 ];
 
 export default function QuizHub() {
+  const { language: uiLanguage } = useLanguage();
   const { user, isLoaded, isSignedIn } = useUser();
   const { supabaseClient } = useAuth();
   const [progress, setProgress]                   = useState(null);
@@ -145,10 +149,10 @@ export default function QuizHub() {
   return (
     <div className="min-h-screen bg-white">
       <Helmet>
-        <title>Quiz Hub | Practice Python Quizzes</title>
-        <meta name="description" content="Access all Python quizzes. Test your knowledge with interactive questions after each lesson. No prerequisites needed." />
-        <meta property="og:title" content="Quiz Hub - FluentlyCode" />
-        <meta property="og:description" content="Interactive quizzes covering all Python lessons." />
+        <title>{uiLanguage === "ru" ? "Тесты | FluentlyCode" : "Quiz Hub | Practice Python Quizzes"}</title>
+        <meta name="description" content={uiLanguage === "ru" ? "Проверяйте знания с помощью тестов к урокам." : "Access all Python quizzes. Test your knowledge with interactive questions after each lesson. No prerequisites needed."} />
+        <meta property="og:title" content={uiLanguage === "ru" ? "Тесты | FluentlyCode" : "Quiz Hub - FluentlyCode"} />
+        <meta property="og:description" content={uiLanguage === "ru" ? "Проверяйте знания с помощью тестов к урокам." : "Interactive quizzes covering all Python lessons."} />
       </Helmet>
       <Navbar streak={streak} />
 
@@ -161,12 +165,9 @@ export default function QuizHub() {
         >
           <div className="flex items-center gap-3 mb-2">
             <HelpCircle size={20} className="text-zinc-400" />
-            <h1 className="text-3xl font-bold tracking-tight">Quiz Mode</h1>
+            <h1 className="text-3xl font-bold tracking-tight">{<LocalizedText text="Quiz Mode" />}</h1>
           </div>
-          <p className="text-sm text-zinc-400">
-            Test your knowledge with multiple choice questions. All quizzes are
-            available — no need to complete lessons first.
-          </p>
+          <p className="text-sm text-zinc-400">{<LocalizedText text="Test your knowledge with multiple choice questions. All quizzes are available — no need to complete lessons first." />}</p>
         </motion.div>
 
         {/* Language selector */}
@@ -211,7 +212,7 @@ export default function QuizHub() {
                 transition={{ duration: 0.4, delay: moduleIdx * 0.05, ease }}
               >
                 <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">
-                  {module.title}
+                  {translateContent(module.title, uiLanguage)}
                 </p>
                 <div className="space-y-1.5">
                   {module.lessons.map((lesson) => {
@@ -234,10 +235,10 @@ export default function QuizHub() {
                           <HelpCircle size={13} className="text-zinc-300 group-hover:text-zinc-500 transition-colors shrink-0" />
                         )}
                         <span className={`text-sm font-medium flex-1 ${done ? "text-emerald-700" : "text-zinc-700"}`}>
-                          {lesson.title}
+                          {translateContent(lesson.title, uiLanguage)}
                         </span>
                         <span className={`text-xs ${done ? "text-emerald-500" : "text-zinc-400"}`}>
-                          {done ? "Completed" : "5 questions"}
+                          {done ? (uiLanguage === "ru" ? "Пройдено" : "Completed") : (uiLanguage === "ru" ? "5 вопросов" : "5 questions")}
                         </span>
                       </button>
                     );

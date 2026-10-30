@@ -1,3 +1,5 @@
+import { useLanguage } from "@/lib/LanguageContext";
+import LocalizedText from "@/components/LocalizedText";
 // src/components/SignupPrompt.jsx
 import { motion, AnimatePresence } from "framer-motion";
 import { SignUpButton, SignInButton } from "@clerk/clerk-react";
@@ -7,6 +9,7 @@ import { useState } from "react";
 const ease = [0.16, 1, 0.3, 1];
 
 export default function SignupPrompt({ show = true, onClose = null }) {
+  const { language } = useLanguage();
   const [visible, setVisible] = useState(show);
 
   const handleClose = () => {
@@ -41,6 +44,7 @@ export default function SignupPrompt({ show = true, onClose = null }) {
             {/* Close button */}
             <button
               onClick={handleClose}
+              aria-label={language === "ru" ? "Закрыть" : "Close"}
               className="absolute top-4 right-4 w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-400 hover:text-zinc-900 hover:bg-zinc-200 transition-all"
             >
               <X size={14} />
@@ -51,26 +55,17 @@ export default function SignupPrompt({ show = true, onClose = null }) {
                 <Sparkles size={24} className="text-emerald-500" />
               </div>
 
-              <h2 className="text-2xl font-bold tracking-tight mb-2">
-                You're on a roll! 🎉
-              </h2>
-              <p className="text-sm text-zinc-500 mb-2 leading-relaxed">
-                You've completed 3 lessons — that's more than most people ever do.
-              </p>
-              <p className="text-sm text-zinc-400 mb-8 leading-relaxed">
-                Create a free account to unlock all lessons, get AI-powered feedback on your code, and track your progress across devices.
-              </p>
+              <h2 className="text-2xl font-bold tracking-tight mb-2">{<LocalizedText text="You're on a roll! 🎉" />}</h2>
+              <p className="text-sm text-zinc-500 mb-2 leading-relaxed">{<LocalizedText text="You've completed 3 lessons — that's more than most people ever do." />}</p>
+              <p className="text-sm text-zinc-400 mb-8 leading-relaxed">{<LocalizedText text="Create a free account to unlock all lessons, get AI-powered feedback on your code, and track your progress across devices." />}</p>
 
               <div className="flex flex-col gap-3">
                 <SignUpButton mode="modal">
-                  <button className="w-full inline-flex items-center justify-center gap-2 bg-zinc-900 text-white px-5 py-3 rounded-full text-sm font-semibold hover:bg-zinc-700 transition-all duration-200">
-                    Create free account <ArrowRight size={13} />
+                  <button className="w-full inline-flex items-center justify-center gap-2 bg-zinc-900 text-white px-5 py-3 rounded-full text-sm font-semibold hover:bg-zinc-700 transition-all duration-200">{<LocalizedText text="Create free account " />}<ArrowRight size={13} />
                   </button>
                 </SignUpButton>
                 <SignInButton mode="modal">
-                  <button className="w-full text-sm text-zinc-500 hover:text-zinc-900 py-2 transition-colors duration-200">
-                    Already have an account? Log in →
-                  </button>
+                  <button className="w-full text-sm text-zinc-500 hover:text-zinc-900 py-2 transition-colors duration-200">{<LocalizedText text="Already have an account? Log in →" />}</button>
                 </SignInButton>
               </div>
 
@@ -78,7 +73,7 @@ export default function SignupPrompt({ show = true, onClose = null }) {
                 {["100% free", "No credit card", "Progress saved"].map((item) => (
                   <span key={item} className="text-xs text-zinc-400 flex items-center gap-1">
                     <span className="w-1 h-1 rounded-full bg-emerald-400" />
-                    {item}
+                    {language === "ru" ? ({ "100% free": "Полностью бесплатно", "No credit card": "Без банковской карты", "Progress saved": "Прогресс сохраняется" }[item]) : item}
                   </span>
                 ))}
               </div>

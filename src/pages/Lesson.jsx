@@ -1,3 +1,6 @@
+import { useLanguage } from "@/lib/LanguageContext";
+import { translateContent } from "@/lib/translateContent";
+import LocalizedText from "@/components/LocalizedText";
 // src/pages/Lesson.jsx
 import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -29,6 +32,7 @@ function useIsMobile() {
 }
 
 export default function Lesson() {
+  const { language: uiLanguage } = useLanguage();
   const { language, lessonId } = useParams();
   const navigate = useNavigate();
   const { user, isLoaded, isSignedIn } = useUser();
@@ -135,13 +139,11 @@ export default function Lesson() {
   if (!result) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-white text-zinc-400">
-        <p className="text-base font-medium">Lesson not found</p>
+        <p className="text-base font-medium">{<LocalizedText text="Lesson not found" />}</p>
         <button
           onClick={() => navigate("/courses")}
           className="text-sm text-zinc-500 hover:text-zinc-900 underline underline-offset-4 transition-colors"
-        >
-          Back to courses
-        </button>
+        >{<LocalizedText text="Back to courses" />}</button>
       </div>
     );
   }
@@ -171,16 +173,16 @@ export default function Lesson() {
   return (
     <div className="min-h-screen bg-white">
       <Helmet>
-        <title>{lesson.title} | Learn Python with FluentlyCode</title>
-        <meta name="description" content={`${lesson.title}: ${lesson.explanation.substring(0, 150)}... Learn Python concepts with interactive coding lessons.`} />
-        <meta property="og:title" content={`${lesson.title} | FluentlyCode`} />
-        <meta property="og:description" content={`Learn ${lesson.title} with interactive coding and AI-powered feedback.`} />
+        <title>{translateContent(lesson.title, uiLanguage)} | {uiLanguage === "ru" ? "Уроки программирования" : "Learn Python with FluentlyCode"}</title>
+        <meta name="description" content={`${translateContent(lesson.title, uiLanguage)}: ${translateContent(lesson.explanation, uiLanguage).substring(0, 150)}...`} />
+        <meta property="og:title" content={`${translateContent(lesson.title, uiLanguage)} | FluentlyCode`} />
+        <meta property="og:description" content={uiLanguage === "ru" ? `Изучайте ${translateContent(lesson.title, uiLanguage)} с интерактивными заданиями и проверкой ИИ.` : `Learn ${lesson.title} with interactive coding and AI-powered feedback.`} />
       </Helmet>
       <Navbar
         streak={streak}
         backTo="/courses"
         backLabel="Courses"
-        moduleTitle={module.title}
+        moduleTitle={translateContent(module.title, uiLanguage)}
       />
 
       <div className="max-w-2xl mx-auto px-6 py-14">
@@ -191,13 +193,13 @@ export default function Lesson() {
           transition={{ duration: 0.5, ease }}
         >
           <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">
-            {module.title}
+            {translateContent(module.title, uiLanguage)}
           </p>
           <h1 className="text-4xl font-bold tracking-tight mb-8 text-balance">
-            {lesson.title}
+            {translateContent(lesson.title, uiLanguage)}
           </h1>
           <p className="text-base text-zinc-600 leading-relaxed mb-10">
-            {lesson.explanation}
+            {translateContent(lesson.explanation, uiLanguage)}
           </p>
         </motion.div>
 
@@ -209,11 +211,9 @@ export default function Lesson() {
             transition={{ duration: 0.5, delay: 0.1, ease }}
             className="mb-10 bg-zinc-50 rounded-2xl p-6 border border-zinc-100"
           >
-            <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-2">
-              Key concept
-            </p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-2">{<LocalizedText text="Key concept" />}</p>
             <p className="text-sm text-zinc-700 leading-relaxed">
-              {lesson.concept}
+              {translateContent(lesson.concept, uiLanguage)}
             </p>
           </motion.div>
         )}
@@ -225,9 +225,7 @@ export default function Lesson() {
           transition={{ duration: 0.5, delay: 0.2, ease }}
           className="mb-10"
         >
-          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">
-            Example
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">{<LocalizedText text="Example" />}</p>
           <CodeExample code={lesson.example} language={language} />
         </motion.div>
 
@@ -241,11 +239,9 @@ export default function Lesson() {
           >
             <Lightbulb size={15} className="text-amber-500 shrink-0 mt-0.5" />
             <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-amber-600 mb-1">
-                Debugging tip
-              </p>
+              <p className="text-xs font-semibold uppercase tracking-widest text-amber-600 mb-1">{<LocalizedText text="Debugging tip" />}</p>
               <p className="text-sm text-amber-800 leading-relaxed">
-                {lesson.exercise.debuggingTip}
+                {translateContent(lesson.exercise.debuggingTip, uiLanguage)}
               </p>
             </div>
           </motion.div>
@@ -258,11 +254,9 @@ export default function Lesson() {
           transition={{ duration: 0.5, delay: 0.4, ease }}
           className="border border-zinc-200 rounded-2xl p-6 mb-8"
         >
-          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">
-            Exercise
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">{<LocalizedText text="Exercise" />}</p>
           <p className="text-sm text-zinc-700 leading-relaxed">
-            {lesson.exercise?.prompt}
+            {translateContent(lesson.exercise?.prompt, uiLanguage)}
           </p>
         </motion.div>
 
@@ -274,16 +268,12 @@ export default function Lesson() {
                 onClick={() => navigate(`/quiz/${language}/${lessonId}`)}
                 className="w-full flex items-center justify-center gap-2 bg-zinc-900 text-white py-3.5 rounded-full text-sm font-semibold hover:bg-zinc-700 transition-all duration-200"
               >
-                <HelpCircle size={14} />
-                Take quiz
-              </button>
+                <HelpCircle size={14} />{<LocalizedText text="Take quiz" />}</button>
               <button
                 onClick={() => navigate(`/code/${language}/${lessonId}`)}
                 className="w-full flex items-center justify-center gap-2 border border-zinc-200 text-zinc-700 py-3.5 rounded-full text-sm font-semibold hover:border-zinc-900 hover:text-zinc-900 transition-all duration-200"
               >
-                <Play size={14} />
-                Start exercise instead
-              </button>
+                <Play size={14} />{<LocalizedText text="Start exercise instead" />}</button>
             </>
           ) : (
             <>
@@ -291,16 +281,12 @@ export default function Lesson() {
                 onClick={() => navigate(`/code/${language}/${lessonId}`)}
                 className="w-full flex items-center justify-center gap-2 bg-zinc-900 text-white py-3.5 rounded-full text-sm font-semibold hover:bg-zinc-700 transition-all duration-200"
               >
-                <Play size={14} />
-                Start exercise
-              </button>
+                <Play size={14} />{<LocalizedText text="Start exercise" />}</button>
               <button
                 onClick={() => navigate(`/quiz/${language}/${lessonId}`)}
                 className="w-full flex items-center justify-center gap-2 border border-zinc-200 text-zinc-700 py-3.5 rounded-full text-sm font-semibold hover:border-zinc-900 hover:text-zinc-900 transition-all duration-200"
               >
-                <HelpCircle size={14} />
-                Take quiz instead
-              </button>
+                <HelpCircle size={14} />{<LocalizedText text="Take quiz instead" />}</button>
             </>
           )}
         </div>

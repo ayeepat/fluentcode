@@ -1,3 +1,7 @@
+import { useLanguage } from "@/lib/LanguageContext";
+import { translateContent, translateQuizText, translateQuizAnswer, translateQuizExplanation } from "@/lib/translateContent";
+import LanguageSwitch from "@/components/LanguageSwitch";
+import LocalizedText from "@/components/LocalizedText";
 // src/pages/Quiz.jsx
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -24,6 +28,7 @@ import {
 const ease = [0.16, 1, 0.3, 1];
 
 export default function Quiz() {
+  const { language: uiLanguage } = useLanguage();
   const { language, lessonId } = useParams();
   const navigate = useNavigate();
   const { user, isSignedIn, isLoaded } = useUser();
@@ -164,7 +169,7 @@ export default function Quiz() {
       else throw new Error("Failed to save quiz progress");
     } catch (err) {
       console.error("Failed to save quiz progress:", err);
-      alert("Error saving your quiz progress. Please try again.");
+      alert(uiLanguage === "ru" ? "Не удалось сохранить прогресс теста. Попробуйте ещё раз." : "Error saving your quiz progress. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -180,13 +185,11 @@ export default function Quiz() {
   if (notFound) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-white text-zinc-400">
-        <p className="text-base font-medium">Quiz lesson not found</p>
+        <p className="text-base font-medium">{<LocalizedText text="Quiz lesson not found" />}</p>
         <button
           onClick={() => navigate("/courses")}
           className="text-sm text-zinc-500 hover:text-zinc-900 underline underline-offset-4 transition-colors"
-        >
-          Back to courses
-        </button>
+        >{<LocalizedText text="Back to courses" />}</button>
       </div>
     );
   }
@@ -207,13 +210,11 @@ export default function Quiz() {
             onClick={() => navigate("/courses")}
             className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
           >
-            <ArrowLeft size={14} />
-            Courses
-          </button>
+            <ArrowLeft size={14} />{<LocalizedText text="Courses" />}</button>
           <span className="text-sm font-semibold text-zinc-900">
             fluentlycode
           </span>
-          <div className="w-20" />
+          <LanguageSwitch />
         </nav>
 
         <div className="flex-1 flex flex-col items-center justify-center px-6 py-14">
@@ -230,11 +231,9 @@ export default function Quiz() {
               />
             </div>
             <h1 className="text-3xl font-bold tracking-tight mb-2">
-              {passed ? "Nice work!" : "Keep practising"}
+              {passed ? (uiLanguage === "ru" ? "Отличная работа!" : "Nice work!") : (uiLanguage === "ru" ? "Продолжайте практиковаться" : "Keep practising")}
             </h1>
-            <p className="text-zinc-400 text-sm mb-8">
-              You got {score} out of {questions.length} correct
-            </p>
+            <p className="text-zinc-400 text-sm mb-8">{<LocalizedText text="You got " />}{score}{<LocalizedText text=" out of " />}{questions.length}{<LocalizedText text=" correct" />}</p>
 
             <div className="h-2 bg-zinc-100 rounded-full overflow-hidden mb-10">
               <motion.div
@@ -256,11 +255,11 @@ export default function Quiz() {
                 className="text-xs mb-6"
               >
                 {saving ? (
-                  <span className="text-zinc-400">Saving progress…</span>
+                  <span className="text-zinc-400">{<LocalizedText text="Saving progress…" />}</span>
                 ) : savedProgress ? (
-                  <span className="text-emerald-600">✓ Progress saved</span>
+                  <span className="text-emerald-600">{<LocalizedText text="✓ Progress saved" />}</span>
                 ) : (
-                  <span className="text-red-400">Could not save — try again</span>
+                  <span className="text-red-400">{<LocalizedText text="Could not save — try again" />}</span>
                 )}
               </motion.p>
             )}
@@ -272,28 +271,21 @@ export default function Quiz() {
                     navigate(`/quiz/${language}/${nextLesson.id}`)
                   }
                   className="w-full flex items-center justify-center gap-2 bg-zinc-900 text-white py-3.5 rounded-full text-sm font-semibold hover:bg-zinc-700 transition-all"
-                >
-                  Next quiz <ArrowRight size={14} />
+                >{<LocalizedText text="Next quiz " />}<ArrowRight size={14} />
                 </button>
               )}
               <button
                 onClick={() => navigate(`/lesson/${language}/${lessonId}`)}
                 className="w-full flex items-center justify-center gap-2 border border-zinc-200 text-zinc-700 py-3.5 rounded-full text-sm font-semibold hover:border-zinc-900 transition-all"
-              >
-                Go to lesson
-              </button>
+              >{<LocalizedText text="Go to lesson" />}</button>
               <button
                 onClick={() => loadVersionAndLesson()}
                 className="w-full flex items-center justify-center gap-2 border border-zinc-200 text-zinc-700 py-3.5 rounded-full text-sm font-semibold hover:border-zinc-400 transition-all"
-              >
-                Try again
-              </button>
+              >{<LocalizedText text="Try again" />}</button>
               <button
                 onClick={() => navigate("/courses")}
                 className="text-sm text-zinc-400 hover:text-zinc-900 transition-colors py-2"
-              >
-                Back to courses
-              </button>
+              >{<LocalizedText text="Back to courses" />}</button>
             </div>
 
             {isGuest && nextRequiresLogin && passed && (
@@ -313,23 +305,21 @@ export default function Quiz() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Helmet>
-        <title>Take a Quiz | Test Your Python Knowledge</title>
-        <meta name="description" content="Test your Python coding knowledge with interactive quizzes. Multiple choice questions to reinforce your learning." />
+        <title>{uiLanguage === "ru" ? "Тест | FluentlyCode" : "Take a Quiz | Test Your Python Knowledge"}</title>
+        <meta name="description" content={uiLanguage === "ru" ? "Проверьте знания с помощью интерактивного теста." : "Test your Python coding knowledge with interactive quizzes. Multiple choice questions to reinforce your learning."} />
       </Helmet>
       <nav className="flex items-center justify-between px-6 py-4 border-b border-zinc-100">
         <button
           onClick={() => navigate("/courses")}
           className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
         >
-          <ArrowLeft size={14} />
-          Courses
-        </button>
+          <ArrowLeft size={14} />{<LocalizedText text="Courses" />}</button>
         <span className="text-xs text-zinc-400 max-w-[240px] text-center leading-tight">
-          {lesson.title}
+          {translateContent(lesson.title, uiLanguage)}
         </span>
-        <span className="text-xs text-zinc-400 tabular-nums">
+        <div className="flex items-center gap-2"><LanguageSwitch /><span className="text-xs text-zinc-400 tabular-nums">
           {currentQ + 1} / {questions.length}
-        </span>
+        </span></div>
       </nav>
 
       <div className="h-1 bg-zinc-100">
@@ -354,14 +344,13 @@ export default function Quiz() {
             transition={{ duration: 0.25, ease }}
             className="flex-1 flex flex-col"
           >
-            <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-4">
-              Question {currentQ + 1}
+            <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-4">{<LocalizedText text="Question " />}{currentQ + 1}
             </p>
 
             <h2 className="text-lg font-semibold text-zinc-900 mb-2 leading-snug whitespace-pre-wrap">
               {q.question.includes("```")
-                ? q.question.split("```")[0]
-                : q.question}
+                ? translateQuizText(q.question.split("```")[0], uiLanguage)
+                : translateQuizText(q.question, uiLanguage)}
             </h2>
 
             {q.question.includes("```") && (
@@ -387,7 +376,7 @@ export default function Quiz() {
                     size={15}
                     className="text-amber-500 shrink-0 mt-0.5"
                   />
-                  <span>{q.hint}</span>
+                  <span>{translateQuizText(q.hint, uiLanguage)}</span>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -433,7 +422,7 @@ export default function Quiz() {
                         String.fromCharCode(65 + index)
                       )}
                     </span>
-                    <span>{option}</span>
+                    <span>{index === q.correctIndex && (q.question.startsWith("What is the output") || q.question.startsWith("Which of the following correctly completes")) ? option : translateQuizAnswer(q.question, option, index === q.correctIndex, lesson, uiLanguage)}</span>
                   </button>
                 );
               })}
@@ -452,9 +441,9 @@ export default function Quiz() {
                   }`}
                 >
                   <span className="font-semibold">
-                    {isCorrect ? "✓ Correct! " : "✗ Not quite. "}
+                    {isCorrect ? (uiLanguage === "ru" ? "✓ Верно! " : "✓ Correct! ") : (uiLanguage === "ru" ? "✗ Не совсем. " : "✗ Not quite. ")}
                   </span>
-                  {q.explanation}
+                  {translateQuizExplanation(q.question, q.explanation, lesson, uiLanguage)}
                 </motion.div>
               )}
             </AnimatePresence>
@@ -470,16 +459,14 @@ export default function Quiz() {
                   className="flex items-center gap-1.5 px-4 py-3.5 rounded-full text-sm text-amber-600 border border-amber-200 hover:bg-amber-50 transition-all shrink-0"
                 >
                   <Lightbulb size={14} />
-                  {showHint ? "Hide" : "Hint"}
+                  {showHint ? (uiLanguage === "ru" ? "Скрыть" : "Hide") : (uiLanguage === "ru" ? "Подсказка" : "Hint")}
                 </button>
               )}
               <button
                 onClick={handleConfirm}
                 disabled={selectedOption === null}
                 className="flex-1 py-3.5 rounded-full text-sm font-semibold bg-zinc-900 text-white hover:bg-zinc-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-              >
-                Confirm
-              </button>
+              >{<LocalizedText text="Confirm" />}</button>
             </>
           ) : (
             <button
@@ -487,12 +474,10 @@ export default function Quiz() {
               className="w-full py-3.5 rounded-full text-sm font-semibold bg-zinc-900 text-white hover:bg-zinc-700 transition-all flex items-center justify-center gap-2"
             >
               {currentQ < questions.length - 1 ? (
-                <>
-                  Next question <ArrowRight size={14} />
+                <>{<LocalizedText text="Next question " />}<ArrowRight size={14} />
                 </>
               ) : (
-                <>
-                  See results <Trophy size={14} />
+                <>{<LocalizedText text="See results " />}<Trophy size={14} />
                 </>
               )}
             </button>

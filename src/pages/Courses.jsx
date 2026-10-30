@@ -1,3 +1,6 @@
+import { useLanguage } from "@/lib/LanguageContext";
+import { translateContent } from "@/lib/translateContent";
+import LocalizedText from "@/components/LocalizedText";
 // src/pages/Courses.jsx
 import { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
@@ -47,6 +50,7 @@ const LANGUAGES = [
 ];
 
 export default function Courses() {
+  const { language: uiLanguage } = useLanguage();
   const { user, isSignedIn, isLoaded } = useUser();
   const { supabaseClient } = useAuth();
   const [progress, setProgress]               = useState(null);
@@ -215,10 +219,10 @@ export default function Courses() {
   return (
     <div className="min-h-screen bg-white">
       <Helmet>
-        <title>Courses & Lessons | Learn Python Coding</title>
-        <meta name="description" content="Browse Python courses with interactive lessons, quizzes, and AI-powered code feedback. Progress tracking and structured learning paths." />
-        <meta property="og:title" content="Courses & Lessons | FluentlyCode" />
-        <meta property="og:description" content="Interactive Python curriculum with hands-on coding lessons and instant feedback." />
+        <title>{uiLanguage === "ru" ? "Курсы и уроки | FluentlyCode" : "Courses & Lessons | Learn Python Coding"}</title>
+        <meta name="description" content={uiLanguage === "ru" ? "Курсы программирования с интерактивными уроками, тестами и проверкой кода." : "Browse Python courses with interactive lessons, quizzes, and AI-powered code feedback. Progress tracking and structured learning paths."} />
+        <meta property="og:title" content={uiLanguage === "ru" ? "Курсы и уроки | FluentlyCode" : "Courses & Lessons | FluentlyCode"} />
+        <meta property="og:description" content={uiLanguage === "ru" ? "Курсы программирования с интерактивными уроками, тестами и проверкой кода." : "Interactive Python curriculum with hands-on coding lessons and instant feedback."} />
       </Helmet>
       <Navbar streak={streak} />
 
@@ -232,15 +236,15 @@ export default function Courses() {
           className="mb-8"
         >
           <div className="flex items-end justify-between gap-4 mb-1.5">
-            <h1 className="text-3xl font-bold tracking-tight">Courses</h1>
+            <h1 className="text-3xl font-bold tracking-tight">{<LocalizedText text="Courses" />}</h1>
             <span className="text-sm font-semibold text-zinc-900 tabular-nums pb-0.5">
               {progressPct}%
             </span>
           </div>
           <p className="text-sm text-zinc-400">
-            {mode === "quiz"
-              ? `${completedQuizCount} of ${totalLessons} quizzes completed`
-              : `${completedLessonCount} of ${totalLessons} lessons completed`}
+            {uiLanguage === "ru"
+              ? (mode === "quiz" ? `Пройдено тестов: ${completedQuizCount} из ${totalLessons}` : `Пройдено уроков: ${completedLessonCount} из ${totalLessons}`)
+              : (mode === "quiz" ? `${completedQuizCount} of ${totalLessons} quizzes completed` : `${completedLessonCount} of ${totalLessons} lessons completed`)}
           </p>
           <div className="mt-4 h-1.5 bg-zinc-100 rounded-full overflow-hidden">
             <motion.div
@@ -257,9 +261,7 @@ export default function Courses() {
             curriculumVersion === 2 &&
             completedLessonCount < v1CompletedCount && (
               <p className="text-xs text-blue-500 mt-3">
-                ✨ You completed {v1CompletedCount} lessons in the previous
-                curriculum — the first {v1CompletedCount} lessons here are
-                unlocked for you.
+                {uiLanguage === "ru" ? `✨ Вы прошли ${v1CompletedCount} уроков по предыдущей программе. Для вас открыты первые ${v1CompletedCount} уроков этой программы.` : `✨ You completed ${v1CompletedCount} lessons in the previous curriculum — the first ${v1CompletedCount} lessons here are unlocked for you.`}
               </p>
             )}
         </motion.div>
@@ -284,18 +286,14 @@ export default function Courses() {
               mode === "lessons" ? "text-zinc-900" : "text-zinc-400"
             }`}
           >
-            <Code2 size={15} />
-            Lessons
-          </button>
+            <Code2 size={15} />{<LocalizedText text="Lessons" />}</button>
           <button
             onClick={() => setMode("quiz")}
             className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-colors duration-200 ${
               mode === "quiz" ? "text-zinc-900" : "text-zinc-400"
             }`}
           >
-            <HelpCircle size={15} />
-            Quiz
-          </button>
+            <HelpCircle size={15} />{<LocalizedText text="Quiz" />}</button>
         </motion.div>
 
         {/* Quiz tip banner */}
@@ -310,9 +308,7 @@ export default function Courses() {
             >
               <div className="flex items-center gap-2.5 px-4 py-3 bg-blue-50 border border-blue-100 rounded-xl mb-6 text-sm text-blue-700">
                 <Smartphone size={14} className="text-blue-400 shrink-0" />
-                <span>
-                  Quiz mode works great on mobile — no typing needed, just tap your answers.
-                </span>
+                <span>{<LocalizedText text="Quiz mode works great on mobile — no typing needed, just tap your answers." />}</span>
               </div>
             </motion.div>
           )}
@@ -400,7 +396,7 @@ export default function Courses() {
                     <div className="px-5 pt-5 pb-4">
                       <div className="flex items-center justify-between mb-3">
                         <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
-                          {module.title}
+                          {translateContent(module.title, uiLanguage)}
                         </p>
                         <span
                           className={`text-xs font-medium tabular-nums px-2 py-0.5 rounded-full ${
@@ -440,11 +436,9 @@ export default function Courses() {
                                 </span>
                                 <Lock size={14} className="text-zinc-300 shrink-0" />
                                 <span className="text-sm text-zinc-400 flex-1">
-                                  {lesson.title}
+                                  {translateContent(lesson.title, uiLanguage)}
                                 </span>
-                                <span className="text-xs text-zinc-300">
-                                  Sign up to unlock
-                                </span>
+                                <span className="text-xs text-zinc-300">{<LocalizedText text="Sign up to unlock" />}</span>
                               </div>
                             );
                           }
@@ -468,10 +462,10 @@ export default function Courses() {
                                 <HelpCircle size={14} className="text-zinc-300 group-hover:text-zinc-600 transition-colors shrink-0" />
                               )}
                               <span className={`text-sm font-medium flex-1 ${quizDone ? "text-emerald-700" : "text-zinc-700"}`}>
-                                {lesson.title}
+                                {translateContent(lesson.title, uiLanguage)}
                               </span>
                               <span className={`text-xs ${quizDone ? "text-emerald-500" : "text-zinc-400"}`}>
-                                {quizDone ? "Completed" : "5 questions"}
+                                {quizDone ? (uiLanguage === "ru" ? "Пройдено" : "Completed") : (uiLanguage === "ru" ? "5 вопросов" : "5 questions")}
                               </span>
                             </button>
                           );
@@ -505,6 +499,7 @@ export default function Courses() {
 }
 
 function LessonRow({ lesson, index = 0, done, unlocked, lang, isGuest }) {
+  const { language: uiLanguage } = useLanguage();
   const num = String(index + 1).padStart(2, "0");
 
   if (!unlocked) {
@@ -512,9 +507,9 @@ function LessonRow({ lesson, index = 0, done, unlocked, lang, isGuest }) {
       <div className="flex items-center gap-3 px-5 py-3.5 opacity-40 cursor-not-allowed select-none">
         <span className="w-6 text-xs text-zinc-300 tabular-nums shrink-0">{num}</span>
         <Lock size={14} className="text-zinc-300 shrink-0" />
-        <span className="text-sm text-zinc-400 flex-1">{lesson.title}</span>
+        <span className="text-sm text-zinc-400 flex-1">{translateContent(lesson.title, uiLanguage)}</span>
         <span className="text-xs text-zinc-300">
-          {isGuest ? "Sign up to unlock" : "Locked"}
+          {isGuest ? (uiLanguage === "ru" ? "Зарегистрируйтесь, чтобы открыть доступ" : "Sign up to unlock") : (uiLanguage === "ru" ? "Закрыто" : "Locked")}
         </span>
       </div>
     );
@@ -534,10 +529,10 @@ function LessonRow({ lesson, index = 0, done, unlocked, lang, isGuest }) {
         <Circle size={15} className="text-zinc-300 group-hover:text-zinc-500 transition-colors shrink-0" />
       )}
       <span className={`text-sm flex-1 font-medium ${done ? "text-emerald-700" : "text-zinc-700"}`}>
-        {lesson.title}
+        {translateContent(lesson.title, uiLanguage)}
       </span>
       {done ? (
-        <span className="text-xs text-emerald-500 font-medium">Completed</span>
+        <span className="text-xs text-emerald-500 font-medium">{<LocalizedText text="Completed" />}</span>
       ) : (
         <ArrowRight size={13} className="text-zinc-300 group-hover:text-zinc-900 group-hover:translate-x-0.5 transition-all duration-200" />
       )}

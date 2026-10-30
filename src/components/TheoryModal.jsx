@@ -1,3 +1,5 @@
+import { useLanguage } from "@/lib/LanguageContext";
+import { translateContent } from "@/lib/translateContent";
 // src/components/TheoryModal.jsx
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ArrowRight, CheckCircle } from "lucide-react";
@@ -5,6 +7,9 @@ import { X, ArrowRight, CheckCircle } from "lucide-react";
 const ease = [0.16, 1, 0.3, 1];
 
 export default function TheoryModal({ lesson, show, onClose, onNext, isCorrect, nextLesson }) {
+  const { language } = useLanguage();
+  const ru = language === "ru";
+  const explanation = translateContent(lesson.explanation, language);
   return (
     <AnimatePresence>
       {show && (
@@ -43,17 +48,18 @@ export default function TheoryModal({ lesson, show, onClose, onNext, isCorrect, 
                   <p className={`text-sm font-bold ${
                     isCorrect ? "text-emerald-700" : "text-amber-700"
                   }`}>
-                    {isCorrect ? "🎉 Correct! Here's why it works" : "Here's what you need to know"}
+                    {isCorrect ? (ru ? "🎉 Верно! Вот почему это работает" : "🎉 Correct! Here's why it works") : (ru ? "Что нужно знать" : "Here's what you need to know")}
                   </p>
                   <p className={`text-xs mt-0.5 ${
                     isCorrect ? "text-emerald-600" : "text-amber-600"
                   }`}>
-                    {lesson.title}
+                    {translateContent(lesson.title, language)}
                   </p>
                 </div>
               </div>
               <button
                 onClick={onClose}
+                aria-label={ru ? "Закрыть" : "Close"}
                 className="w-7 h-7 rounded-full bg-white/60 flex items-center justify-center text-zinc-400 hover:text-zinc-900 transition-colors shrink-0"
               >
                 <X size={14} />
@@ -66,10 +72,10 @@ export default function TheoryModal({ lesson, show, onClose, onNext, isCorrect, 
               {lesson.concept && (
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-2">
-                    Key concept
+                    {ru ? "Главное понятие" : "Key concept"}
                   </p>
                   <p className="text-sm text-zinc-700 leading-relaxed font-medium">
-                    {lesson.concept}
+                    {translateContent(lesson.concept, language)}
                   </p>
                 </div>
               )}
@@ -78,7 +84,7 @@ export default function TheoryModal({ lesson, show, onClose, onNext, isCorrect, 
               {lesson.example && (
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-2">
-                    Example
+                    {ru ? "Пример" : "Example"}
                   </p>
                   <div className="bg-zinc-950 rounded-xl p-4 overflow-x-auto">
                     <pre className="text-xs text-zinc-100 font-mono leading-relaxed whitespace-pre-wrap">
@@ -92,12 +98,12 @@ export default function TheoryModal({ lesson, show, onClose, onNext, isCorrect, 
               {lesson.explanation && (
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-2">
-                    Explanation
+                    {ru ? "Объяснение" : "Explanation"}
                   </p>
                   <p className="text-sm text-zinc-500 leading-relaxed">
-                    {lesson.explanation.length > 300
-                      ? lesson.explanation.slice(0, 300) + "…"
-                      : lesson.explanation}
+                    {explanation.length > 300
+                      ? explanation.slice(0, 300) + "…"
+                      : explanation}
                   </p>
                 </div>
               )}
@@ -110,21 +116,21 @@ export default function TheoryModal({ lesson, show, onClose, onNext, isCorrect, 
                   onClick={onNext}
                   className="flex-1 flex items-center justify-center gap-2 bg-zinc-900 text-white py-3 rounded-full text-sm font-semibold hover:bg-zinc-700 transition-all"
                 >
-                  Next lesson <ArrowRight size={14} />
+                  {ru ? "Следующий урок" : "Next lesson"} <ArrowRight size={14} />
                 </button>
               ) : isCorrect && !nextLesson ? (
                 <button
                   onClick={onClose}
                   className="flex-1 flex items-center justify-center gap-2 bg-zinc-900 text-white py-3 rounded-full text-sm font-semibold hover:bg-zinc-700 transition-all"
                 >
-                  Finish course 🎓
+                  {ru ? "Завершить курс 🎓" : "Finish course 🎓"}
                 </button>
               ) : (
                 <button
                   onClick={onClose}
                   className="flex-1 flex items-center justify-center gap-2 bg-zinc-900 text-white py-3 rounded-full text-sm font-semibold hover:bg-zinc-700 transition-all"
                 >
-                  Got it — let me try again
+                  {ru ? "Понятно, попробую ещё раз" : "Got it — let me try again"}
                 </button>
               )}
             </div>

@@ -5,6 +5,8 @@ import "./index.css";
 import { inject } from "@vercel/analytics";
 import { ClerkProvider } from "@clerk/clerk-react";
 import { HelmetProvider } from "react-helmet-async";
+import { LanguageProvider, useLanguage } from "@/lib/LanguageContext";
+import { clerkRussian } from "@/locales/ru/clerk";
 
 console.log("✓ main.jsx loaded successfully");
 inject();
@@ -24,6 +26,21 @@ const LoadingFallback = () => (
   </div>
 );
 
+function AppWithAuth() {
+  const { language } = useLanguage();
+  if (!PUBLISHABLE_KEY) return <App />;
+  return (
+    <ClerkProvider
+      publishableKey={PUBLISHABLE_KEY}
+      afterSignOutUrl="/"
+      localization={language === "ru" ? clerkRussian : undefined}
+      appearance={{ layout: { termsPageUrl: "/terms", privacyPageUrl: "/privacy" } }}
+    >
+      <App />
+    </ClerkProvider>
+  );
+}
+
 const rootElement = document.getElementById("root");
 if (!rootElement) {
   console.error("❌ Root element not found!");
@@ -33,26 +50,9 @@ if (!rootElement) {
     <React.StrictMode>
       <HelmetProvider>
         <Suspense fallback={<LoadingFallback />}>
-          {PUBLISHABLE_KEY ? (
-            <ClerkProvider
-              publishableKey={PUBLISHABLE_KEY}
-              afterSignOutUrl="/"
-              appearance={{
-                layout: {
-                  termsPageUrl: "/terms",
-                  privacyPageUrl: "/privacy",
-                },
-              }}
-            >
-              <App />
-            </ClerkProvider>
-          ) : (
-            // No Clerk key: vite.config.js has aliased @clerk/clerk-react to the
-            // guest-mode stub (src/lib/clerk-stub.jsx), whose hooks work without a
-            // provider. Render the app so guests can still use it instead of
-            // showing a dead-end configuration screen.
-            <App />
-          )}
+          <LanguageProvider>
+            <AppWithAuth />
+          </LanguageProvider>
         </Suspense>
       </HelmetProvider>
     </React.StrictMode>

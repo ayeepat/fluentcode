@@ -1,3 +1,4 @@
+import LocalizedText from "@/components/LocalizedText";
 import React from "react";
 
 export default class ErrorBoundary extends React.Component {
@@ -20,9 +21,9 @@ export default class ErrorBoundary extends React.Component {
       return (
         <div className="min-h-screen flex items-center justify-center bg-white p-6">
           <div className="text-center max-w-2xl">
-            <h1 className="text-2xl font-bold text-red-600 mb-4">Something went wrong</h1>
+            <h1 className="text-2xl font-bold text-red-600 mb-4">{<LocalizedText text="Something went wrong" />}</h1>
             <details className="text-left bg-gray-50 p-4 rounded overflow-auto">
-              <summary className="cursor-pointer font-mono text-sm">Error details</summary>
+              <summary className="cursor-pointer font-mono text-sm">{<LocalizedText text="Error details" />}</summary>
               <pre className="text-xs mt-2 whitespace-pre-wrap">
                 {this.state.error?.toString()}
                 {this.state.errorInfo?.componentStack}
@@ -31,9 +32,7 @@ export default class ErrorBoundary extends React.Component {
             <button
               onClick={() => window.location.reload()}
               className="mt-6 px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
-            >
-              Reload page
-            </button>
+            >{<LocalizedText text="Reload page" />}</button>
           </div>
         </div>
       );

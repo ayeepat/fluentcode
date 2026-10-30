@@ -1,3 +1,5 @@
+import { useLanguage } from "@/lib/LanguageContext";
+import LocalizedText from "@/components/LocalizedText";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
@@ -7,6 +9,8 @@ import { useFeedbackWidget } from "@/lib/FeedbackContext";
 const FORMSPREE_ENDPOINT = "https://formspree.io/f/xzdojbzn";
 
 export default function FeedbackWidget() {
+  const { language } = useLanguage();
+  const ru = language === "ru";
   const { isOpen, shouldAutoOpen, openFeedbackWidget, closeFeedbackWidget } = useFeedbackWidget();
   const [feedbackType, setFeedbackType] = useState("feature"); // "feature" or "bug"
   const [submitting, setSubmitting] = useState(false);
@@ -60,7 +64,7 @@ export default function FeedbackWidget() {
       }, 2000);
     } catch (err) {
       console.error("Feedback submission error:", err);
-      setError("Failed to submit feedback. Please try again.");
+      setError(ru ? "Не удалось отправить отзыв. Попробуйте ещё раз." : "Failed to submit feedback. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -83,6 +87,7 @@ export default function FeedbackWidget() {
         animate={{ scale: 1 }}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
+        aria-label={ru ? "Открыть или закрыть форму обратной связи" : "Open or close feedback"}
         onClick={() => {
           if (isOpen) {
             handleCancel();
@@ -138,15 +143,12 @@ export default function FeedbackWidget() {
               {/* Header */}
               <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100 bg-gradient-to-r from-zinc-50 to-white">
                 <div>
-                  <h2 className="text-lg font-semibold text-zinc-900">
-                    Send us feedback
-                  </h2>
-                  <p className="text-xs text-zinc-400 mt-1">
-                    Help us improve your learning experience
-                  </p>
+                  <h2 className="text-lg font-semibold text-zinc-900">{<LocalizedText text="Send us feedback" />}</h2>
+                  <p className="text-xs text-zinc-400 mt-1">{<LocalizedText text="Help us improve your learning experience" />}</p>
                 </div>
                 <button
                   onClick={handleCancel}
+                  aria-label={ru ? "Закрыть" : "Close"}
                   className="text-zinc-400 hover:text-zinc-600 transition-colors p-1"
                 >
                   <X size={20} />
@@ -176,21 +178,14 @@ export default function FeedbackWidget() {
                         />
                       </svg>
                     </div>
-                    <h3 className="text-sm font-semibold text-zinc-900 mb-1">
-                      Thank you!
-                    </h3>
-                    <p className="text-xs text-zinc-500">
-                      We've received your feedback and will use it to improve
-                      FluentlyCode.
-                    </p>
+                    <h3 className="text-sm font-semibold text-zinc-900 mb-1">{<LocalizedText text="Thank you!" />}</h3>
+                    <p className="text-xs text-zinc-500">{<LocalizedText text="We've received your feedback and will use it to improve FluentlyCode." />}</p>
                   </motion.div>
                 ) : (
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     {/* Feedback Type */}
                     <div>
-                      <label className="text-xs font-semibold text-zinc-700 block mb-2">
-                        Feedback Type
-                      </label>
+                      <label className="text-xs font-semibold text-zinc-700 block mb-2">{<LocalizedText text="Feedback Type" />}</label>
                       <div className="flex gap-2">
                         {[
                           { value: "feature", label: "✨ Feature Suggestion" },
@@ -206,7 +201,7 @@ export default function FeedbackWidget() {
                                 : "bg-zinc-50 text-zinc-700 border-zinc-200 hover:border-zinc-300"
                             }`}
                           >
-                            {option.label}
+                            {ru ? (option.value === "feature" ? "✨ Предложение" : "🐛 Сообщить об ошибке") : option.label}
                           </button>
                         ))}
                       </div>
@@ -214,16 +209,14 @@ export default function FeedbackWidget() {
 
                     {/* Email */}
                     <div>
-                      <label className="text-xs font-semibold text-zinc-700 block mb-2">
-                        Email (optional)
-                      </label>
+                      <label className="text-xs font-semibold text-zinc-700 block mb-2">{<LocalizedText text="Email (optional)" />}</label>
                       <input
                         type="email"
                         placeholder="your@email.com"
                         {...register("email", {
                           validate: (value) => {
                             if (!value) return true;
-                            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || "Invalid email format";
+                            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || (ru ? "Неверный адрес электронной почты" : "Invalid email format");
                           },
                         })}
                         className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-sm bg-white hover:border-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900/20 focus:border-zinc-900 transition-all duration-200"
@@ -237,20 +230,18 @@ export default function FeedbackWidget() {
 
                     {/* Message */}
                     <div>
-                      <label className="text-xs font-semibold text-zinc-700 block mb-2">
-                        Message
-                      </label>
+                      <label className="text-xs font-semibold text-zinc-700 block mb-2">{<LocalizedText text="Message" />}</label>
                       <textarea
                         placeholder={
                           feedbackType === "feature"
-                            ? "Tell us about a feature you'd love to see..."
-                            : "Describe the issue you encountered..."
+                            ? (ru ? "Расскажите, какую функцию вы хотели бы видеть..." : "Tell us about a feature you'd love to see...")
+                            : (ru ? "Опишите возникшую проблему..." : "Describe the issue you encountered...")
                         }
                         {...register("message", {
-                          required: "Please enter your feedback",
+                          required: ru ? "Введите сообщение" : "Please enter your feedback",
                           minLength: {
                             value: 10,
-                            message: "Feedback must be at least 10 characters",
+                            message: ru ? "Сообщение должно содержать не менее 10 символов" : "Feedback must be at least 10 characters",
                           },
                         })}
                         className="w-full px-3 py-2 rounded-lg border border-zinc-200 text-sm bg-white resize-none hover:border-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900/20 focus:border-zinc-900 transition-all duration-200"
@@ -281,9 +272,7 @@ export default function FeedbackWidget() {
                         type="button"
                         onClick={handleCancel}
                         className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-zinc-700 bg-zinc-50 hover:bg-zinc-100 border border-zinc-200 transition-all duration-200"
-                      >
-                        Cancel
-                      </button>
+                      >{<LocalizedText text="Cancel" />}</button>
                       <button
                         type="submit"
                         disabled={submitting || !message.trim()}
@@ -291,14 +280,10 @@ export default function FeedbackWidget() {
                       >
                         {submitting ? (
                           <>
-                            <span className="w-3 h-3 rounded-full border border-white/30 border-t-white animate-spin" />
-                            Sending...
-                          </>
+                            <span className="w-3 h-3 rounded-full border border-white/30 border-t-white animate-spin" />{<LocalizedText text="Sending..." />}</>
                         ) : (
                           <>
-                            <Send size={14} />
-                            Send
-                          </>
+                            <Send size={14} />{<LocalizedText text="Send" />}</>
                         )}
                       </button>
                     </div>
