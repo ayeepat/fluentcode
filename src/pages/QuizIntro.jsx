@@ -105,7 +105,7 @@ export default function QuizIntro() {
     <div className="min-h-screen bg-white">
       <Helmet>
         <title>{uiLanguage === "ru" ? "Подготовка к тесту" : "Quiz Intro"} | {translateContent(lesson.title, uiLanguage)} - FluentlyCode</title>
-        <meta name="description" content={uiLanguage === "ru" ? `Проверьте знания по теме «${translateContent(lesson.title, uiLanguage)}» в интерактивном тесте.` : `Test your knowledge about ${lesson.title}. Interactive quiz with instant feedback.`} />
+        <meta name="description" content={uiLanguage === "ru" ? `Проверьте знания по теме «${translateContent(lesson.title, uiLanguage)}» в интерактивном тесте.` : `Review ${lesson.title} with a short quiz and see your results right away.`} />
       </Helmet>
       <Navbar
         streak={streak}

@@ -4,7 +4,7 @@ export const goCurriculum = {
   modules: [
     {
       id: "go-level0-m1",
-      title: "Level 0 — Hello Go",
+      title: "Level 0 - Hello Go",
       duration: "15 min",
       lessons: [
         {
@@ -165,7 +165,7 @@ func main() {
     },
     {
       id: "go-level1-m1",
-      title: "Level 1 — Variables & Data Types",
+      title: "Level 1 - Variables & Data Types",
       duration: "25 min",
       lessons: [
         {
@@ -361,7 +361,7 @@ func main() {
     },
     {
       id: "go-level2-m1",
-      title: "Level 2 — Control Flow",
+      title: "Level 2 - Control Flow",
       duration: "30 min",
       lessons: [
         {
@@ -590,7 +590,7 @@ func main() {
     },
     {
       id: "go-level3-m1",
-      title: "Level 3 — Functions",
+      title: "Level 3 - Functions",
       duration: "30 min",
       lessons: [
         {
@@ -770,7 +770,7 @@ func main() {
     },
     {
       id: "go-level4-m1",
-      title: "Level 4 — Pointers",
+      title: "Level 4 - Pointers",
       duration: "25 min",
       lessons: [
         {
@@ -903,7 +903,7 @@ func main() {
     },
     {
       id: "go-level5-m1",
-      title: "Level 5 — Arrays, Slices & Maps",
+      title: "Level 5 - Arrays, Slices & Maps",
       duration: "40 min",
       lessons: [
         {
@@ -1107,7 +1107,7 @@ func main() {
     },
     {
       id: "go-level6-m1",
-      title: "Level 6 — Structs and Methods",
+      title: "Level 6 - Structs and Methods",
       duration: "35 min",
       lessons: [
         {
@@ -1328,7 +1328,7 @@ func main() {
     },
     {
       id: "go-level7-m1",
-      title: "Level 7 — Interfaces & Errors",
+      title: "Level 7 - Interfaces & Errors",
       duration: "30 min",
       lessons: [
         {
@@ -1479,7 +1479,7 @@ func main() {
     },
     {
       id: "go-level8-m1",
-      title: "Level 8 — Concurrency (Goroutines & Channels)",
+      title: "Level 8 - Concurrency (Goroutines & Channels)",
       duration: "40 min",
       lessons: [
         {
@@ -1724,7 +1724,7 @@ func main() {
     },
     {
       id: "go-level9-m1",
-      title: "Level 9 — Packages and Modules",
+      title: "Level 9 - Packages and Modules",
       duration: "30 min",
       lessons: [
         {
@@ -1861,7 +1861,7 @@ Then: import "github.com/gorilla/mux"`,
     },
     {
       id: "go-level10-m1",
-      title: "Level 10 — Advanced Error Handling",
+      title: "Level 10 - Advanced Error Handling",
       duration: "25 min",
       lessons: [
         {
@@ -2008,7 +2008,7 @@ func main() {
     },
     {
       id: "go-level11-m1",
-      title: "Level 11 — File I/O and Text",
+      title: "Level 11 - File I/O and Text",
       duration: "30 min",
       lessons: [
         {
@@ -2166,7 +2166,7 @@ func main() {
     },
     {
       id: "go-level12-m1",
-      title: "Level 12 — Testing and Benchmarking",
+      title: "Level 12 - Testing and Benchmarking",
       duration: "35 min",
       lessons: [
         {
@@ -2300,7 +2300,7 @@ func BenchmarkSub(b *testing.B) {
     },
     {
       id: "go-level13-m1",
-      title: "Level 13 — Generics (Go 1.18+)",
+      title: "Level 13 - Generics (Go 1.18+)",
       duration: "30 min",
       lessons: [
         {
@@ -2438,7 +2438,7 @@ func main() {
     },
     {
       id: "go-level14-m1",
-      title: "Level 14 — Building Web APIs (net/http)",
+      title: "Level 14 - Building Web APIs (net/http)",
       duration: "40 min",
       lessons: [
         {

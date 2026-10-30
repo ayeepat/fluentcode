@@ -53,7 +53,7 @@ export default function Lesson() {
   );
 
   // Redirect guests trying to access non-guest lessons.
-  // Wait for the curriculum cache — on deep links it isn't populated yet.
+  // Wait for the curriculum cache - on deep links it isn't populated yet.
   useEffect(() => {
     if (isLoaded && curriculumReady && isGuest && !guestAllowed) {
       // Redirect to first guest lesson (v2 for Python, v1 for other languages)
@@ -176,7 +176,7 @@ export default function Lesson() {
         <title>{translateContent(lesson.title, uiLanguage)} | {uiLanguage === "ru" ? "Уроки программирования" : "Learn Python with FluentlyCode"}</title>
         <meta name="description" content={`${translateContent(lesson.title, uiLanguage)}: ${translateContent(lesson.explanation, uiLanguage).substring(0, 150)}...`} />
         <meta property="og:title" content={`${translateContent(lesson.title, uiLanguage)} | FluentlyCode`} />
-        <meta property="og:description" content={uiLanguage === "ru" ? `Изучайте ${translateContent(lesson.title, uiLanguage)} с интерактивными заданиями и проверкой ИИ.` : `Learn ${lesson.title} with interactive coding and AI-powered feedback.`} />
+        <meta property="og:description" content={uiLanguage === "ru" ? `Изучайте ${translateContent(lesson.title, uiLanguage)} с интерактивными заданиями и проверкой ИИ.` : `Learn ${lesson.title} with interactive coding and AI feedback.`} />
       </Helmet>
       <Navbar
         streak={streak}

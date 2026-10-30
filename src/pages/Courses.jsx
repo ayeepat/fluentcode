@@ -32,7 +32,7 @@ import Navbar from "@/components/Navbar";
 const ease = [0.16, 1, 0.3, 1];
 
 // ---------------------------------------------------------------------------
-// Language list — inlined here so this component never depends on an async
+// Language list - inlined here so this component never depends on an async
 // export from curriculum.js. If you add a language, update this array too.
 // ---------------------------------------------------------------------------
 const LANGUAGES = [
@@ -220,7 +220,7 @@ export default function Courses() {
     <div className="min-h-screen bg-white">
       <Helmet>
         <title>{uiLanguage === "ru" ? "Курсы и уроки | FluentlyCode" : "Courses & Lessons | Learn Python Coding"}</title>
-        <meta name="description" content={uiLanguage === "ru" ? "Курсы программирования с интерактивными уроками, тестами и проверкой кода." : "Browse Python courses with interactive lessons, quizzes, and AI-powered code feedback. Progress tracking and structured learning paths."} />
+        <meta name="description" content={uiLanguage === "ru" ? "Курсы программирования с интерактивными уроками, тестами и проверкой кода." : "Browse Python courses with interactive lessons, quizzes, and AI code feedback. Progress tracking and structured learning paths."} />
         <meta property="og:title" content={uiLanguage === "ru" ? "Курсы и уроки | FluentlyCode" : "Courses & Lessons | FluentlyCode"} />
         <meta property="og:description" content={uiLanguage === "ru" ? "Курсы программирования с интерактивными уроками, тестами и проверкой кода." : "Interactive Python curriculum with hands-on coding lessons and instant feedback."} />
       </Helmet>
@@ -261,7 +261,7 @@ export default function Courses() {
             curriculumVersion === 2 &&
             completedLessonCount < v1CompletedCount && (
               <p className="text-xs text-blue-500 mt-3">
-                {uiLanguage === "ru" ? `✨ Вы прошли ${v1CompletedCount} уроков по предыдущей программе. Для вас открыты первые ${v1CompletedCount} уроков этой программы.` : `✨ You completed ${v1CompletedCount} lessons in the previous curriculum — the first ${v1CompletedCount} lessons here are unlocked for you.`}
+                {uiLanguage === "ru" ? `✨ Вы прошли ${v1CompletedCount} уроков по предыдущей программе. Для вас открыты первые ${v1CompletedCount} уроков этой программы.` : `You completed ${v1CompletedCount} lessons in the previous curriculum. The first ${v1CompletedCount} lessons here are already available.`}
               </p>
             )}
         </motion.div>
@@ -308,7 +308,7 @@ export default function Courses() {
             >
               <div className="flex items-center gap-2.5 px-4 py-3 bg-blue-50 border border-blue-100 rounded-xl mb-6 text-sm text-blue-700">
                 <Smartphone size={14} className="text-blue-400 shrink-0" />
-                <span>{<LocalizedText text="Quiz mode works great on mobile — no typing needed, just tap your answers." />}</span>
+                <span>{<LocalizedText text="Quiz mode is easy to use on mobile. Just tap an answer; no typing needed." />}</span>
               </div>
             </motion.div>
           )}
@@ -438,7 +438,7 @@ export default function Courses() {
                                 <span className="text-sm text-zinc-400 flex-1">
                                   {translateContent(lesson.title, uiLanguage)}
                                 </span>
-                                <span className="text-xs text-zinc-300">{<LocalizedText text="Sign up to unlock" />}</span>
+                                <span className="text-xs text-zinc-300">{<LocalizedText text="Create an account to continue" />}</span>
                               </div>
                             );
                           }
@@ -509,7 +509,7 @@ function LessonRow({ lesson, index = 0, done, unlocked, lang, isGuest }) {
         <Lock size={14} className="text-zinc-300 shrink-0" />
         <span className="text-sm text-zinc-400 flex-1">{translateContent(lesson.title, uiLanguage)}</span>
         <span className="text-xs text-zinc-300">
-          {isGuest ? (uiLanguage === "ru" ? "Зарегистрируйтесь, чтобы открыть доступ" : "Sign up to unlock") : (uiLanguage === "ru" ? "Закрыто" : "Locked")}
+          {isGuest ? (uiLanguage === "ru" ? "Зарегистрируйтесь, чтобы открыть доступ" : "Create an account to continue") : (uiLanguage === "ru" ? "Закрыто" : "Locked")}
         </span>
       </div>
     );

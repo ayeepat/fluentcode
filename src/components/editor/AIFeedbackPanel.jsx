@@ -155,8 +155,8 @@ Respond in ${ru ? "Russian" : "English"}, preserving code and identifiers exactl
             <Lock size={18} className="text-zinc-300" />
           </div>
           <div>
-            <p className="text-sm font-medium text-zinc-700 mb-1">{<LocalizedText text="AI tutor available with a free account" />}</p>
-            <p className="text-xs text-zinc-400 max-w-[200px] mx-auto leading-relaxed">{<LocalizedText text="Get personalized feedback, hints, and explanations for your code" />}</p>
+            <p className="text-sm font-medium text-zinc-700 mb-1">{<LocalizedText text="Code feedback is available with a free account" />}</p>
+            <p className="text-xs text-zinc-400 max-w-[200px] mx-auto leading-relaxed">{<LocalizedText text="Get hints, explanations, and feedback on your code" />}</p>
           </div>
           <SignUpButton mode="modal">
             <button className="inline-flex items-center gap-2 bg-zinc-900 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-zinc-700 transition-all duration-200">
@@ -221,7 +221,7 @@ Respond in ${ru ? "Russian" : "English"}, preserving code and identifiers exactl
 
       {limitReached && (
         <div className="mx-4 mt-4 bg-amber-50 border border-amber-200 rounded-2xl p-4 shrink-0">
-          <p className="text-xs text-amber-700 leading-relaxed">{<LocalizedText text="You've reached your daily AI request limit. Come back tomorrow to continue asking questions." />}</p>
+          <p className="text-xs text-amber-700 leading-relaxed">{<LocalizedText text="You've used today's free requests. You can ask more questions tomorrow." />}</p>
         </div>
       )}
 
@@ -315,7 +315,7 @@ Respond in ${ru ? "Russian" : "English"}, preserving code and identifiers exactl
               onKeyDown={(e) =>
                 e.key === "Enter" && !e.shiftKey && sendMessage()
               }
-              placeholder={ru ? "Спросите ИИ-помощника…" : "Ask the AI assistant…"}
+              placeholder={ru ? "Спросите ИИ-помощника…" : "Ask about your code..."}
               className="flex-1 text-sm outline-none bg-transparent text-zinc-800 placeholder-zinc-300"
             />
             <button

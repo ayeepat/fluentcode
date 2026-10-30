@@ -51,42 +51,42 @@ function useIsMobile() {
 }
 
 // ---------------------------------------------------------------------------
-// Static course display data — sourced from actual curriculum files.
+// Static course display data - sourced from actual curriculum files.
 // Update these numbers manually whenever lessons are added or removed.
-// Never import curriculum files here — that causes the cache-miss crash.
+// Never import curriculum files here - that causes the cache-miss crash.
 // ---------------------------------------------------------------------------
 const COURSE_CARDS = [
   {
     lang: "python",
     label: "Python",
     mono: "Py",
-    tagline: "The friendliest place to start",
+    tagline: "A straightforward place to start",
     modules: [
-      { id: "l0",  title: "Level 0 — Your First Code",            lessons: 4  },
-      { id: "l1",  title: "Level 1 — Talking and Listening",      lessons: 5  },
-      { id: "l2",  title: "Level 2 — Working with Text",          lessons: 5  },
-      { id: "l3",  title: "Level 3 — Numbers and Math",           lessons: 5  },
-      { id: "l4",  title: "Level 4 — Making Decisions",           lessons: 6  },
-      { id: "l5",  title: "Level 5 — Repeating Code",             lessons: 5  },
-      { id: "l6",  title: "Level 6 — Lists",                      lessons: 5  },
-      { id: "l7",  title: "Level 7 — Dictionaries",               lessons: 4  },
-      { id: "l8",  title: "Level 8 — Reusable Code with Functions", lessons: 6 },
-      { id: "l9",  title: "Level 9 — Handy Built-ins",            lessons: 5  },
-      { id: "l10", title: "Level 10 — Advanced Topics",           lessons: 4  },
+      { id: "l0",  title: "Level 0 - Your First Code",            lessons: 4  },
+      { id: "l1",  title: "Level 1 - Talking and Listening",      lessons: 5  },
+      { id: "l2",  title: "Level 2 - Working with Text",          lessons: 5  },
+      { id: "l3",  title: "Level 3 - Numbers and Math",           lessons: 5  },
+      { id: "l4",  title: "Level 4 - Making Decisions",           lessons: 6  },
+      { id: "l5",  title: "Level 5 - Repeating Code",             lessons: 5  },
+      { id: "l6",  title: "Level 6 - Lists",                      lessons: 5  },
+      { id: "l7",  title: "Level 7 - Dictionaries",               lessons: 4  },
+      { id: "l8",  title: "Level 8 - Reusable Code with Functions", lessons: 6 },
+      { id: "l9",  title: "Level 9 - Handy Built-ins",            lessons: 5  },
+      { id: "l10", title: "Level 10 - Advanced Topics",           lessons: 4  },
     ],
   },
   {
     lang: "java",
     label: "Java",
     mono: "Jv",
-    tagline: "Industry classic, done gently",
+    tagline: "The Java basics without the fluff",
     modules: [
-      { id: "p0", title: "Phase 0 — Welcome to Java",             lessons: 1  },
-      { id: "p1", title: "Phase 1 — Fundamentals",                lessons: 9  },
-      { id: "p2", title: "Phase 2 — Control Flow",                lessons: 8  },
-      { id: "p3", title: "Phase 3 — Methods and Collections",     lessons: 9  },
-      { id: "p4", title: "Phase 4 — Object-Oriented Programming", lessons: 8  },
-      { id: "p5", title: "Phase 5 — Intermediate Java",           lessons: 5  },
+      { id: "p0", title: "Phase 0 - Welcome to Java",             lessons: 1  },
+      { id: "p1", title: "Phase 1 - Fundamentals",                lessons: 9  },
+      { id: "p2", title: "Phase 2 - Control Flow",                lessons: 8  },
+      { id: "p3", title: "Phase 3 - Methods and Collections",     lessons: 9  },
+      { id: "p4", title: "Phase 4 - Object-Oriented Programming", lessons: 8  },
+      { id: "p5", title: "Phase 5 - Intermediate Java",           lessons: 5  },
     ],
   },
   {
@@ -110,12 +110,12 @@ const COURSE_CARDS = [
     mono: "JS",
     tagline: "The language of the web",
     modules: [
-      { id: "p0", title: "Phase 0 — Welcome to JavaScript",       lessons: 1  },
-      { id: "p1", title: "Phase 1 — Fundamentals",                lessons: 8  },
-      { id: "p2", title: "Phase 2 — Control Flow",                lessons: 5  },
-      { id: "p3", title: "Phase 3 — Functions",                   lessons: 4  },
-      { id: "p4", title: "Phase 4 — Arrays and Objects",          lessons: 4  },
-      { id: "p5", title: "Phase 5 — Intermediate JavaScript",     lessons: 5  },
+      { id: "p0", title: "Phase 0 - Welcome to JavaScript",       lessons: 1  },
+      { id: "p1", title: "Phase 1 - Fundamentals",                lessons: 8  },
+      { id: "p2", title: "Phase 2 - Control Flow",                lessons: 5  },
+      { id: "p3", title: "Phase 3 - Functions",                   lessons: 4  },
+      { id: "p4", title: "Phase 4 - Arrays and Objects",          lessons: 4  },
+      { id: "p5", title: "Phase 5 - Intermediate JavaScript",     lessons: 5  },
     ],
   },
   {
@@ -124,27 +124,27 @@ const COURSE_CARDS = [
     mono: "TS",
     tagline: "JavaScript with guardrails",
     modules: [
-      { id: "p0", title: "Phase 0 — Welcome to TypeScript",       lessons: 1  },
-      { id: "p1", title: "Phase 1 — Type Fundamentals",           lessons: 5  },
-      { id: "p2", title: "Phase 2 — Functions in TypeScript",     lessons: 4  },
-      { id: "p3", title: "Phase 3 — Objects and Interfaces",      lessons: 4  },
-      { id: "p4", title: "Phase 4 — Arrays, Tuples, and Generics", lessons: 3 },
-      { id: "p5", title: "Phase 5 — Classes and OOP",             lessons: 3  },
-      { id: "p6", title: "Phase 6 — Advanced Types",              lessons: 4  },
+      { id: "p0", title: "Phase 0 - Welcome to TypeScript",       lessons: 1  },
+      { id: "p1", title: "Phase 1 - Type Fundamentals",           lessons: 5  },
+      { id: "p2", title: "Phase 2 - Functions in TypeScript",     lessons: 4  },
+      { id: "p3", title: "Phase 3 - Objects and Interfaces",      lessons: 4  },
+      { id: "p4", title: "Phase 4 - Arrays, Tuples, and Generics", lessons: 3 },
+      { id: "p5", title: "Phase 5 - Classes and OOP",             lessons: 3  },
+      { id: "p6", title: "Phase 6 - Advanced Types",              lessons: 4  },
     ],
   },
   {
     lang: "ruby",
     label: "Ruby",
     mono: "Rb",
-    tagline: "Designed to make you smile",
+    tagline: "Readable syntax and less boilerplate",
     modules: [
-      { id: "p0", title: "Phase 0 — Welcome to Ruby",             lessons: 1  },
-      { id: "p1", title: "Phase 1 — Fundamentals",                lessons: 7  },
-      { id: "p2", title: "Phase 2 — Control Flow",                lessons: 5  },
-      { id: "p3", title: "Phase 3 — Methods",                     lessons: 2  },
-      { id: "p4", title: "Phase 4 — Arrays and Hashes",           lessons: 2  },
-      { id: "p5", title: "Phase 5 — Intermediate Ruby",           lessons: 2  },
+      { id: "p0", title: "Phase 0 - Welcome to Ruby",             lessons: 1  },
+      { id: "p1", title: "Phase 1 - Fundamentals",                lessons: 7  },
+      { id: "p2", title: "Phase 2 - Control Flow",                lessons: 5  },
+      { id: "p3", title: "Phase 3 - Methods",                     lessons: 2  },
+      { id: "p4", title: "Phase 4 - Arrays and Hashes",           lessons: 2  },
+      { id: "p5", title: "Phase 5 - Intermediate Ruby",           lessons: 2  },
     ],
   },
   {
@@ -153,11 +153,11 @@ const COURSE_CARDS = [
     mono: "C+",
     tagline: "Close to the metal",
     modules: [
-      { id: "p0", title: "Phase 0 — Welcome to C++",              lessons: 1  },
-      { id: "p1", title: "Phase 1 — Fundamentals",                lessons: 4  },
-      { id: "p2", title: "Phase 2 — Functions and Scope",         lessons: 2  },
-      { id: "p3", title: "Phase 3 — Arrays, Vectors, and Strings", lessons: 2 },
-      { id: "p4", title: "Phase 4 — Classes and Objects",         lessons: 1  },
+      { id: "p0", title: "Phase 0 - Welcome to C++",              lessons: 1  },
+      { id: "p1", title: "Phase 1 - Fundamentals",                lessons: 4  },
+      { id: "p2", title: "Phase 2 - Functions and Scope",         lessons: 2  },
+      { id: "p3", title: "Phase 3 - Arrays, Vectors, and Strings", lessons: 2 },
+      { id: "p4", title: "Phase 4 - Classes and Objects",         lessons: 1  },
     ],
   },
   {
@@ -166,36 +166,36 @@ const COURSE_CARDS = [
     mono: "Go",
     tagline: "Simple, fast, concurrent",
     modules: [
-      { id: "l0",  title: "Level 0 — Hello Go",                   lessons: 4  },
-      { id: "l1",  title: "Level 1 — Variables & Data Types",     lessons: 5  },
-      { id: "l2",  title: "Level 2 — Control Flow",               lessons: 5  },
-      { id: "l3",  title: "Level 3 — Functions",                  lessons: 4  },
-      { id: "l4",  title: "Level 4 — Pointers",                   lessons: 3  },
-      { id: "l5",  title: "Level 5 — Arrays, Slices & Maps",      lessons: 5  },
-      { id: "l6",  title: "Level 6 — Structs and Methods",        lessons: 4  },
-      { id: "l7",  title: "Level 7 — Interfaces & Errors",        lessons: 3  },
-      { id: "l8",  title: "Level 8 — Concurrency",                lessons: 5  },
-      { id: "l9",  title: "Level 9 — Packages and Modules",       lessons: 4  },
-      { id: "l10", title: "Level 10 — Advanced Error Handling",   lessons: 3  },
-      { id: "l11", title: "Level 11 — File I/O and Text",         lessons: 3  },
-      { id: "l12", title: "Level 12 — Testing and Benchmarking",  lessons: 3  },
-      { id: "l13", title: "Level 13 — Generics",                  lessons: 3  },
-      { id: "l14", title: "Level 14 — Building Web APIs",         lessons: 5  },
+      { id: "l0",  title: "Level 0 - Hello Go",                   lessons: 4  },
+      { id: "l1",  title: "Level 1 - Variables & Data Types",     lessons: 5  },
+      { id: "l2",  title: "Level 2 - Control Flow",               lessons: 5  },
+      { id: "l3",  title: "Level 3 - Functions",                  lessons: 4  },
+      { id: "l4",  title: "Level 4 - Pointers",                   lessons: 3  },
+      { id: "l5",  title: "Level 5 - Arrays, Slices & Maps",      lessons: 5  },
+      { id: "l6",  title: "Level 6 - Structs and Methods",        lessons: 4  },
+      { id: "l7",  title: "Level 7 - Interfaces & Errors",        lessons: 3  },
+      { id: "l8",  title: "Level 8 - Concurrency",                lessons: 5  },
+      { id: "l9",  title: "Level 9 - Packages and Modules",       lessons: 4  },
+      { id: "l10", title: "Level 10 - Advanced Error Handling",   lessons: 3  },
+      { id: "l11", title: "Level 11 - File I/O and Text",         lessons: 3  },
+      { id: "l12", title: "Level 12 - Testing and Benchmarking",  lessons: 3  },
+      { id: "l13", title: "Level 13 - Generics",                  lessons: 3  },
+      { id: "l14", title: "Level 14 - Building Web APIs",         lessons: 5  },
     ],
   },
   {
     lang: "rust",
     label: "Rust",
     mono: "Rs",
-    tagline: "Fearless systems programming",
+    tagline: "Systems programming with strong safety checks",
     modules: [
-      { id: "m1", title: "Module 1 — Getting Started with Rust",       lessons: 5 },
-      { id: "m2", title: "Module 2 — Ownership & Borrowing",           lessons: 5 },
-      { id: "m3", title: "Module 3 — Structuring Your Data",           lessons: 5 },
-      { id: "m4", title: "Module 4 — Error Handling & Collections",    lessons: 5 },
-      { id: "m5", title: "Module 5 — Project Organization & Generics", lessons: 5 },
-      { id: "m6", title: "Module 6 — Iterators, Closures & Concurrency", lessons: 5 },
-      { id: "m7", title: "Module 7 — The Capstone Build (CLI Tool)",   lessons: 5 },
+      { id: "m1", title: "Module 1 - Getting Started with Rust",       lessons: 5 },
+      { id: "m2", title: "Module 2 - Ownership & Borrowing",           lessons: 5 },
+      { id: "m3", title: "Module 3 - Structuring Your Data",           lessons: 5 },
+      { id: "m4", title: "Module 4 - Error Handling & Collections",    lessons: 5 },
+      { id: "m5", title: "Module 5 - Project Organization & Generics", lessons: 5 },
+      { id: "m6", title: "Module 6 - Iterators, Closures & Concurrency", lessons: 5 },
+      { id: "m7", title: "Module 7 - The Capstone Build (CLI Tool)",   lessons: 5 },
     ],
   },
   {
@@ -204,11 +204,11 @@ const COURSE_CARDS = [
     mono: "SQL",
     tagline: "Ask better questions of your data",
     modules: [
-      { id: "m1", title: "Module 1 — Reading Data",             lessons: 5 },
-      { id: "m2", title: "Module 2 — Filtering and Sorting",    lessons: 5 },
-      { id: "m3", title: "Module 3 — Summaries and Groups",     lessons: 5 },
-      { id: "m4", title: "Module 4 — Joining Tables",           lessons: 5 },
-      { id: "m5", title: "Module 5 — Changing Data Safely",     lessons: 5 },
+      { id: "m1", title: "Module 1 - Reading Data",             lessons: 5 },
+      { id: "m2", title: "Module 2 - Filtering and Sorting",    lessons: 5 },
+      { id: "m3", title: "Module 3 - Summaries and Groups",     lessons: 5 },
+      { id: "m4", title: "Module 4 - Joining Tables",           lessons: 5 },
+      { id: "m5", title: "Module 5 - Changing Data Safely",     lessons: 5 },
     ],
   },
   {
@@ -217,11 +217,11 @@ const COURSE_CARDS = [
     mono: "H&C",
     tagline: "Build pages people can actually use",
     modules: [
-      { id: "m1", title: "Module 1 — Building a Meaningful Page",          lessons: 5 },
-      { id: "m2", title: "Module 2 — CSS Foundations",                     lessons: 5 },
-      { id: "m3", title: "Module 3 — Layout with Flexbox and Grid",        lessons: 5 },
-      { id: "m4", title: "Module 4 — Responsive and Accessible Interfaces", lessons: 5 },
-      { id: "m5", title: "Module 5 — Practical Components",                lessons: 5 },
+      { id: "m1", title: "Module 1 - Building a Meaningful Page",          lessons: 5 },
+      { id: "m2", title: "Module 2 - CSS Foundations",                     lessons: 5 },
+      { id: "m3", title: "Module 3 - Layout with Flexbox and Grid",        lessons: 5 },
+      { id: "m4", title: "Module 4 - Responsive and Accessible Interfaces", lessons: 5 },
+      { id: "m5", title: "Module 5 - Practical Components",                lessons: 5 },
     ],
   },
 ];
@@ -287,8 +287,8 @@ function EditorMockup() {
           <Check size={14} strokeWidth={3} />
         </span>
         <div className="text-left">
-          <p className="text-xs font-semibold text-zinc-900 leading-tight">{ru ? 'Верно — отличная работа!' : 'Correct — nice work!'}</p>
-          <p className="text-[11px] text-zinc-400 leading-tight">{ru ? 'Проверка ИИ · результат совпал' : 'AI review · exact output match'}</p>
+          <p className="text-xs font-semibold text-zinc-900 leading-tight">{ru ? 'Верно — отличная работа!' : 'Correct. Nice work!'}</p>
+          <p className="text-[11px] text-zinc-400 leading-tight">{ru ? 'Проверка кода · результат совпал' : 'Code check · output matches'}</p>
         </div>
       </motion.div>
     </div>
@@ -341,9 +341,9 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-white flex flex-col overflow-x-clip">
       <Helmet>
-        <title>{ru ? "FluentlyCode | Интерактивные уроки программирования с ИИ" : "FluentlyCode | Learn to Code with AI-Powered Interactive Lessons"}</title>
-        <meta name="description" content={ru ? "Интерактивные уроки Python, проверка кода с помощью ИИ и тесты. Начните бесплатно без регистрации." : "Learn to code with FluentlyCode: interactive Python lessons, AI-powered feedback, quizzes, and instant code evaluation. Free and no signup required."} />
-        <meta property="og:title" content={ru ? "FluentlyCode | Обучение программированию с помощью ИИ" : "FluentlyCode | Learn to Code with AI-Powered Feedback"} />
+        <title>{ru ? "FluentlyCode | Интерактивные уроки программирования с ИИ" : "FluentlyCode | Learn to Code with AI Interactive Lessons"}</title>
+        <meta name="description" content={ru ? "Интерактивные уроки Python, проверка кода с помощью ИИ и тесты. Начните бесплатно без регистрации." : "Learn to code with FluentlyCode: interactive Python lessons, AI feedback, quizzes, and instant code evaluation. Free and no signup required."} />
+        <meta property="og:title" content={ru ? "FluentlyCode | Обучение программированию с помощью ИИ" : "FluentlyCode | Learn to Code with AI Feedback"} />
         <meta property="og:description" content={ru ? "Интерактивные уроки Python с проверкой кода от ИИ. Начните бесплатно без регистрации." : "Interactive Python lessons with instant AI feedback. Start coding in seconds. No signup required. Completely free."} />
       </Helmet>
 
@@ -477,14 +477,14 @@ export default function Landing() {
         >
           {ru ? "Учитесь программировать." : "Learn to code."}
           <br />
-          <span className="text-zinc-400 font-semibold">{ru ? "По-настоящему." : "Actually learn it."}</span>
+          <span className="text-zinc-400 font-semibold">{ru ? "На практике." : "By actually coding."}</span>
         </motion.h1>
 
         <motion.p
           {...fadeUp(0.18)}
           className="relative text-base text-zinc-500 mb-10 max-w-md leading-relaxed"
         >
-          {ru ? "Пишите настоящий код, получайте обратную связь сразу и осваивайте навыки на практике. Чтобы начать, регистрация не нужна." : "Write real code, get instant feedback, and build skills that stick. No account needed to start — just jump in."}
+          {ru ? "Проходите короткие уроки, пишите настоящий код и получайте обратную связь, когда она нужна. Начать можно без регистрации." : "Work through short lessons, write real code, and get feedback when you need it. You can start without making an account."}
         </motion.p>
 
         <motion.div
@@ -525,7 +525,7 @@ export default function Landing() {
           {[
             ru ? `Бесплатных уроков: ${TOTAL_LESSONS}` : `${TOTAL_LESSONS} free lessons`,
             ru ? `Языков: ${COURSE_CARDS.length}` : `${COURSE_CARDS.length} languages`,
-            ru ? "10 проверок ИИ в день" : "10 AI reviews/day",
+            ru ? "10 проверок ИИ в день" : "10 code reviews/day",
             ru ? "Без регистрации" : "No signup needed",
           ].map((item) => (
             <span key={item} className="flex items-center gap-1.5 text-xs text-zinc-500">
@@ -550,20 +550,20 @@ export default function Landing() {
             {
               step: "01",
               icon: <Zap size={16} />,
-              title: "Jump straight in",
-              desc: "No signup, no setup. Click the button and start your first coding exercise in seconds.",
+              title: "Start right away",
+              desc: "Pick a course and try the first exercise. You do not need an account to get started.",
             },
             {
               step: "02",
               icon: <Terminal size={16} />,
               title: "Write real code",
-              desc: "Every lesson ends with an exercise. No multiple choice — you write and run actual code.",
+              desc: "Each lesson gives you something to build or fix, so you spend more time coding than reading.",
             },
             {
               step: "03",
               icon: <Sparkles size={16} />,
-              title: "Get AI feedback",
-              desc: "Your AI tutor reviews your code and gives targeted guidance. Create a free account for 10 reviews per day.",
+              title: "Get feedback when you need it",
+              desc: "Submit your code for a short review and see what to fix next. Free accounts include 10 AI reviews a day.",
             },
           ].map(({ step, icon, title, desc }, i) => (
             <motion.div
@@ -599,12 +599,12 @@ export default function Landing() {
             <h2 className="text-4xl font-bold tracking-tight">
               {ru ? `${COURSE_CARDS.length} языков.` : `${COURSE_CARDS.length} languages.`}
               <br />
-              {ru ? "Создано для обучения." : "Optimised for learning."}
+              {ru ? "Создано для практики." : "Built around practice."}
             </h2>
           </div>
           <p className="text-sm text-zinc-400 md:text-right md:pb-1">
             {ru ? `Уроков: ${TOTAL_LESSONS} · Языков: ${COURSE_CARDS.length}` : `${TOTAL_LESSONS} lessons across ${COURSE_CARDS.length} languages`}
-            <br className="hidden md:block" /> {ru ? "— всё бесплатно." : "— all free."}
+            <br className="hidden md:block" /> {ru ? "— всё бесплатно." : "and all of it is free."}
           </p>
         </motion.div>
 
@@ -686,7 +686,7 @@ export default function Landing() {
               {ru ? 'Готовы начать?' : 'Ready to start?'}
             </h2>
             <p className="text-zinc-400 mb-9 text-sm">
-              {ru ? 'Без регистрации и обязательств. Просто пишите код.' : 'No account needed. No commitments. Just code.'}
+              {ru ? 'Попробуйте урок и посмотрите, как вам. Регистрация не нужна.' : 'Try a lesson and see how it feels. No account required.'}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <button
@@ -736,7 +736,7 @@ export default function Landing() {
                 <Wordmark />
               </div>
               <p className="text-xs text-zinc-400 leading-relaxed max-w-xs">
-                {ru ? "Учитесь программировать на практике и получайте обратную связь от ИИ. Бесплатно и навсегда." : "Learn to code with real exercises and AI-powered feedback. Free forever, built for people who actually want to learn."}
+                {ru ? "Практикуйтесь на коротких уроках и заданиях с настоящим кодом, получайте обратную связь. Пользуйтесь бесплатно, без платного доступа." : "Practice with short lessons, real coding exercises, and feedback when you need it. Free to use, with no paywall."}
               </p>
             </div>
 
@@ -801,7 +801,7 @@ export default function Landing() {
 
           <div className="border-t border-zinc-200 pt-6 flex flex-col md:flex-row items-center justify-between gap-3">
             <p className="text-xs text-zinc-400">
-              © {new Date().getFullYear()} fluentlycode — {ru ? "учитесь программировать в своём темпе." : "learn to code, personally."}
+              © {new Date().getFullYear()} fluentlycode — {ru ? "учитесь на практике." : "learn by doing."}
             </p>
             <div className="flex items-center gap-4">
               <Link to="/terms" className="text-xs text-zinc-400 hover:text-zinc-900 transition-colors">

@@ -11,9 +11,9 @@ export default function SignUpPage() {
       <div className="absolute top-4 right-4"><LanguageSwitch /></div>
       <Helmet>
         <title>{language === "ru" ? "Регистрация | FluentlyCode" : "Sign Up | Start Learning with FluentlyCode"}</title>
-        <meta name="description" content={language === "ru" ? "Создайте бесплатный аккаунт и отслеживайте прогресс." : "Create a free FluentlyCode account to unlock unlimited AI-powered coding lessons and track your progress."} />
+        <meta name="description" content={language === "ru" ? "Создайте бесплатный аккаунт и отслеживайте прогресс." : "Create a free FluentlyCode account to access all lessons, save your progress, and use AI code feedback."} />
         <meta property="og:title" content={language === "ru" ? "Регистрация | FluentlyCode" : "Sign Up - FluentlyCode"} />
-        <meta property="og:description" content={language === "ru" ? "Создайте бесплатный аккаунт и отслеживайте прогресс." : "Join FluentlyCode and start learning to code."} />
+        <meta property="og:description" content={language === "ru" ? "Создайте бесплатный аккаунт и отслеживайте прогресс." : "Create an account to save progress and continue your courses."} />
       </Helmet>
       <SignUp routing="path" path="/sign-up" afterSignUpUrl="/dashboard" />
     </div>

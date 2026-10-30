@@ -4,28 +4,28 @@ export const typescriptCurriculum = {
   modules: [
     {
       id: "typescript-phase0-m1",
-      title: "Phase 0 — Welcome to TypeScript",
+      title: "Phase 0 - Welcome to TypeScript",
       duration: "15 min",
       lessons: [
         {
           id: "typescript-phase0-m1-l1",
           title: "Your First TypeScript Program",
           explanation: `TypeScript is JavaScript with superpowers. JavaScript is flexible and 
-fast to write, but that flexibility causes bugs — you can accidentally 
+fast to write, but that flexibility causes bugs - you can accidentally 
 add a number to a string, call a method that doesn't exist, or forget 
 to handle a missing value, and you won't find out until your program 
 crashes at runtime. TypeScript adds a type system on top of JavaScript 
 that catches these mistakes before your code ever runs. Think of it 
-as a spell-checker for code — it highlights problems as you write 
+as a spell-checker for code - it highlights problems as you write 
 them. TypeScript is the standard language at most large tech companies 
 (Microsoft, Google, Airbnb, Slack all use it), and learning it makes 
 you a significantly more employable developer.`,
-          concept: `TypeScript is a SUPERSET of JavaScript — all valid JavaScript is valid TypeScript.
+          concept: `TypeScript is a SUPERSET of JavaScript - all valid JavaScript is valid TypeScript.
 TypeScript adds: type annotations, interfaces, enums, and access modifiers.
-Types are checked at COMPILE TIME — errors caught before running.
-TypeScript compiles to JavaScript — browsers and Node.js run the JS output.
+Types are checked at COMPILE TIME - errors caught before running.
+TypeScript compiles to JavaScript - browsers and Node.js run the JS output.
 Type annotations use the colon syntax: variableName: Type
-TypeScript can INFER types — you don't always need to write them explicitly.`,
+TypeScript can INFER types - you don't always need to write them explicitly.`,
           example: `// JavaScript (no type safety)
 let name = "Alice";
 name = 42;          // no error! Bug waiting to happen
@@ -43,7 +43,7 @@ greet("Alice");   // ✓ works
 // greet(42);     // ✗ Error: Argument of type 'number' is not assignable to 'string'
 // greet();       // ✗ Error: Expected 1 arguments, but got 0
 
-// Type inference — TypeScript figures it out:
+// Type inference - TypeScript figures it out:
 let count = 0;           // TypeScript infers: number
 let message = "hello";   // TypeScript infers: string
 let active = true;       // TypeScript infers: boolean
@@ -92,28 +92,28 @@ console.log(greetLearner(firstName));`,
             ],
             debuggingTip: `Common mistakes:
 • Type annotation syntax: it's name: string not name: String (lowercase for primitives).
-• String, Number, Boolean (capitalized) are object wrapper types — use lowercase always.
+• String, Number, Boolean (capitalized) are object wrapper types - use lowercase always.
 • Template literals need backticks (\`) not regular quotes for \${} interpolation.
 • Function return type after closing parenthesis: function name(param: Type): ReturnType { }
-• TypeScript errors show in red — read them carefully, they tell you exactly what's wrong.`
+• TypeScript errors show in red - read them carefully, they tell you exactly what's wrong.`
           }
         }
       ]
     },
     {
       id: "typescript-phase1-m1",
-      title: "Phase 1 — Type Fundamentals",
+      title: "Phase 1 - Type Fundamentals",
       duration: "3 hours",
       lessons: [
         {
           id: "typescript-phase1-m1-l1",
-          title: "Primitive Types — string, number, boolean",
+          title: "Primitive Types - string, number, boolean",
           explanation: `TypeScript's type system starts with three primitive types that mirror 
-JavaScript's most fundamental values. string covers all text — single 
-characters to entire documents. number covers ALL numeric values — 
+JavaScript's most fundamental values. string covers all text - single 
+characters to entire documents. number covers ALL numeric values - 
 integers, decimals, negative numbers (TypeScript doesn't separate int 
 from float like Java does). boolean is true or false. The power comes 
-from annotating variables with these types — TypeScript then enforces 
+from annotating variables with these types - TypeScript then enforces 
 that you never accidentally put the wrong kind of data in a variable. 
 This eliminates an entire category of bugs that are extremely common 
 in plain JavaScript.`,
@@ -160,7 +160,7 @@ console.log(typeof isActive);    // "boolean"`,
 2. Declare pageCount: number = 312
 3. Declare isAvailable: boolean = true
 4. Declare discountRate: number = 0.15 (15%)
-5. Calculate and store: finalPrice = 29.99 * (1 - discountRate) — annotate as number
+5. Calculate and store: finalPrice = 29.99 * (1 - discountRate) - annotate as number
 6. Print a receipt: "Product: [name] | Pages: [pages] | Price: $[finalPrice] | Available: [bool]"
 7. Try creating a variable with the wrong type (comment it out with // to show you tried)`,
             starterCode: `// Step 1: productName string
@@ -201,21 +201,21 @@ console.log(\`Product: \${productName} | Pages: \${pageCount} | Price: \$\${fina
             ],
             debuggingTip: `Common mistakes:
 • Used String with capital S? String is the object wrapper, string (lowercase) is the primitive. Always use lowercase.
-• Forgot the colon? let name string is invalid syntax — the colon is required: let name: string.
+• Forgot the colon? let name string is invalid syntax - the colon is required: let name: string.
 • Semicolons optional in TypeScript but recommended for consistency.
-• toFixed() returns a string — if you need the number, use parseFloat(price.toFixed(2)).
+• toFixed() returns a string - if you need the number, use parseFloat(price.toFixed(2)).
 • const vs let: use const for values that don't change, let for variables that will be reassigned.`
           }
         },
         {
           id: "typescript-phase1-m1-l2",
-          title: "Type Inference — TypeScript Reads Your Mind",
-          explanation: `TypeScript doesn't require you to write type annotations everywhere — 
+          title: "Type Inference - TypeScript Reads Your Mind",
+          explanation: `TypeScript doesn't require you to write type annotations everywhere - 
 it's smart enough to figure out the type from the value you assign. 
 This is called type inference. When you write const name = 'Alice', 
 TypeScript automatically knows name is a string. You can then hover 
 over name in VS Code and see the inferred type. Inference is one of 
-TypeScript's most beloved features — you get full type safety without 
+TypeScript's most beloved features - you get full type safety without 
 writing verbose annotations everywhere. The general rule: let TypeScript 
 infer types from values, but annotate function parameters and return 
 types explicitly (inference can't read your intentions there).`,
@@ -260,11 +260,11 @@ const CONSTANT = 42;   // type: 42 (literal number type)
 let variable = 42;     // type: number (can change to any number)`,
           exercise: {
             prompt: `Explore type inference:
-1. Create 4 variables WITHOUT type annotations — let TypeScript infer: a string, number, boolean, and array of numbers
+1. Create 4 variables WITHOUT type annotations - let TypeScript infer: a string, number, boolean, and array of numbers
 2. Try reassigning each to a wrong type (write as comments with // Error:)
-3. Write function calculateTax(price: number, rate: number): number that returns price * rate — annotate explicitly
+3. Write function calculateTax(price: number, rate: number): number that returns price * rate - annotate explicitly
 4. Store the result of calculateTax(100, 0.08) in a variable WITHOUT annotation and log it
-5. Create const PI = 3.14159 and const MAX_USERS = 100 — hover description: what are their literal types?
+5. Create const PI = 3.14159 and const MAX_USERS = 100 - hover description: what are their literal types?
 6. Create an inferred object and add a new property (observe the error)`,
             starterCode: `// Step 1: Four inferred variables (no type annotations!)
 const appName =
@@ -315,21 +315,21 @@ const config = { host: 'localhost', port: 3000 };
               { type: "contains", value: "calculateTax(100, 0.08)" }
             ],
             debuggingTip: `Common mistakes:
-• Over-annotating? const name: string = 'Alice' is redundant — TypeScript infers string. Skip the annotation.
-• Under-annotating functions? Function parameters CANNOT be inferred without a call — always annotate them.
+• Over-annotating? const name: string = 'Alice' is redundant - TypeScript infers string. Skip the annotation.
+• Under-annotating functions? Function parameters CANNOT be inferred without a call - always annotate them.
 • const gives literal types: const x = 'hello' has type "hello", not string. This matters in advanced patterns.
 • Adding properties to inferred objects fails because TypeScript locks the shape at creation.
-• Hover over variables in VS Code to see the inferred type — it's the fastest way to understand what TypeScript sees.`
+• Hover over variables in VS Code to see the inferred type - it's the fastest way to understand what TypeScript sees.`
           }
         },
         {
           id: "typescript-phase1-m1-l3",
-          title: "Union Types — Either/Or Values",
+          title: "Union Types - Either/Or Values",
           explanation: `Real data doesn't always fit neatly into one type. A function might return 
 a number OR null. A variable might hold a string OR a number. TypeScript's 
 union types handle this with the pipe symbol (|): string | number means 
 "this can be a string or a number". This is one of TypeScript's most 
-important features — it forces you to handle all possible cases. If a 
+important features - it forces you to handle all possible cases. If a 
 variable can be string | null, TypeScript won't let you call string 
 methods on it without first checking that it's actually a string. 
 This eliminates the dreaded "Cannot read properties of null" runtime error.`,
@@ -353,7 +353,7 @@ id = 42;          // ✓ number
 
 // Function with union parameter
 function printId(id: string | number): void {
-  // Can't call string methods directly — might be a number!
+  // Can't call string methods directly - might be a number!
   // console.log(id.toUpperCase()); // ✗ Error!
   
   // Narrow first with typeof:
@@ -377,24 +377,24 @@ const result = findUser('Bob');
 // console.log(result.length); // ✗ Error: result might be null!
 
 if (result !== null) {
-  console.log(result.length); // ✓ safe — null is excluded
+  console.log(result.length); // ✓ safe - null is excluded
 }
 
 // Optional chaining handles it more elegantly:
 console.log(result?.length); // returns undefined if result is null
 
-// String literal union — like a mini-enum
+// String literal union - like a mini-enum
 type Direction = 'north' | 'south' | 'east' | 'west';
 let heading: Direction = 'north';
 // heading = 'up'; // ✗ Error: not in the union`,
           exercise: {
             prompt: `Practice union types:
-1. Declare id: string | number — assign a string value, then reassign to a number, log both
+1. Declare id: string | number - assign a string value, then reassign to a number, log both
 2. Write function formatId(id: string | number): string that:
    - If string: returns it in UPPERCASE
    - If number: returns it with 'ID-' prefix (e.g., 'ID-42')
 3. Write function getScore(name: string): number | null that returns 100 for 'Alice', null otherwise
-4. Call getScore for 'Alice' and 'Bob' — safely access the result only when not null
+4. Call getScore for 'Alice' and 'Bob' - safely access the result only when not null
 5. Define type Status = 'active' | 'inactive' | 'pending' and use it with a variable
 6. Write function describeStatus(s: Status): string that returns different messages per status`,
             starterCode: `// Step 1: Union variable
@@ -467,23 +467,23 @@ console.log(describeStatus(userStatus));`,
               { type: "contains", value: "number | null" }
             ],
             debuggingTip: `Common mistakes:
-• Calling string methods on string | number without narrowing? TypeScript blocks this — use typeof first.
+• Calling string methods on string | number without narrowing? TypeScript blocks this - use typeof first.
 • Returning string | null but accessing like it's always a string? Always check null first: if (result !== null).
 • Optional chaining (?.) vs non-null assertion (!)? Use ?. for safety, ! only when you're 100% certain it's not null.
-• String literal union typo? 'activ' instead of 'active' — TypeScript catches this at assignment time.
+• String literal union typo? 'activ' instead of 'active' - TypeScript catches this at assignment time.
 • Type guard in else: if typeof === 'string' in if branch means else branch is definitely NOT string.`
           }
         },
         {
           id: "typescript-phase1-m1-l4",
-          title: "any, unknown, and never — Special Types",
+          title: "any, unknown, and never - Special Types",
           explanation: `TypeScript has three special types that represent unusual situations. 
-'any' is the escape hatch — it turns off type checking completely, 
+'any' is the escape hatch - it turns off type checking completely, 
 letting you do anything with a value. It's tempting to use when 
 TypeScript's errors seem annoying, but it defeats the purpose of 
-TypeScript entirely. 'unknown' is the safe alternative — it says 
+TypeScript entirely. 'unknown' is the safe alternative - it says 
 "I don't know the type" but forces you to check before using it. 
-'never' represents values that literally never exist — functions that 
+'never' represents values that literally never exist - functions that 
 always throw errors, or switch statements that have handled all cases. 
 Understanding these three types makes you a much more sophisticated 
 TypeScript developer.`,
@@ -501,14 +501,14 @@ never   → value that never occurs
           - function that always throws returns never
           - exhaustive switch: remaining case is never
           - useful for exhaustiveness checking`,
-          example: `// any — dangerous, avoid
+          example: `// any - dangerous, avoid
 let dangerous: any = 'hello';
 dangerous = 42;              // ✓ no error
 dangerous = { foo: 'bar' };  // ✓ no error
-dangerous.anything();        // ✓ no error — but will CRASH at runtime!
-let num: number = dangerous; // ✓ no error — any infects everything
+dangerous.anything();        // ✓ no error - but will CRASH at runtime!
+let num: number = dangerous; // ✓ no error - any infects everything
 
-// unknown — safe alternative to any
+// unknown - safe alternative to any
 let userInput: unknown = getUserInput(); // could be anything
 // userInput.toUpperCase();  // ✗ Error: must narrow first
 
@@ -520,7 +520,7 @@ if (typeof userInput === 'string') {
 // Type assertion (use carefully):
 const str = userInput as string; // you're telling TypeScript "trust me"
 
-// never — function that never returns
+// never - function that never returns
 function throwError(message: string): never {
   throw new Error(message);
   // code after throw is unreachable
@@ -546,7 +546,7 @@ function getUserInput(): unknown {
             prompt: `Understand special types:
 1. Declare a variable with type 'unknown' assigned a string value
 2. Try to call .toUpperCase() on it directly (comment it out showing the error)
-3. Narrow the unknown with typeof and call .toUpperCase() safely — log the result
+3. Narrow the unknown with typeof and call .toUpperCase() safely - log the result
 4. Write function alwaysThrows(msg: string): never that throws an Error
 5. Write function processValue(val: unknown): string that:
    - If val is a string: returns val.toUpperCase()
@@ -608,19 +608,19 @@ console.log(processValue(true));`,
               { type: "contains", value: ": never" }
             ],
             debuggingTip: `Common mistakes:
-• Using 'any' because 'unknown' is annoying? That's the wrong lesson — use 'unknown' and narrow properly.
+• Using 'any' because 'unknown' is annoying? That's the wrong lesson - use 'unknown' and narrow properly.
 • Type assertion 'as string' on unknown? Only do this when you're genuinely certain of the type. Wrong assertions cause runtime crashes.
-• never return type on function that might not throw? It must ALWAYS throw or infinitely loop — no other exit path.
-• Forgetting never in exhaustive checks? Adding a new union member without updating switches is a common bug — never prevents it.
-• any spreads: let x: any = ...; let y: number = x; — y is also effectively any. Avoid the whole chain.`
+• never return type on function that might not throw? It must ALWAYS throw or infinitely loop - no other exit path.
+• Forgetting never in exhaustive checks? Adding a new union member without updating switches is a common bug - never prevents it.
+• any spreads: let x: any = ...; let y: number = x; - y is also effectively any. Avoid the whole chain.`
           }
         },
         {
           id: "typescript-phase1-m1-l5",
-          title: "Type Aliases — Creating Named Types",
+          title: "Type Aliases - Creating Named Types",
           explanation: `As your programs grow, you'll find yourself writing the same complex 
 type annotations repeatedly. Type aliases let you give a name to any 
-type — from simple unions to complex object shapes. They make your 
+type - from simple unions to complex object shapes. They make your 
 code dramatically more readable and maintainable. If the meaning of 
 a type changes, you update it in one place and everywhere using the 
 alias automatically benefits. Type aliases are also self-documenting: 
@@ -765,17 +765,17 @@ console.log(laptop);`,
             ],
             debuggingTip: `Common mistakes:
 • Rating = number instead of literal union? number accepts 6, 100, -1. Use 1|2|3|4|5 to restrict to valid ratings.
-• Semicolons in object types? Type { x: number; y: number } uses semicolons (not commas) — both work but semicolons are conventional.
-• Type aliases aren't values — you can't console.log(ProductId). They exist only at compile time.
+• Semicolons in object types? Type { x: number; y: number } uses semicolons (not commas) - both work but semicolons are conventional.
+• Type aliases aren't values - you can't console.log(ProductId). They exist only at compile time.
 • Tuple vs array? [number, number] is exactly 2 numbers. number[] is any number of numbers.
-• Function type syntax: (param: Type) => ReturnType — the arrow is part of the syntax.`
+• Function type syntax: (param: Type) => ReturnType - the arrow is part of the syntax.`
           }
         }
       ]
     },
     {
       id: "typescript-phase2-m1",
-      title: "Phase 2 — Functions in TypeScript",
+      title: "Phase 2 - Functions in TypeScript",
       duration: "2.5 hours",
       lessons: [
         {
@@ -785,7 +785,7 @@ console.log(laptop);`,
 By annotating parameters, you document what a function expects and get 
 an error if you call it wrong. By annotating return types, you document 
 what it produces and TypeScript verifies you actually return the right thing. 
-This is self-enforcing documentation — unlike comments, type annotations 
+This is self-enforcing documentation - unlike comments, type annotations 
 can't be out of sync with the code because TypeScript enforces them. 
 Every parameter should be typed. Return types should be explicit for 
 public/exported functions and can be inferred for small private helpers.`,
@@ -817,7 +817,7 @@ console.log(add(5, 3));    // ✓ 8
 // add(5);                  // ✗ Error: Expected 2 arguments, got 1
 // add(5, 3, 1);            // ✗ Error: Expected 2 arguments, got 3
 
-// void — no return value
+// void - no return value
 function logMessage(msg: string): void {
   console.log(\`[LOG]: \${msg}\`);
   // return 42; // ✗ Error: can't return value from void function
@@ -850,12 +850,12 @@ function grade(score: number): string {
 }`,
           exercise: {
             prompt: `Write fully typed functions:
-1. Write function celsiusToFahrenheit(c: number): number — returns (c * 9/5) + 32
-2. Write function capitalize(s: string): string — returns string with first letter uppercase
+1. Write function celsiusToFahrenheit(c: number): number - returns (c * 9/5) + 32
+2. Write function capitalize(s: string): string - returns string with first letter uppercase
 3. Write function isInRange(value: number, min: number, max: number): boolean
 4. Write arrow function 'repeat' that takes a string and count (number) and returns string repeated count times
-5. Write function printUserInfo(name: string, age: number, city?: string): void — city is optional, print different messages
-6. Write function safeSqrt(n: number): number — throws Error if n < 0, returns Math.sqrt(n) otherwise`,
+5. Write function printUserInfo(name: string, age: number, city?: string): void - city is optional, print different messages
+6. Write function safeSqrt(n: number): number - throws Error if n < 0, returns Math.sqrt(n) otherwise`,
             starterCode: `// Step 1: celsiusToFahrenheit
 function celsiusToFahrenheit(c: number): number {
   
@@ -922,18 +922,18 @@ console.log(safeSqrt(16));`,
               { type: "contains", value: "city?: string" }
             ],
             debuggingTip: `Common mistakes:
-• Missing return type causes TypeScript to infer — fine for simple functions, but explicit is better.
+• Missing return type causes TypeScript to infer - fine for simple functions, but explicit is better.
 • void functions shouldn't return values. Return type void means the return value is ignored.
-• Optional parameter (city?) must come AFTER required parameters — can't have required after optional.
-• TypeScript requires ALL code paths to return the declared type — missing return in an if branch causes an error.
-• Arrow function types: const fn = (x: number): string => x.toString() — the : string comes before =>.`
+• Optional parameter (city?) must come AFTER required parameters - can't have required after optional.
+• TypeScript requires ALL code paths to return the declared type - missing return in an if branch causes an error.
+• Arrow function types: const fn = (x: number): string => x.toString() - the : string comes before =>.`
           }
         },
         {
           id: "typescript-phase2-m1-l2",
           title: "Optional and Default Parameters",
           explanation: `Real functions rarely require all their arguments every time. Optional 
-parameters (marked with ?) can be omitted by callers — TypeScript treats 
+parameters (marked with ?) can be omitted by callers - TypeScript treats 
 them as type | undefined inside the function. Default parameters provide 
 a fallback value and make the parameter optional automatically. Together, 
 they make APIs flexible and easy to use. The critical difference: optional 
@@ -948,7 +948,7 @@ the most practically important patterns in TypeScript.`,
 Default: param: type = defaultValue
   → always has a value inside function (either passed or default)
   → caller can omit it
-  → NO need to check — always defined
+  → NO need to check - always defined
 
 Rules:
 - Optional/default params must come AFTER required params
@@ -998,7 +998,7 @@ console.log(paginate(numbers, 2));       // Page 2: [11, 12, ..., 20]
 console.log(paginate(numbers, 1, 5, 'Results')); // Results 1: [1, 2, 3, 4, 5]`,
           exercise: {
             prompt: `Practice optional and default parameters:
-1. Write createEmail(username: string, domain?: string): string — domain defaults to 'gmail.com' if not provided (use ?? or if check)
+1. Write createEmail(username: string, domain?: string): string - domain defaults to 'gmail.com' if not provided (use ?? or if check)
 2. Write formatPrice(amount: number, currency: string = 'USD', decimals: number = 2): string returning "$12.99 USD"
 3. Write buildTag(tag: string, content: string, className?: string): string returning HTML like <div>content</div> or <div class="box">content</div>
 4. Write logEvent(event: string, timestamp: number = Date.now(), severity?: 'info' | 'warn' | 'error'): void
@@ -1069,8 +1069,8 @@ logEvent('error_occurred', Date.now(), 'error');`,
 • Optional (?) vs default (=)? Optional gives you Type | undefined to handle. Default gives you a guaranteed value.
 • Putting optional before required? function fn(opt?: string, req: string) is a TypeScript error.
 • Not handling undefined optional? if (className !== undefined) before using className.toString() etc.
-• Nullish coalescing (??) vs OR (||)? ?? only replaces null/undefined. || replaces any falsy (0, '', false) — big difference!
-• Default parameter types auto-inferred: currency: string = 'USD' — TypeScript infers string from 'USD'.`
+• Nullish coalescing (??) vs OR (||)? ?? only replaces null/undefined. || replaces any falsy (0, '', false) - big difference!
+• Default parameter types auto-inferred: currency: string = 'USD' - TypeScript infers string from 'USD'.`
           }
         },
         {
@@ -1080,7 +1080,7 @@ logEvent('error_occurred', Date.now(), 'error');`,
 in. In JavaScript, you'd handle this with runtime checks. In TypeScript, 
 function overloads let you declare multiple type signatures for one 
 function, precisely documenting each valid combination of inputs and 
-outputs. The caller sees only the overload signatures — TypeScript 
+outputs. The caller sees only the overload signatures - TypeScript 
 picks the right one based on the arguments. The implementation signature 
 (the actual function body) is broader than all overloads and is not 
 visible to callers. Overloads make your API intentions crystal clear.`,
@@ -1146,7 +1146,7 @@ const str = parse(42);     // type: string`,
 2. Write overloads for 'toArray' function:
    - toArray(value: string): string[] → splits by comma
    - toArray(value: number): number[] → returns [value]
-3. Call both functions and log results — verify TypeScript infers correct return types`,
+3. Call both functions and log results - verify TypeScript infers correct return types`,
             starterCode: `// Step 1: wrap overloads
 function wrap(value: string): string[];
 function wrap(value: number): number[];
@@ -1200,18 +1200,18 @@ console.log(toArray(42));`,
               { type: "contains", value: "function toArray" }
             ],
             debuggingTip: `Common mistakes:
-• Implementation signature visible to callers? It shouldn't be — overload signatures are what callers use.
+• Implementation signature visible to callers? It shouldn't be - overload signatures are what callers use.
 • Implementation types too narrow? The implementation signature must be a SUPERSET of all overloads.
 • Return type not matching overload? If overload says string[] but implementation returns number[], TypeScript errors.
-• Only one overload? That's not really overloading — just use a union type directly.
+• Only one overload? That's not really overloading - just use a union type directly.
 • Overloads vs union types: use overloads when INPUT type determines OUTPUT type. Use unions when they're independent.`
           }
         },
         {
           id: "typescript-phase2-m1-l4",
           title: "Higher-Order Functions and Callbacks",
-          explanation: `Higher-order functions — functions that take other functions as arguments 
-or return functions — are everywhere in TypeScript. Array methods like 
+          explanation: `Higher-order functions - functions that take other functions as arguments 
+or return functions - are everywhere in TypeScript. Array methods like 
 .map(), .filter(), .reduce() all take callback functions. Event handlers, 
 setTimeout, and custom utilities all work this way. Properly typing 
 callbacks is a key TypeScript skill. You annotate the callback parameter 
@@ -1282,10 +1282,10 @@ const addOneAndDouble = compose(
 console.log(addOneAndDouble(5));  // (5+1)*2 = 12`,
           exercise: {
             prompt: `Build higher-order functions:
-1. Write applyTransform(strings: string[], fn: (s: string) => string): string[] — applies fn to each string
+1. Write applyTransform(strings: string[], fn: (s: string) => string): string[] - applies fn to each string
 2. Use it with: (a) toUpperCase transformer, (b) reverse string transformer, (c) add '!' transformer
-3. Write makeAdder(x: number): (y: number) => number — returns a function that adds x to its argument
-4. Create add5 and add10 using makeAdder — test them
+3. Write makeAdder(x: number): (y: number) => number - returns a function that adds x to its argument
+4. Create add5 and add10 using makeAdder - test them
 5. Write pipe(value: number, ...fns: Array<(n: number) => number>): number that applies functions left to right
 6. Test pipe with: start=5, double it, add 3, square it`,
             starterCode: `// Step 1 & 2: applyTransform
@@ -1347,28 +1347,28 @@ console.log(pipe(5,
             ],
             debuggingTip: `Common mistakes:
 • Callback parameter types wrong? The callback signature must exactly match what you pass.
-• Rest parameters (...fns) must be last parameter — can't have required params after rest.
+• Rest parameters (...fns) must be last parameter - can't have required params after rest.
 • Array<(n: number) => number> vs ((n: number) => number)[]? Both are valid syntax for same type.
-• Closure captures by reference: makeAdder(x) captures x from outer scope — x is evaluated when called.
-• reduce initial value type: fns.reduce((acc, fn) => fn(acc), value) — initial value 'value' determines accumulator type.`
+• Closure captures by reference: makeAdder(x) captures x from outer scope - x is evaluated when called.
+• reduce initial value type: fns.reduce((acc, fn) => fn(acc), value) - initial value 'value' determines accumulator type.`
           }
         }
       ]
     },
     {
       id: "typescript-phase3-m1",
-      title: "Phase 3 — Objects and Interfaces",
+      title: "Phase 3 - Objects and Interfaces",
       duration: "3 hours",
       lessons: [
         {
           id: "typescript-phase3-m1-l1",
-          title: "Interfaces — Defining Object Shapes",
-          explanation: `Interfaces are one of TypeScript's most powerful features. An interface 
-defines the exact shape an object must have — which properties exist, 
+          title: "Interfaces - Defining Object Shapes",
+          explanation: `Interfaces are a core TypeScript feature. An interface 
+defines the exact shape an object must have - which properties exist, 
 what types they hold, and which are optional. Think of an interface as 
 a contract: "any object claiming to be a User MUST have a name, email, 
 and age." TypeScript enforces this contract at compile time. This is 
-how large teams coordinate — one developer defines the interface, 
+how large teams coordinate - one developer defines the interface, 
 and TypeScript ensures everyone who creates or uses that data type 
 does so correctly. Interfaces are the primary way to model your 
 application's data structures in TypeScript.`,
@@ -1438,7 +1438,7 @@ const greet: Greeter = (name) => \`Hello, \${name}!\`;`,
           exercise: {
             prompt: `Build and use interfaces:
 1. Define interface Product with: id (number), name (string), price (number), category (string), inStock (boolean), description? (optional string)
-2. Create two Product objects — one with description, one without
+2. Create two Product objects - one with description, one without
 3. Write function formatProduct(p: Product): string returning "Name - $Price (category)" format
 4. Write function applyDiscount(p: Product, percent: number): Product returning a new product with discounted price
 5. Define interface Address with: street, city, country (all strings), postalCode (string), apartment? (optional string)
@@ -1561,10 +1561,10 @@ console.log(customer);`,
             ],
             debuggingTip: `Common mistakes:
 • Extra properties on object literals? TypeScript's excess property check blocks unknown properties. Use spread or type assertion if intentional.
-• Missing required property? TypeScript will list every missing field — add them all.
+• Missing required property? TypeScript will list every missing field - add them all.
 • Nested interfaces: address: Address means the address field must itself satisfy the Address interface.
 • readonly vs const? readonly is for object properties. const is for variable bindings. Both together give maximum immutability.
-• interface vs type for objects? Both work. Prefer interface for data shapes — it supports extends and gives better error messages.`
+• interface vs type for objects? Both work. Prefer interface for data shapes - it supports extends and gives better error messages.`
           }
         },
         {
@@ -1609,7 +1609,7 @@ interface Animal {
   sound(): string;
 }
 
-// Extended interface — Dog is-an Animal
+// Extended interface - Dog is-an Animal
 interface Dog extends Animal {
   breed: string;
   fetch(item: string): void;
@@ -1634,7 +1634,7 @@ const rex: TrainedDog = {
   },
 };
 
-// Intersection types — mixing capabilities
+// Intersection types - mixing capabilities
 interface Flyable {
   fly(): void;
   altitude: number;
@@ -1774,17 +1774,17 @@ console.log(serviceableEV);`,
               { type: "contains", value: "interface WithMaintenance" }
             ],
             debuggingTip: `Common mistakes:
-• Intersection (&) requires ALL properties from ALL types — missing any one is an error.
-• Conflicting property types in intersection? type A = {x: string} & {x: number} makes x: never — impossible to satisfy.
+• Intersection (&) requires ALL properties from ALL types - missing any one is an error.
+• Conflicting property types in intersection? type A = {x: string} & {x: number} makes x: never - impossible to satisfy.
 • extends vs &? Both produce similar results for objects, but extends gives better error messages and supports augmentation.
-• Method implementations in objects: startEngine: () => 'text' is a method stored as a function property — valid.
-• Forgetting methods when creating objects? Interface methods are required too — not just data properties.`
+• Method implementations in objects: startEngine: () => 'text' is a method stored as a function property - valid.
+• Forgetting methods when creating objects? Interface methods are required too - not just data properties.`
           }
         },
         {
           id: "typescript-phase3-m1-l3",
           title: "Index Signatures and Record Types",
-          explanation: `Sometimes you don't know all the property names in advance — a dictionary, 
+          explanation: `Sometimes you don't know all the property names in advance - a dictionary, 
 a cache, a set of user preferences, or any key-value store. TypeScript's 
 index signatures let you type these dynamic objects: [key: string]: Type 
 means "this object can have any string keys, and their values must all 
@@ -1820,7 +1820,7 @@ counts['hello'] = 5;
 counts['world'] = 3;
 console.log(counts['hello']); // 5
 
-// Record type — same thing, cleaner syntax
+// Record type - same thing, cleaner syntax
 const scores: Record<string, number> = {
   Alice: 95,
   Bob: 87,
@@ -1831,7 +1831,7 @@ const scores: Record<string, number> = {
 scores['Diana'] = 88;
 console.log(scores['Alice']); // 95
 
-// Record with union keys — restricts allowed keys
+// Record with union keys - restricts allowed keys
 type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 type MethodConfig = Record<HTTPMethod, { timeout: number; retries: number }>;
 
@@ -1859,8 +1859,8 @@ function getFromCache(key: string): string | null {
 }`,
           exercise: {
             prompt: `Work with index signatures and Record:
-1. Create type ColorMap = Record<string, string> — create a colors map with 3 entries
-2. Create type EventCounts = Record<string, number> — build a function countEvents(events: string[]): EventCounts that counts occurrences of each event
+1. Create type ColorMap = Record<string, string> - create a colors map with 3 entries
+2. Create type EventCounts = Record<string, number> - build a function countEvents(events: string[]): EventCounts that counts occurrences of each event
 3. Define type DayOfWeek = 'Mon'|'Tue'|'Wed'|'Thu'|'Fri'|'Sat'|'Sun' and create Record<DayOfWeek, boolean> for workdays
 4. Write function mergeDicts(a: Record<string, number>, b: Record<string, number>): Record<string, number> that combines two dicts, summing values for duplicate keys
 5. Test mergeDicts and log the result`,
@@ -1948,11 +1948,11 @@ console.log(mergeDicts(dict1, dict2));`,
               { type: "contains", value: "Record<DayOfWeek, boolean>" }
             ],
             debuggingTip: `Common mistakes:
-• Accessing index signature result? It's Type | undefined unless you check first — use optional chaining or nullish coalescing.
+• Accessing index signature result? It's Type | undefined unless you check first - use optional chaining or nullish coalescing.
 • Record with union keys requires ALL keys: Record<'a'|'b', string> must have both 'a' and 'b'.
 • Index signature type must be compatible with specific properties: interface { id: number; [key: string]: string } fails because id is number not string.
-• Object.entries() returns [string, Type][] — TypeScript knows the value type from the Record definition.
-• Initializing counts: counts[key] = (counts[key] ?? 0) + 1 — the ?? handles the undefined case safely.`
+• Object.entries() returns [string, Type][] - TypeScript knows the value type from the Record definition.
+• Initializing counts: counts[key] = (counts[key] ?? 0) + 1 - the ?? handles the undefined case safely.`
           }
         },
         {
@@ -1962,7 +1962,7 @@ console.log(mergeDicts(dict1, dict2));`,
 down. TypeScript's readonly keyword and Readonly<T> utility type let you 
 enforce immutability at the type level. A readonly property can be set 
 when the object is created but never changed afterward. const prevents 
-reassigning a variable but doesn't protect the object's contents — 
+reassigning a variable but doesn't protect the object's contents - 
 readonly protects the contents. For deeper immutability, as const 
 creates deeply readonly literal types. Understanding immutability 
 patterns is a hallmark of senior-level TypeScript and prevents 
@@ -2014,7 +2014,7 @@ const numbers: ReadonlyArray<number> = [1, 2, 3, 4, 5];
 // numbers.push(6); // ✗ Error: push doesn't exist on ReadonlyArray
 console.log(numbers[0]); // ✓ reading is fine
 
-// as const — deeply readonly literal types
+// as const - deeply readonly literal types
 const ROUTES = {
   HOME: '/',
   ABOUT: '/about',
@@ -2039,7 +2039,7 @@ type ApiUrl = \`\${typeof API_CONFIG.BASE_URL}/\${typeof API_CONFIG.VERSION}\`;`
             prompt: `Practice immutability patterns:
 1. Define interface AppConfig with all readonly properties: appName (string), version (string), maxUsers (number), features (readonly string[])
 2. Create an AppConfig object and try to modify it (show the error in a comment)
-3. Define interface MutableUser with name, email, age — create Readonly<MutableUser> alias called FrozenUser
+3. Define interface MutableUser with name, email, age - create Readonly<MutableUser> alias called FrozenUser
 4. Create a FrozenUser and verify it can't be modified
 5. Create const COLORS = { RED: '#ff0000', GREEN: '#00ff00', BLUE: '#0000ff' } as const
 6. Extract the type of all color values using typeof and keyof
@@ -2131,10 +2131,10 @@ console.log(getColor('RED'));`,
               { type: "contains", value: "keyof typeof COLORS" }
             ],
             debuggingTip: `Common mistakes:
-• const doesn't make object properties readonly! const x = {a: 1} — x can't be reassigned but x.a = 2 works. Use readonly for properties.
+• const doesn't make object properties readonly! const x = {a: 1} - x can't be reassigned but x.a = 2 works. Use readonly for properties.
 • readonly array vs Readonly<T[]>? readonly number[] prevents push/pop/splice. Readonly<number[]> is equivalent.
 • as const on primitives? 'hello' as const has type "hello" (literal), not string.
-• keyof typeof COLORS gives 'RED' | 'GREEN' | 'BLUE' — the keys as a union of string literals.
+• keyof typeof COLORS gives 'RED' | 'GREEN' | 'BLUE' - the keys as a union of string literals.
 • Shallow vs deep readonly? Readonly<T> makes TOP-LEVEL properties readonly. Nested objects still mutable. Use recursive readonly for deep.`
           }
         }
@@ -2142,7 +2142,7 @@ console.log(getColor('RED'));`,
     },
     {
       id: "typescript-phase4-m1",
-      title: "Phase 4 — Arrays, Tuples, and Generics",
+      title: "Phase 4 - Arrays, Tuples, and Generics",
       duration: "2.5 hours",
       lessons: [
         {
@@ -2151,10 +2151,10 @@ console.log(getColor('RED'));`,
           explanation: `TypeScript's typed arrays ensure every element in a collection has the 
 same type. If you declare string[], TypeScript prevents you from ever 
 accidentally pushing a number into it. Typed arrays also mean method 
-callbacks are automatically typed — in numbers.map(n => n * 2), 
+callbacks are automatically typed - in numbers.map(n => n * 2), 
 TypeScript knows n is a number and will catch n.toUpperCase() as an 
 error. Tuples are arrays with a fixed length where each position has 
-a specific type — perfect for representing coordinate pairs, RGB colors, 
+a specific type - perfect for representing coordinate pairs, RGB colors, 
 database rows, or any data where position has meaning.`,
           concept: `Array types:
 string[]          → array of strings (preferred syntax)
@@ -2184,7 +2184,7 @@ const doubled = scores.map(n => n * 2);  // type: number[]
 const passing = scores.filter(n => n >= 90);  // type: number[]
 const total = scores.reduce((sum, n) => sum + n, 0);  // type: number
 
-// Tuples — fixed position typing
+// Tuples - fixed position typing
 type Pair = [string, number];
 type RGB = [number, number, number];
 type Point3D = [number, number, number];
@@ -2211,7 +2211,7 @@ console.log(\`17 / 5 = \${quotient} remainder \${remainder}\`);
 type Range = [min: number, max: number];
 const priceRange: Range = [9.99, 99.99];`,
           exercise: {
-            prompt: `Master typed arrays and tuples:
+            prompt: `Practice typed arrays and tuples:
 1. Declare typed arrays: string[] of fruits, number[] of prices, boolean[] of availability
 2. Write function getExpensive(products: string[], prices: number[], threshold: number): string[] returning products above threshold (use filter with index)
 3. Define tuple type Coordinate = [number, number] and Point3D = [number, number, number]
@@ -2280,26 +2280,26 @@ console.log(personName, personScore, personPassed);`,
               { type: "contains", value: "): [string, number, boolean]" }
             ],
             debuggingTip: `Common mistakes:
-• Tuple length: [number, number] must have EXACTLY 2 elements — not 1, not 3.
-• Tuple vs Array in function returns? Explicit tuple return type needed — TypeScript infers arrays otherwise.
-• Destructuring mismatches? const [a, b, c] = tuple of length 2 — c is undefined (error with strict tuples).
-• Array filter with index: .filter((item, index) => prices[index] > threshold) — both item and index available.
-• Tuple element access: tuple[0] has the type of first element, tuple[1] has second — TypeScript tracks these.`
+• Tuple length: [number, number] must have EXACTLY 2 elements - not 1, not 3.
+• Tuple vs Array in function returns? Explicit tuple return type needed - TypeScript infers arrays otherwise.
+• Destructuring mismatches? const [a, b, c] = tuple of length 2 - c is undefined (error with strict tuples).
+• Array filter with index: .filter((item, index) => prices[index] > threshold) - both item and index available.
+• Tuple element access: tuple[0] has the type of first element, tuple[1] has second - TypeScript tracks these.`
           }
         },
         {
           id: "typescript-phase4-m1-l2",
-          title: "Generics — Reusable Type-Safe Code",
+          title: "Generics - Reusable Type-Safe Code",
           explanation: `Generics are TypeScript's most powerful feature for writing reusable code. 
 Without generics, you'd have to write separate functions for every type: 
 getFirstString, getFirstNumber, getFirstUser. With generics, you write 
-it once: getFirst<T> works for any type T. The T is a type parameter — 
+it once: getFirst<T> works for any type T. The T is a type parameter - 
 a placeholder that TypeScript fills in based on how you call the function. 
 Generics are what makes TypeScript's standard library work: Array<T>, 
 Promise<T>, Map<K, V> are all generic. Learning to write generic 
 functions is the bridge from beginner to intermediate TypeScript.`,
           concept: `function name<T>(param: T): T { }
-// T is a type parameter — filled in at call time
+// T is a type parameter - filled in at call time
 
 // Calling:
 name<string>('hello');  // explicit: T = string
@@ -2308,7 +2308,7 @@ name('hello');           // inferred: T = string
 // Multiple type params:
 function pair<K, V>(key: K, value: V): [K, V] { }
 
-// Constraints — T must have certain properties:
+// Constraints - T must have certain properties:
 function getLength<T extends { length: number }>(item: T): number {
   return item.length;
 }
@@ -2368,8 +2368,8 @@ const numberBox: Box<number> = {
 };`,
           exercise: {
             prompt: `Write generic functions and types:
-1. Write generic function pick<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> — returns new object with only specified keys
-2. Write generic function zip<A, B>(a: A[], b: B[]): [A, B][] — pairs elements from two arrays
+1. Write generic function pick<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> - returns new object with only specified keys
+2. Write generic function zip<A, B>(a: A[], b: B[]): [A, B][] - pairs elements from two arrays
 3. Write generic function groupBy<T, K extends string>(items: T[], keyFn: (item: T) => K): Record<K, T[]>
 4. Define generic interface Stack<T> with push(item: T): void, pop(): T | undefined, peek(): T | undefined, size: number
 5. Implement a class or object satisfying Stack<string> and test it`,
@@ -2482,20 +2482,20 @@ console.log(stringStack.size);`,
               { type: "contains", value: "interface Stack<T>" }
             ],
             debuggingTip: `Common mistakes:
-• Generic constraint: K extends keyof T means K must be one of T's keys — prevents invalid key access.
+• Generic constraint: K extends keyof T means K must be one of T's keys - prevents invalid key access.
 • Type inference failing? Add explicit type params: fn<string>(...) to help TypeScript.
-• Pick<T, K> utility type: built-in TypeScript — returns object type with only keys K from T.
+• Pick<T, K> utility type: built-in TypeScript - returns object type with only keys K from T.
 • Generic interface vs generic function? Interface<T> binds T at object creation. function<T>() binds T at each call.
-• as Record<K, T[]> assertion needed when building result from scratch — TypeScript can't verify empty object satisfies it yet.`
+• as Record<K, T[]> assertion needed when building result from scratch - TypeScript can't verify empty object satisfies it yet.`
           }
         },
         {
           id: "typescript-phase4-m1-l3",
-          title: "Utility Types — TypeScript's Built-in Toolkit",
+          title: "Utility Types - TypeScript's Built-in Toolkit",
           explanation: `TypeScript ships with a collection of utility types that transform existing 
 types into new ones. These are built into the language and solve common 
 transformation problems that would be tedious to write manually. 
-Partial<T> makes all properties optional — perfect for update operations 
+Partial<T> makes all properties optional - perfect for update operations 
 where you only change some fields. Required<T> is the opposite. Pick<T,K> 
 extracts only certain properties. Omit<T,K> removes certain properties. 
 These utilities let you derive new types from existing ones without 
@@ -2519,7 +2519,7 @@ Parameters<F>       → get parameter types of function F as tuple`,
   role: 'admin' | 'user' | 'guest';
 }
 
-// Partial — all optional (great for update operations)
+// Partial - all optional (great for update operations)
 type UserUpdate = Partial<User>;
 // { id?: number; name?: string; email?: string; ... }
 
@@ -2529,17 +2529,17 @@ function updateUser(id: number, changes: Partial<User>): void {
 updateUser(1, { name: 'Alice Updated' });  // ✓ only name
 updateUser(1, { email: 'new@email.com', role: 'admin' }); // ✓ some
 
-// Required — makes everything required
+// Required - makes everything required
 type RequiredUser = Required<User>;
 // age is no longer optional!
 
-// Pick — take only what you need
+// Pick - take only what you need
 type UserPreview = Pick<User, 'id' | 'name'>;
 // { id: number; name: string }
 
 type UserCredentials = Pick<User, 'email' | 'role'>;
 
-// Omit — remove what you don't want
+// Omit - remove what you don't want
 type PublicUser = Omit<User, 'id' | 'email'>;
 // No id or email exposed publicly
 
@@ -2564,9 +2564,9 @@ type DefiniteString = NonNullable<MaybeString>;  // string`,
           exercise: {
             prompt: `Apply utility types to a real scenario:
 1. Define interface BlogPost with: id, title, content, author, tags (string[]), publishedAt (Date | null), draft (boolean)
-2. Create CreatePostDto = Omit<BlogPost, 'id' | 'publishedAt'> — for creating posts
-3. Create UpdatePostDto = Partial<Omit<BlogPost, 'id'>> — for updating posts
-4. Create PostPreview = Pick<BlogPost, 'id' | 'title' | 'author' | 'draft'> — for list views
+2. Create CreatePostDto = Omit<BlogPost, 'id' | 'publishedAt'> - for creating posts
+3. Create UpdatePostDto = Partial<Omit<BlogPost, 'id'>> - for updating posts
+4. Create PostPreview = Pick<BlogPost, 'id' | 'title' | 'author' | 'draft'> - for list views
 5. Write function createPost(dto: CreatePostDto): BlogPost that adds id and publishedAt
 6. Write function updatePost(id: number, dto: UpdatePostDto): void
 7. Use ReturnType<typeof createPost> and verify it equals BlogPost`,
@@ -2655,10 +2655,10 @@ type CreatePostReturn = ReturnType<typeof createPost>;`,
               { type: "contains", value: "ReturnType<typeof createPost>" }
             ],
             debuggingTip: `Common mistakes:
-• Partial doesn't deeply nest — Partial<{a: {b: string}}> makes 'a' optional but {b: string} is still required if 'a' is present.
+• Partial doesn't deeply nest - Partial<{a: {b: string}}> makes 'a' optional but {b: string} is still required if 'a' is present.
 • Omit vs Exclude? Omit removes object KEYS. Exclude removes from union TYPES. Different purposes.
-• Pick requires valid keys — Pick<User, 'foo'> where 'foo' isn't a User key causes an error.
-• Combining utilities: Partial<Omit<T, 'id'>> — read inside out: first Omit, then Partial on result.
+• Pick requires valid keys - Pick<User, 'foo'> where 'foo' isn't a User key causes an error.
+• Combining utilities: Partial<Omit<T, 'id'>> - read inside out: first Omit, then Partial on result.
 • ReturnType requires typeof for function values: ReturnType<typeof createPost> not ReturnType<createPost>.`
           }
         }
@@ -2666,7 +2666,7 @@ type CreatePostReturn = ReturnType<typeof createPost>;`,
     },
     {
       id: "typescript-phase5-m1",
-      title: "Phase 5 — Classes and OOP",
+      title: "Phase 5 - Classes and OOP",
       duration: "3 hours",
       lessons: [
         {
@@ -2675,7 +2675,7 @@ type CreatePostReturn = ReturnType<typeof createPost>;`,
           explanation: `TypeScript supercharges JavaScript classes with full type safety. Every 
 property must be declared with its type at the top of the class body. 
 Every method parameter and return type is annotated. TypeScript then 
-verifies that you never misuse these members — you can't pass a string 
+verifies that you never misuse these members - you can't pass a string 
 to a method expecting a number, and you can't access a property that 
 doesn't exist. TypeScript classes also support features JavaScript 
 doesn't: access modifiers (public, private, protected), readonly 
@@ -2707,7 +2707,7 @@ properties, and parameter properties that create and assign in one step.`,
     this.accountNumber = \`ACC-\${Math.random().toString(36).slice(2, 9).toUpperCase()}\`;
   }
   
-  // Getter — access like a property
+  // Getter - access like a property
   get balance(): number {
     return this._balance;
   }
@@ -2750,11 +2750,11 @@ console.log(account.balance); // ✓ via getter`,
 1. Create class Product with: private _price (number), readonly id (number), public name (string), private _stock (number)
 2. Constructor takes name, price, initialStock (default 0), generates id randomly
 3. Add getter 'price' returning _price, getter 'stock' returning _stock
-4. Add method addStock(quantity: number): void — increases stock
-5. Add method sell(quantity: number): boolean — decreases stock if available, returns success
-6. Add method applyDiscount(percent: number): void — reduces price by percent
-7. Add static method createFreebie(name: string): Product — creates product with price 0
-8. Create a product, add stock, sell some, apply discount — log results`,
+4. Add method addStock(quantity: number): void - increases stock
+5. Add method sell(quantity: number): boolean - decreases stock if available, returns success
+6. Add method applyDiscount(percent: number): void - reduces price by percent
+7. Add static method createFreebie(name: string): Product - creates product with price 0
+8. Create a product, add stock, sell some, apply discount - log results`,
             starterCode: `class Product {
   private _price: number;
   readonly id: number;
@@ -2859,10 +2859,10 @@ console.log(freebie.price);`,
             ],
             debuggingTip: `Common mistakes:
 • Property not declared at class level? Assigning this.name in constructor without declaring name: string at top causes error in strict mode.
-• Private property accessed outside class? TypeScript blocks it — use getters to expose read access.
+• Private property accessed outside class? TypeScript blocks it - use getters to expose read access.
 • Getter vs method: get price() is called as laptop.price (no parentheses). Regular method: laptop.getPrice().
-• Static method called on instance? Product.createFreebie() not laptop.createFreebie() — static belongs to the class.
-• Readonly in constructor? this.id = value in constructor is fine for readonly — it's the ONLY place you can set it.`
+• Static method called on instance? Product.createFreebie() not laptop.createFreebie() - static belongs to the class.
+• Readonly in constructor? this.id = value in constructor is fine for readonly - it's the ONLY place you can set it.`
           }
         },
         {
@@ -2870,7 +2870,7 @@ console.log(freebie.price);`,
           title: "Inheritance and Access Modifiers",
           explanation: `TypeScript's access modifiers (public, private, protected) enforce 
 encapsulation at the type level. Public members are accessible everywhere. 
-Private members are accessible only within the declaring class — not even 
+Private members are accessible only within the declaring class - not even 
 subclasses can touch them. Protected members are accessible in the 
 declaring class AND its subclasses. This lets you design proper 
 hierarchies where base classes share implementation with children 
@@ -3104,18 +3104,18 @@ animals.forEach(animal => {
             ],
             debuggingTip: `Common mistakes:
 • Forgot super() in child constructor? TypeScript error: super must be called before accessing 'this'.
-• Abstract class instantiated? new Animal() fails — abstract classes are blueprints, not real objects.
+• Abstract class instantiated? new Animal() fails - abstract classes are blueprints, not real objects.
 • Private in parent not accessible in child? Use protected for properties you want subclasses to access.
-• override keyword? TypeScript 4.3+ has 'override' modifier — good practice to mark overriding methods.
-• Polymorphism: Animal[] array accepts Dog, Cat, GuideDog — calling sound() calls each class's own version.`
+• override keyword? TypeScript 4.3+ has 'override' modifier - good practice to mark overriding methods.
+• Polymorphism: Animal[] array accepts Dog, Cat, GuideDog - calling sound() calls each class's own version.`
           }
         },
         {
           id: "typescript-phase5-m1-l3",
-          title: "Interfaces with Classes — implements",
+          title: "Interfaces with Classes - implements",
           explanation: `Interfaces define contracts. Classes fulfill them with implements. 
 A class that implements an interface must provide all the methods and 
-properties the interface declares — TypeScript verifies this at compile 
+properties the interface declares - TypeScript verifies this at compile 
 time. One class can implement multiple interfaces, picking up multiple 
 contracts at once. This is how you achieve composition over inheritance: 
 instead of deep class hierarchies, you define small, focused interfaces 
@@ -3324,10 +3324,10 @@ console.log(\`Found \${found.length} reports\`);`,
               { type: "contains", value: "export(format: 'json' | 'csv')" }
             ],
             debuggingTip: `Common mistakes:
-• Class doesn't implement all interface members? TypeScript lists every missing method — implement them all.
+• Class doesn't implement all interface members? TypeScript lists every missing method - implement them all.
 • Interface method signature mismatch? If interface says export(format: 'json'|'csv'): string, class must match exactly.
-• Searchable<Report> type parameter? The T in Searchable<T> is filled with Report — doesn't change the interface shape here.
-• Array typed as Printable[]? You can only access Printable members (print()) — to access Report-specific methods, type narrowing needed.
+• Searchable<Report> type parameter? The T in Searchable<T> is filled with Report - doesn't change the interface shape here.
+• Array typed as Printable[]? You can only access Printable members (print()) - to access Report-specific methods, type narrowing needed.
 • implements vs extends? implements = fulfill a contract (interface). extends = inherit implementation (class/abstract class).`
           }
         }
@@ -3335,7 +3335,7 @@ console.log(\`Found \${found.length} reports\`);`,
     },
     {
       id: "typescript-phase6-m1",
-      title: "Phase 6 — Advanced Types",
+      title: "Phase 6 - Advanced Types",
       duration: "2.5 hours",
       lessons: [
         {
@@ -3391,7 +3391,7 @@ function makeSound(animal: Cat | Dog): string {
   return animal.bark();    // TypeScript: Dog
 }
 
-// Discriminated union — BEST pattern for unions
+// Discriminated union - BEST pattern for unions
 interface LoadingState { status: 'loading'; }
 interface SuccessState { status: 'success'; data: string; }
 interface ErrorState   { status: 'error'; message: string; }
@@ -3416,10 +3416,10 @@ function processUnknown(val: unknown): void {
   }
 }`,
           exercise: {
-            prompt: `Master type narrowing:
+            prompt: `Practice type narrowing:
 1. Write function describe(value: string | number | boolean | null): string that handles all four cases with typeof and null check
 2. Define discriminated union: type Shape = Circle | Square | Triangle where each has 'kind' literal property and appropriate dimensions
-3. Write function area(shape: Shape): number using switch on shape.kind — TypeScript should know exact type in each branch
+3. Write function area(shape: Shape): number using switch on shape.kind - TypeScript should know exact type in each branch
 4. Write custom type guard isArray(val: unknown): val is unknown[] 
 5. Write function safeFirst(val: unknown): unknown | undefined using isArray to safely get first element`,
             starterCode: `// Step 1: describe function
@@ -3504,10 +3504,10 @@ console.log(safeFirst('not an array'));`,
               { type: "contains", value: "val is unknown[]" }
             ],
             debuggingTip: `Common mistakes:
-• Forgot to check null before typeof? typeof null === 'object' — check null first explicitly.
-• Discriminated union switch: TypeScript needs every case to handle the union completely — add all cases.
-• Custom type guard return type: must be 'param is Type' not just boolean — the 'is' syntax is what makes it a guard.
-• 'in' operator on primitive? '5' in 'string' is invalid — 'in' only works on objects.
+• Forgot to check null before typeof? typeof null === 'object' - check null first explicitly.
+• Discriminated union switch: TypeScript needs every case to handle the union completely - add all cases.
+• Custom type guard return type: must be 'param is Type' not just boolean - the 'is' syntax is what makes it a guard.
+• 'in' operator on primitive? '5' in 'string' is invalid - 'in' only works on objects.
 • Non-exhaustive switch? Add a default: const _: never = shape; to catch unhandled cases at compile time.`
           }
         },
@@ -3518,7 +3518,7 @@ console.log(safeFirst('not an array'));`,
 existing type. They're how TypeScript's built-in utility types like 
 Partial<T>, Readonly<T>, and Required<T> are implemented. Conditional 
 types let you express "if T extends X then Y else Z" logic at the type 
-level — enabling truly dynamic type transformations. These are advanced 
+level - enabling truly dynamic type transformations. These are advanced 
 features used in library code and sophisticated type utilities. 
 Understanding them helps you read TypeScript's error messages better 
 and write powerful, generic type transformations for your own code.`,
@@ -3556,7 +3556,7 @@ type IsArray<T> = T extends any[] ? true : false;
 type IsArray1 = IsArray<string[]>;  // true
 type IsArray2 = IsArray<string>;    // false
 
-// Infer — extract type from within another type
+// Infer - extract type from within another type
 type UnpackPromise<T> = T extends Promise<infer U> ? U : T;
 type UnpackedString = UnpackPromise<Promise<string>>;  // string
 type UnpackedNumber = UnpackPromise<Promise<number>>;  // number
@@ -3583,8 +3583,8 @@ const handlers: Partial<EventHandlers> = {
 };`,
           exercise: {
             prompt: `Write mapped and conditional types:
-1. Write mapped type Getters<T> that transforms each property name to 'get[PropertyName]' returning its type — e.g., Getters<{name: string}> → {getName: () => string}
-2. Write conditional type IsString<T> returning true if T extends string, false otherwise — test with string, number, 'hello', boolean
+1. Write mapped type Getters<T> that transforms each property name to 'get[PropertyName]' returning its type - e.g., Getters<{name: string}> → {getName: () => string}
+2. Write conditional type IsString<T> returning true if T extends string, false otherwise - test with string, number, 'hello', boolean
 3. Write conditional type DeepPartial<T> that recursively makes all properties optional (hint: if T[K] is an object, recurse; otherwise T[K] | undefined)
 4. Test DeepPartial with a nested interface`,
             starterCode: `// Step 1: Getters mapped type
@@ -3681,17 +3681,17 @@ console.log(partialConfig);`,
               { type: "contains", value: "type DeepPartial<T>" }
             ],
             debuggingTip: `Common mistakes:
-• Mapped type key remapping syntax: [K in keyof T as NewKey] — the 'as' remaps the key name.
-• Capitalize<string & K>? K might not be a string (could be number or symbol) — string & K ensures it's a string.
+• Mapped type key remapping syntax: [K in keyof T as NewKey] - the 'as' remaps the key name.
+• Capitalize<string & K>? K might not be a string (could be number or symbol) - string & K ensures it's a string.
 • Conditional type distribution? T extends string applied to a union distributes: (A | B) extends string → (A extends string) | (B extends string).
-• DeepPartial on primitives? string extends object is false — primitives pass through unchanged, only objects recurse.
+• DeepPartial on primitives? string extends object is false - primitives pass through unchanged, only objects recurse.
 • Infer keyword only works in conditional type extends clause: T extends (infer U)[] ? U : never.`
           }
         },
         {
           id: "typescript-phase6-m1-l3",
           title: "Template Literal Types and String Manipulation",
-          explanation: `TypeScript 4.1 introduced template literal types — the ability to create 
+          explanation: `TypeScript 4.1 introduced template literal types - the ability to create 
 new string types by combining existing string types, just like template 
 literal strings in JavaScript but at the type level. This is extraordinarily 
 powerful: you can type event names like 'on' + Capitalize<EventName>, 
@@ -3753,9 +3753,9 @@ type DirectionalCSS = \`\${CSSProp}\${CSSDirection}\`;
           exercise: {
             prompt: `Build with template literal types:
 1. Create type HttpMethod = 'get' | 'post' | 'put' | 'delete' | 'patch' and type RouteKey = \`\${Uppercase<HttpMethod>} /\${string}\`
-2. Create type CSSUnit = 'px' | 'rem' | 'em' | '%' and type CSSValue = \`\${number}\${CSSUnit}\` — what values are valid?
+2. Create type CSSUnit = 'px' | 'rem' | 'em' | '%' and type CSSValue = \`\${number}\${CSSUnit}\` - what values are valid?
 3. Create type EventType = 'click' | 'keydown' | 'submit' and use mapped type with template literal to create event handler object type {onClick, onKeydown, onSubmit}: each () => void
-4. Create type Env = 'dev' | 'staging' | 'prod' and type EnvVar = \`APP_\${Uppercase<Env>}_\${string}\` — what matches?
+4. Create type Env = 'dev' | 'staging' | 'prod' and type EnvVar = \`APP_\${Uppercase<Env>}_\${string}\` - what matches?
 5. Write a function that accepts a RouteKey string and logs the method and path separately`,
             starterCode: `// Step 1: HTTP route types
 type HttpMethod = 'get' | 'post' | 'put' | 'delete' | 'patch';
@@ -3838,10 +3838,10 @@ parseRoute('POST /api/auth/login');`,
             ],
             debuggingTip: `Common mistakes:
 • Template literal type vs value? \`Hello \${string}\` as a TYPE is different from \`Hello \${name}\` as a VALUE.
-• Union distribution: \`\${A | B}\` expands to all combinations — with large unions this can create huge types.
+• Union distribution: \`\${A | B}\` expands to all combinations - with large unions this can create huge types.
 • Capitalize works on string unions: Capitalize<'click' | 'focus'> → 'Click' | 'Focus'.
-• Number in template literals: \`\${number}px\` accepts any number at the type level — '3.14px', '-1px', 'NaNpx' all match.
-• Mapped type key remapping with as: [K in keyof T as \`on\${Capitalize<string & K>}\`] — the string & K ensures string keys only.`
+• Number in template literals: \`\${number}px\` accepts any number at the type level - '3.14px', '-1px', 'NaNpx' all match.
+• Mapped type key remapping with as: [K in keyof T as \`on\${Capitalize<string & K>}\`] - the string & K ensures string keys only.`
           }
         },
         {
@@ -3851,10 +3851,10 @@ parseRoute('POST /api/auth/login');`,
 data shapes, generics for reusable code, union types for flexible APIs, 
 utility types for transformations, type guards for safe narrowing, and 
 template literal types for string patterns. You'll build a type-safe 
-API client — the kind of utility that appears in virtually every 
+API client - the kind of utility that appears in virtually every 
 TypeScript application. When it's done, TypeScript will catch wrong 
 endpoint names, wrong request body shapes, and wrong assumptions 
-about response data — all before your code runs.`,
+about response data - all before your code runs.`,
           concept: `Integrates all Phase 1-6 concepts:
 - Interfaces for request/response shapes
 - Generics for typed responses ApiResponse<T>
@@ -4098,11 +4098,11 @@ runTests();`,
               { type: "contains", value: "handleResult<T>" }
             ],
             debuggingTip: `Common mistakes:
-• Generic class method: async get<T>() — the type parameter goes after the method name, not the class name.
-• await without async? Functions using await must be async — and they return Promise<T> automatically.
-• Discriminated union narrowing: if (result.success) narrows to success branch — TypeScript knows result.data is T there.
-• Private class field access? Private members accessible within the class body — not outside, not in subclasses.
-• Generic simulateFetch? The T in private async simulateFetch<T> is independent of the class — each call has its own T.`
+• Generic class method: async get<T>() - the type parameter goes after the method name, not the class name.
+• await without async? Functions using await must be async - and they return Promise<T> automatically.
+• Discriminated union narrowing: if (result.success) narrows to success branch - TypeScript knows result.data is T there.
+• Private class field access? Private members accessible within the class body - not outside, not in subclasses.
+• Generic simulateFetch? The T in private async simulateFetch<T> is independent of the class - each call has its own T.`
           }
         }
       ]

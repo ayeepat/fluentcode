@@ -259,7 +259,7 @@ export default function Quiz() {
                 ) : savedProgress ? (
                   <span className="text-emerald-600">{<LocalizedText text="✓ Progress saved" />}</span>
                 ) : (
-                  <span className="text-red-400">{<LocalizedText text="Could not save — try again" />}</span>
+                  <span className="text-red-400">{<LocalizedText text="Could not save. Try again." />}</span>
                 )}
               </motion.p>
             )}

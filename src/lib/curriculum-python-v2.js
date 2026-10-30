@@ -8,7 +8,7 @@ export const pythonCurriculumV2 = {
     // Level 0: Your First Code (4 lessons)
     {
       id: "python-v2-level0",
-      title: "Level 0 — Your First Code",
+      title: "Level 0 - Your First Code",
       duration: "10 min",
       lessons: [
         {
@@ -87,7 +87,7 @@ print("apple", "banana", "cherry", sep=" | ")`,
     // Level 1: Talking and Listening (5 lessons)
     {
       id: "python-v2-level1",
-      title: "Level 1 — Talking and Listening",
+      title: "Level 1 - Talking and Listening",
       duration: "20 min",
       lessons: [
         {
@@ -191,7 +191,7 @@ print(num * 2)`,
     // Level 2: Strings and f‑strings (5 lessons)
     {
       id: "python-v2-level2",
-      title: "Level 2 — Working with Text",
+      title: "Level 2 - Working with Text",
       duration: "20 min",
       lessons: [
         {
@@ -288,7 +288,7 @@ print(f"Area: {width * height}")`,
     // Level 3: Numbers and Math (5 lessons)
     {
       id: "python-v2-level3",
-      title: "Level 3 — Numbers and Math",
+      title: "Level 3 - Numbers and Math",
       duration: "20 min",
       lessons: [
         {
@@ -405,7 +405,7 @@ print(total)`,
     // Level 4: Making Decisions (6 lessons)
     {
       id: "python-v2-level4",
-      title: "Level 4 — Making Decisions",
+      title: "Level 4 - Making Decisions",
       duration: "25 min",
       lessons: [
         {
@@ -568,7 +568,7 @@ else:
     // Level 5: Loops (5 lessons)
     {
       id: "python-v2-level5",
-      title: "Level 5 — Repeating Code",
+      title: "Level 5 - Repeating Code",
       duration: "25 min",
       lessons: [
         {
@@ -682,7 +682,7 @@ for num in range(1, 6):
     // Level 6: Lists (5 lessons)
     {
       id: "python-v2-level6",
-      title: "Level 6 — Lists",
+      title: "Level 6 - Lists",
       duration: "25 min",
       lessons: [
         {
@@ -800,7 +800,7 @@ for t in temperatures:
     // Level 7: Dictionaries (4 lessons)
     {
       id: "python-v2-level7",
-      title: "Level 7 — Dictionaries",
+      title: "Level 7 - Dictionaries",
       duration: "20 min",
       lessons: [
         {
@@ -896,7 +896,7 @@ for item, price in menu.items():
     // Level 8: Functions (6 lessons)
     {
       id: "python-v2-level8",
-      title: "Level 8 — Reusable Code with Functions",
+      title: "Level 8 - Reusable Code with Functions",
       duration: "30 min",
       lessons: [
         {
@@ -1043,7 +1043,7 @@ print(multiply_all(2,3,4))`,
     // Level 9: More Built‑ins (5 lessons)
     {
       id: "python-v2-level9",
-      title: "Level 9 — Handy Built‑ins",
+      title: "Level 9 - Handy Built‑ins",
       duration: "25 min",
       lessons: [
         {
@@ -1154,7 +1154,7 @@ print(doubles)`,
     // Level 10: Advanced Topics (4 lessons)
     {
       id: "python-v2-level10",
-      title: "Level 10 — Advanced Topics",
+      title: "Level 10 - Advanced Topics",
       duration: "30 min",
       lessons: [
         {

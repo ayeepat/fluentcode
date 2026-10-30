@@ -1,11 +1,11 @@
-// SQL curriculum data — portable ANSI-style SQL, with examples that work in
+// SQL curriculum data - portable ANSI-style SQL, with examples that work in
 // PostgreSQL, SQLite, and most learning sandboxes.
 export const sqlCurriculum = {
   label: "SQL",
   modules: [
     {
       id: "sql-module1",
-      title: "Module 1 — Reading Data",
+      title: "Module 1 - Reading Data",
       duration: "50 min",
       lessons: [
         {
@@ -82,7 +82,7 @@ export const sqlCurriculum = {
     },
     {
       id: "sql-module2",
-      title: "Module 2 — Filtering and Sorting",
+      title: "Module 2 - Filtering and Sorting",
       duration: "60 min",
       lessons: [
         {
@@ -159,7 +159,7 @@ export const sqlCurriculum = {
     },
     {
       id: "sql-module3",
-      title: "Module 3 — Summaries and Groups",
+      title: "Module 3 - Summaries and Groups",
       duration: "60 min",
       lessons: [
         {
@@ -236,7 +236,7 @@ export const sqlCurriculum = {
     },
     {
       id: "sql-module4",
-      title: "Module 4 — Joining Tables",
+      title: "Module 4 - Joining Tables",
       duration: "70 min",
       lessons: [
         {
@@ -313,7 +313,7 @@ export const sqlCurriculum = {
     },
     {
       id: "sql-module5",
-      title: "Module 5 — Changing Data Safely",
+      title: "Module 5 - Changing Data Safely",
       duration: "70 min",
       lessons: [
         {

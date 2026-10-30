@@ -140,7 +140,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-white">
       <Helmet>
         <title>{uiLanguage === "ru" ? "Мой прогресс | FluentlyCode" : "Dashboard | Your Learning Progress"}</title>
-        <meta name="description" content={uiLanguage === "ru" ? "Следите за серией занятий и выполненными упражнениями." : "Track your learning progress. View your streak, completed exercises, and continue your coding journey with FluentlyCode."} />
+        <meta name="description" content={uiLanguage === "ru" ? "Следите за серией занятий и выполненными упражнениями." : "Track your learning progress. View your streak, completed exercises, and continue learning with FluentlyCode."} />
       </Helmet>
       <Navbar streak={streak} />
 
@@ -212,7 +212,7 @@ export default function Dashboard() {
           ) : (
             <div className="text-center py-16 border border-zinc-100 rounded-2xl">
               <p className="text-2xl mb-2">🎉</p>
-              <p className="font-semibold text-zinc-900 mb-1">{<LocalizedText text="All lessons complete!" />}</p>
+              <p className="font-semibold text-zinc-900 mb-1">{<LocalizedText text="You've finished every lesson." />}</p>
               <p className="text-sm text-zinc-400">{<LocalizedText text="More content coming soon." />}</p>
             </div>
           )}

@@ -41,7 +41,7 @@ export default function Terms() {
 
           <section>
             <h2 className="text-base font-semibold text-zinc-900 mb-2">{<LocalizedText text={"2. Description of Service"} />}</h2>
-            <p>{<LocalizedText text={"FluentlyCode is an online platform that provides interactive programming education through structured lessons, coding exercises, and AI-powered feedback. The Service includes both free and paid subscription tiers. We reserve the right to modify, suspend, or discontinue any part of the Service at any time, with or without notice."} />}</p>
+            <p>{<LocalizedText text={"FluentlyCode is an online platform that provides interactive programming education through structured lessons, coding exercises, and AI feedback. The Service includes both free and paid subscription tiers. We reserve the right to modify, suspend, or discontinue any part of the Service at any time, with or without notice."} />}</p>
           </section>
 
           <section>

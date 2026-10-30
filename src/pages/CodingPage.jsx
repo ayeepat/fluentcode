@@ -211,7 +211,7 @@ export default function CodingPage() {
   );
 
   // ------------------------------------------------------------------
-  // Guards — wait for the curriculum cache before judging guest access,
+  // Guards - wait for the curriculum cache before judging guest access,
   // otherwise deep links redirect before the lesson list exists.
   // ------------------------------------------------------------------
   useEffect(() => {
@@ -437,7 +437,7 @@ export default function CodingPage() {
           feedback: `Your code has a runtime error:\n\n${userError}\n\nFix the error and try again.`,
           mistakePatterns: ["runtime_error"],
           suggestions: [
-            "Read the error message carefully — it tells you the line number.",
+            "Read the error message carefully. It usually points you to the problem.",
             "Check for typos in variable names or function calls.",
           ],
         });
@@ -516,7 +516,7 @@ export default function CodingPage() {
   async function handleCorrectSubmission() {
     setFeedback({
       isCorrect: true,
-      feedback: "Your code produces the correct output. Great work!",
+      feedback: "Your code produces the correct output. Nice work.",
       mistakePatterns: [],
       suggestions: [],
     });
@@ -693,10 +693,10 @@ export default function CodingPage() {
   return (
     <div className="h-screen flex flex-col bg-white overflow-hidden">
       <Helmet>
-        <title>{uiLanguage === "ru" ? "Редактор кода с ИИ" : "AI-Powered Code Editor"} | {translateContent(lesson.title, uiLanguage)} - FluentlyCode</title>
+        <title>{uiLanguage === "ru" ? "Редактор кода с ИИ" : "AI Code Editor"} | {translateContent(lesson.title, uiLanguage)} - FluentlyCode</title>
         <meta
           name="description"
-          content={uiLanguage === "ru" ? "Пишите код, выполняйте интерактивные упражнения и получайте подсказки ИИ." : "Write code and get instant AI-powered feedback. Practice Python with interactive exercises and AI guidance from FluentlyCode."}
+          content={uiLanguage === "ru" ? "Пишите код, выполняйте интерактивные упражнения и получайте подсказки ИИ." : "Write code and get instant AI feedback. Practice Python with interactive exercises and AI guidance from FluentlyCode."}
         />
       </Helmet>
 
@@ -836,10 +836,10 @@ export default function CodingPage() {
                   }`}
                 >
                   {feedback.isCorrect
-                    ? (uiLanguage === "ru" ? "🎉 Отлично! Ваш код верен!" : "🎉 Great job! Your code is correct!")
+                    ? (uiLanguage === "ru" ? "🎉 Отлично! Ваш код верен!" : "Looks good. Your code is correct.")
                     : failCount >= 3 && exerciseFirst
-                    ? (uiLanguage === "ru" ? "Не совсем — теория ниже может помочь!" : "Not quite — the theory below might help!")
-                    : (uiLanguage === "ru" ? "Пока неверно — проверьте следующее:" : "Not quite right — here's what to check:")}
+                    ? (uiLanguage === "ru" ? "Не совсем — теория ниже может помочь!" : "Not quite. The explanation below may help.")
+                    : (uiLanguage === "ru" ? "Пока неверно — проверьте следующее:" : "Not quite. Check these:")}
                 </p>
                 <p
                   className={`text-xs leading-relaxed whitespace-pre-wrap ${
@@ -860,7 +860,7 @@ export default function CodingPage() {
                 )}
                 {feedback.isCorrect && isGuest && (
                   <p className="text-xs text-emerald-500 mt-2">
-                    <Sparkles size={11} className="inline mr-1" />{<LocalizedText text="Create a free account to unlock AI feedback on every exercise!" />}</p>
+                    <Sparkles size={11} className="inline mr-1" />{<LocalizedText text="Create a free account to get AI feedback on each exercise!" />}</p>
                 )}
                 {feedback.isCorrect && exerciseFirst && (
                   <button

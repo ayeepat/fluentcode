@@ -4,7 +4,7 @@ export const rustCurriculum = {
   modules: [
     {
       id: "rust-module1-m1",
-      title: "Module 1 — Getting Started with Rust",
+      title: "Module 1 - Getting Started with Rust",
       duration: "60 min",
       lessons: [
         {
@@ -165,7 +165,7 @@ Condition must be bool type`,
     },
     {
       id: "rust-module2-m1",
-      title: "Module 2 — Ownership & Borrowing",
+      title: "Module 2 - Ownership & Borrowing",
       duration: "80 min",
       lessons: [
         {
@@ -329,7 +329,7 @@ Shadowing changes type safely`,
     },
     {
       id: "rust-module3-m1",
-      title: "Module 3 — Structuring Your Data",
+      title: "Module 3 - Structuring Your Data",
       duration: "60 min",
       lessons: [
         {
@@ -555,7 +555,7 @@ None - No value`,
     },
     {
       id: "rust-module4-m1",
-      title: "Module 4 — Error Handling & Collections",
+      title: "Module 4 - Error Handling & Collections",
       duration: "70 min",
       lessons: [
         {
@@ -588,7 +588,7 @@ v.len() - Get length`,
         },
         {
           id: "rust-module4-m1-l2",
-          title: "Deep Dive into Strings",
+          title: "Working with Strings",
           explanation: `String is a growable, heap-allocated data structure, whereas &str is an immutable view into string data. Knowing the difference is crucial.`,
           concept: `String - Mutable, growable
 &str - String slice, read-only
@@ -721,7 +721,7 @@ fn main() {
     },
     {
       id: "rust-module5-m1",
-      title: "Module 5 — Project Organization & Generics",
+      title: "Module 5 - Project Organization & Generics",
       duration: "80 min",
       lessons: [
         {
@@ -896,7 +896,7 @@ fn main() {
     },
     {
       id: "rust-module6-m1",
-      title: "Module 6 — Iterators, Closures & Concurrency",
+      title: "Module 6 - Iterators, Closures & Concurrency",
       duration: "75 min",
       lessons: [
         {
@@ -1062,7 +1062,7 @@ fn main() {
     },
     {
       id: "rust-module7-m1",
-      title: "Module 7 — The Capstone Build (CLI Tool)",
+      title: "Module 7 - The Capstone Build (CLI Tool)",
       duration: "120 min",
       lessons: [
         {
