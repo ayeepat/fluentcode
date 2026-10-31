@@ -1,5 +1,5 @@
 // src/components/CodeExample.jsx
-// Dark code block dressed as a tiny editor window — used for lesson examples.
+// Dark code block dressed as a tiny editor window - used for lesson examples.
 
 const FILE_NAMES = {
   python: "example.py",

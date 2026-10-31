@@ -78,7 +78,7 @@ ${userCode || "(no code yet)"}
 
 Student's question: "${q}"
 
-Respond in ${ru ? "Russian" : "English"}, preserving code and identifiers exactly. Be concise, warm, and clear. Never reveal the full solution — guide instead. 2–4 sentences max unless the concept truly requires more.`;
+Respond in ${ru ? "Russian" : "English"}, preserving code and identifiers exactly. Be concise, warm, and clear. Never reveal the full solution. Guide instead. 2–4 sentences max unless the concept truly requires more.`;
 
       const res = await fetch(`${SUPABASE_URL}/functions/v1/ai-chat`, {
         method: "POST",

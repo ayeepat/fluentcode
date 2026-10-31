@@ -4,7 +4,7 @@
 // Uses a module-level singleton so Pyodide is only ever initialised once
 // per page session, regardless of how many times runPython is called.
 
-// Use the ESM build from the CDN — this works correctly inside Vite's
+// Use the ESM build from the CDN - this works correctly inside Vite's
 // module environment without conflicting with the bundler's own module
 // system. The key difference from the old approach: we use a dynamic
 // import() instead of injecting a <script> tag, which avoids the MIME
@@ -20,7 +20,7 @@ async function getPyodide() {
   if (loadingPromise)  return loadingPromise;
 
   loadingPromise = (async () => {
-    // Dynamic import() of the ESM build — no script tag injection,
+    // Dynamic import() of the ESM build - no script tag injection,
     // no MIME conflicts, works with Vite's module system cleanly.
     const { loadPyodide } = await import(/* @vite-ignore */ PYODIDE_CDN);
 
@@ -75,7 +75,7 @@ export async function runPython(code) {
       getPyodide(),
       new Promise((_, reject) =>
         setTimeout(
-          () => reject(new Error("Pyodide took too long to load — check your connection and try again.")),
+          () => reject(new Error("Pyodide took too long to load. Check your connection and try again.")),
           30_000
         )
       ),

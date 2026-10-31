@@ -838,8 +838,8 @@ export default function CodingPage() {
                   {feedback.isCorrect
                     ? (uiLanguage === "ru" ? "🎉 Отлично! Ваш код верен!" : "Looks good. Your code is correct.")
                     : failCount >= 3 && exerciseFirst
-                    ? (uiLanguage === "ru" ? "Не совсем — теория ниже может помочь!" : "Not quite. The explanation below may help.")
-                    : (uiLanguage === "ru" ? "Пока неверно — проверьте следующее:" : "Not quite. Check these:")}
+                    ? (uiLanguage === "ru" ? "Не совсем. Теория ниже может помочь!" : "Not quite. The explanation below may help.")
+                    : (uiLanguage === "ru" ? "Пока неверно. Проверьте следующее:" : "Not quite. Check these:")}
                 </p>
                 <p
                   className={`text-xs leading-relaxed whitespace-pre-wrap ${

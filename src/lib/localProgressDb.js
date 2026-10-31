@@ -90,7 +90,7 @@ export const localProgressDb = {
     );
   },
 
-  // Signup prompt — only show once ever
+  // Signup prompt - only show once ever
   hasSeenSignupPrompt() {
     return localStorage.getItem(SIGNUP_PROMPT_KEY) === "true";
   },

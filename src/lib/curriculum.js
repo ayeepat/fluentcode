@@ -54,7 +54,7 @@ async function _load(language, version) {
   return pendingLoads[key];
 }
 
-// Eager pre-load Python V2 — it's the default for every user.
+// Eager pre-load Python V2 - it's the default for every user.
 // Errors are swallowed here; components handle their own loading states.
 _load('python', 2).catch(() => {});
 
@@ -75,7 +75,7 @@ export function getCurriculumByVersion(version = 2, language) {
 }
 
 /**
- * Lightweight language metadata — kept as a plain exported const.
+ * Lightweight language metadata - kept as a plain exported const.
  * Components that need the language list import this directly.
  * It is a simple object literal with no dependency on any async code,
  * so it is always defined when the module is evaluated.
@@ -95,7 +95,7 @@ export const LANGUAGE_META = {
 };
 
 /**
- * Legacy Proxy — supports curriculum[lang] and Object.entries(curriculum)
+ * Legacy Proxy - supports curriculum[lang] and Object.entries(curriculum)
  * for components that haven't migrated yet.
  */
 export const curriculum = new Proxy(
@@ -117,7 +117,7 @@ export const curriculum = new Proxy(
 );
 
 // ---------------------------------------------------------------------------
-// Synchronous helpers (read from cache — call loadCurriculum first)
+// Synchronous helpers (read from cache - call loadCurriculum first)
 // ---------------------------------------------------------------------------
 
 export function getLessonById(language, lessonId, version = 2) {

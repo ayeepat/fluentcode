@@ -6,7 +6,7 @@ import path from 'path'
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const clerkKey = env.VITE_CLERK_PUBLISHABLE_KEY || ''
-  // Placeholder or missing key would crash ClerkProvider at startup —
+  // Placeholder or missing key would crash ClerkProvider at startup -
   // swap in the guest-mode stub so local dev still runs (see src/lib/clerk-stub.jsx).
   const clerkKeyValid = /^pk_(test|live)_/.test(clerkKey)
 

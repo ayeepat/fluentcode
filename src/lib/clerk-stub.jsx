@@ -13,7 +13,7 @@ const warnOnce = (() => {
     if (warned) return;
     warned = true;
     console.warn(
-      "⚠️ Clerk key not configured — auth is disabled, running in guest mode. " +
+      "⚠️ Clerk key not configured - auth is disabled, running in guest mode. " +
         "Set VITE_CLERK_PUBLISHABLE_KEY in .env.local to enable sign-in."
     );
   };

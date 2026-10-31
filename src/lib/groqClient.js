@@ -48,7 +48,7 @@ export const evaluateCode = async (code, language, lesson, clerkToken, uiLanguag
       feedback:
         typeof data.feedback === "string" && data.feedback.trim()
           ? data.feedback
-          : "Nice effort — keep going.",
+          : "Nice effort. Keep going.",
       mistakePatterns: Array.isArray(data.mistakePatterns)
         ? data.mistakePatterns.slice(0, 3)
         : [],

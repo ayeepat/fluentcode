@@ -2,7 +2,7 @@
 
 const STORAGE_KEY_PROGRESS = "fluentcode_progress";
 
-// Safe JSON parse — never throws
+// Safe JSON parse - never throws
 const safeGet = (key) => {
   try {
     return JSON.parse(localStorage.getItem(key) || "[]");
@@ -81,7 +81,7 @@ export const localDb = {
         return true;
       },
 
-      // Upsert — create if not exists, update if exists
+      // Upsert - create if not exists, update if exists
       // Used to safely sync progress without duplicates
       upsert: async (query, data) => {
         const all = safeGet(STORAGE_KEY_PROGRESS);

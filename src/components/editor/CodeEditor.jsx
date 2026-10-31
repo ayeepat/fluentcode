@@ -16,7 +16,7 @@ export default function CodeEditor({ value, onChange, language }) {
   const handleChange = (newValue, event) => {
     // On the first edit, check if the user is typing over the starter code.
     // We only special-case this when Monaco gives us the change event so we can
-    // recover exactly what was entered — otherwise fall through to a plain update.
+    // recover exactly what was entered - otherwise fall through to a plain update.
     if (!hasCleared && newValue !== value && event?.changes?.length) {
       // If the starter code is just a comment/template structure, clear it
       const isStarterCode =
@@ -27,8 +27,8 @@ export default function CodeEditor({ value, onChange, language }) {
         value?.startsWith("-- ") ||  // SQL
         value?.startsWith("<!--");  // HTML & CSS
       if (isStarterCode) {
-        // Keep exactly what the user just entered — a single keystroke or a
-        // whole pasted solution — and drop the starter template. Truncating to
+        // Keep exactly what the user just entered - a single keystroke or a
+        // whole pasted solution - and drop the starter template. Truncating to
         // the last character silently deleted pastes and multi-char edits.
         const inserted = event.changes.map((c) => c.text).join("");
         setHasCleared(true);

@@ -115,7 +115,7 @@ function extractFirstOutput(exampleCode) {
  * Strategy:
  *  1. Split on sentence boundaries (. ! ?)
  *  2. Prefer sentences that contain "is", "are", "means", "allows",
- *     "lets", "used", "called" — these tend to be definitional.
+ *     "lets", "used", "called" - these tend to be definitional.
  *  3. Fall back to the longest sentence if none match.
  *  4. Return null if nothing useful is found.
  */
@@ -134,7 +134,7 @@ function extractKeySentence(explanation) {
 
   const pool = definitional.length > 0 ? definitional : sentences;
 
-  // Pick the longest from the pool — tends to be the most content-rich
+  // Pick the longest from the pool - tends to be the most content-rich
   const best = pool.reduce((a, b) => (b.length > a.length ? b : a));
 
   // Cap at 160 chars so it fits comfortably as a quiz option

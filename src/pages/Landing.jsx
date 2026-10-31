@@ -484,7 +484,7 @@ export default function Landing() {
           {...fadeUp(0.18)}
           className="relative text-base text-zinc-500 mb-10 max-w-md leading-relaxed"
         >
-          {ru ? "Короткий урок, настоящее задание и обратная связь. Напишите первый код — начать можно без регистрации." : "A short lesson, a real coding exercise, and feedback when you need it. Start writing code without making an account."}
+          {ru ? "Короткий урок, настоящее задание и обратная связь. Напишите первый код. Начать можно без регистрации." : "A short lesson, a real coding exercise, and feedback when you need it. Start writing code without making an account."}
         </motion.p>
 
         <motion.div
@@ -711,7 +711,7 @@ export default function Landing() {
             {/* Support link folded into the panel */}
             <div className="mt-12 pt-8 border-t border-white/10 flex flex-col items-center gap-3">
               <p className="text-xs text-zinc-500 max-w-sm leading-relaxed">
-                {ru ? "FluentlyCode бесплатен. Если проект вам помогает, поддержите его — это поможет оплачивать серверы." : "FluentlyCode is free to use. If it helps you, consider supporting the project to keep the servers running."}
+                {ru ? "FluentlyCode бесплатен. Если проект вам помогает, поддержите его. Это поможет оплачивать серверы." : "FluentlyCode is free to use. If it helps you, consider supporting the project to keep the servers running."}
               </p>
               <a
                 href="https://boosty.to/fluentcode/donate"
@@ -801,7 +801,7 @@ export default function Landing() {
 
           <div className="border-t border-zinc-200 pt-6 flex flex-col md:flex-row items-center justify-between gap-3">
             <p className="text-xs text-zinc-400">
-              © {new Date().getFullYear()} fluentlycode — {ru ? "учитесь на практике" : "learn by doing"}
+              © {new Date().getFullYear()} fluentlycode · {ru ? "учитесь на практике" : "learn by doing"}
             </p>
             <div className="flex items-center gap-4">
               <Link to="/terms" className="text-xs text-zinc-400 hover:text-zinc-900 transition-colors">

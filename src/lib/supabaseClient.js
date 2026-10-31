@@ -11,7 +11,7 @@ const hasSupabaseConfig = Boolean(supabaseUrl && supabaseAnonKey);
 
 if (!hasSupabaseConfig) {
   console.warn(
-    "⚠️ VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY not set — running without Supabase (guest mode only)."
+    "⚠️ VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY not set - running without Supabase (guest mode only)."
   );
 }
 
@@ -20,7 +20,7 @@ export const supabase = hasSupabaseConfig
   ? createClient(supabaseUrl, supabaseAnonKey)
   : null;
 
-// Single authenticated client instance — reused and updated with new tokens
+// Single authenticated client instance - reused and updated with new tokens
 let authenticatedClient = null;
 let currentToken = null;
 

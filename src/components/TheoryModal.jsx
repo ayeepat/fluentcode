@@ -66,7 +66,7 @@ export default function TheoryModal({ lesson, show, onClose, onNext, isCorrect, 
               </button>
             </div>
 
-            {/* Content — scrollable */}
+            {/* Content - scrollable */}
             <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
               {/* Key concept */}
               {lesson.concept && (
@@ -94,7 +94,7 @@ export default function TheoryModal({ lesson, show, onClose, onNext, isCorrect, 
                 </div>
               )}
 
-              {/* Explanation — short version */}
+              {/* Explanation - short version */}
               {lesson.explanation && (
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-2">
@@ -130,7 +130,7 @@ export default function TheoryModal({ lesson, show, onClose, onNext, isCorrect, 
                   onClick={onClose}
                   className="flex-1 flex items-center justify-center gap-2 bg-zinc-900 text-white py-3 rounded-full text-sm font-semibold hover:bg-zinc-700 transition-all"
                 >
-                  {ru ? "Понятно, попробую ещё раз" : "Got it — let me try again"}
+                  {ru ? "Понятно, попробую ещё раз" : "Got it. Let me try again"}
                 </button>
               )}
             </div>
