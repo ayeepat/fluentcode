@@ -163,9 +163,9 @@
   "The Java basics without the fluff": "Основы Java без лишнего",
   "Readable syntax and less boilerplate": "Понятный синтаксис и меньше шаблонного кода",
   "Systems programming with strong safety checks": "Системное программирование со строгими проверками безопасности",
-  "Start right away": "Начните сразу",
+  "Start right away": "Начните с задания",
   "Pick a course and try the first exercise. You do not need an account to get started.": "Выберите курс и попробуйте первое упражнение. Для начала аккаунт не нужен.",
-  "Each lesson gives you something to build or fix, so you spend more time coding than reading.": "В каждом уроке вы создаёте или исправляете код, поэтому больше времени уделяете практике.",
-  "Get feedback when you need it": "Получайте обратную связь, когда она нужна",
-  "Submit your code for a short review and see what to fix next. Free accounts include 10 AI reviews a day.": "Отправьте код на проверку и узнайте, что исправить. Бесплатный аккаунт включает 10 проверок ИИ в день."
+  "Each lesson gives you something to build or fix, so you spend more time coding than reading.": "В каждом уроке нужно что-то написать или исправить. Больше практики, меньше чтения.",
+  "Get feedback when you need it": "Получайте обратную связь",
+  "Submit your code for a short review and see what to fix next. Free accounts include 10 AI reviews a day.": "Отправьте код на проверку и узнайте, что исправить. С бесплатным аккаунтом доступны 10 проверок ИИ в день."
 }

@@ -248,7 +248,7 @@ function EditorMockup() {
           <span className="w-2.5 h-2.5 rounded-full bg-zinc-700" />
           <span className="ml-3 text-xs font-mono text-zinc-500">exercise.py</span>
           <span className="ml-auto text-[10px] font-medium uppercase tracking-widest text-zinc-600">
-            {ru ? 'Урок 1 · Python' : 'Lesson 1 · Python'}
+            {ru ? 'Первый код · Python' : 'Your first code · Python'}
           </span>
         </div>
 
@@ -287,8 +287,8 @@ function EditorMockup() {
           <Check size={14} strokeWidth={3} />
         </span>
         <div className="text-left">
-          <p className="text-xs font-semibold text-zinc-900 leading-tight">{ru ? 'Верно — отличная работа!' : 'Correct. Nice work!'}</p>
-          <p className="text-[11px] text-zinc-400 leading-tight">{ru ? 'Проверка кода · результат совпал' : 'Code check · output matches'}</p>
+          <p className="text-xs font-semibold text-zinc-900 leading-tight">{ru ? 'Верно' : 'Correct'}</p>
+          <p className="text-[11px] text-zinc-400 leading-tight">{ru ? 'Результат совпал' : 'The output matches'}</p>
         </div>
       </motion.div>
     </div>
@@ -341,10 +341,10 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-white flex flex-col overflow-x-clip">
       <Helmet>
-        <title>{ru ? "FluentlyCode | Интерактивные уроки программирования с ИИ" : "FluentlyCode | Learn to Code with AI Interactive Lessons"}</title>
-        <meta name="description" content={ru ? "Интерактивные уроки Python, проверка кода с помощью ИИ и тесты. Начните бесплатно без регистрации." : "Learn to code with FluentlyCode: interactive Python lessons, AI feedback, quizzes, and instant code evaluation. Free and no signup required."} />
-        <meta property="og:title" content={ru ? "FluentlyCode | Обучение программированию с помощью ИИ" : "FluentlyCode | Learn to Code with AI Feedback"} />
-        <meta property="og:description" content={ru ? "Интерактивные уроки Python с проверкой кода от ИИ. Начните бесплатно без регистрации." : "Interactive Python lessons with instant AI feedback. Start coding in seconds. No signup required. Completely free."} />
+        <title>{ru ? "FluentlyCode | Учитесь писать код на практике" : "FluentlyCode | Learn programming by writing code"}</title>
+        <meta name="description" content={ru ? "Короткие уроки, задания с настоящим кодом и обратная связь. Python, JavaScript и ещё 9 языков. Начните бесплатно без регистрации." : "Short lessons, real coding exercises, and feedback. Practice Python, JavaScript, and 9 more languages. Start for free without an account."} />
+        <meta property="og:title" content={ru ? "FluentlyCode | Учитесь писать код на практике" : "FluentlyCode | Learn programming by writing code"} />
+        <meta property="og:description" content={ru ? "Напишите первый код, посмотрите результат и продолжайте учиться. Бесплатные уроки по 11 языкам." : "Write your first code, see the result, and keep learning. Free lessons across 11 languages."} />
       </Helmet>
 
       {/* ── Navigation ── */}
@@ -475,16 +475,16 @@ export default function Landing() {
           {...fadeUp(0.1)}
           className="relative text-5xl sm:text-6xl md:text-7xl font-bold leading-[0.95] tracking-tight mb-6 max-w-4xl"
         >
-          {ru ? "Учитесь программировать." : "Learn to code."}
+          {ru ? "Учитесь писать код" : "Learn programming"}
           <br />
-          <span className="text-zinc-400 font-semibold">{ru ? "На практике." : "By actually coding."}</span>
+          <span className="text-zinc-400 font-semibold">{ru ? "на практике" : "by writing code"}</span>
         </motion.h1>
 
         <motion.p
           {...fadeUp(0.18)}
           className="relative text-base text-zinc-500 mb-10 max-w-md leading-relaxed"
         >
-          {ru ? "Проходите короткие уроки, пишите настоящий код и получайте обратную связь, когда она нужна. Начать можно без регистрации." : "Work through short lessons, write real code, and get feedback when you need it. You can start without making an account."}
+          {ru ? "Короткий урок, настоящее задание и обратная связь. Напишите первый код — начать можно без регистрации." : "A short lesson, a real coding exercise, and feedback when you need it. Start writing code without making an account."}
         </motion.p>
 
         <motion.div
@@ -496,7 +496,7 @@ export default function Landing() {
             className="group inline-flex items-center gap-2 bg-zinc-900 text-white pl-6 pr-5 py-3 rounded-full text-sm font-semibold hover:bg-zinc-700 transition-all duration-200 shadow-[0_8px_30px_-8px_rgba(0,0,0,0.35)]"
           >
             {isSignedIn ? (
-              <>{ru ? "В личный кабинет" : "Go to Dashboard"} <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" /></>
+              <>{ru ? "В личный кабинет" : "Go to dashboard"} <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" /></>
             ) : isMobile ? (
               <>{ru ? "Начать первый тест" : "Start first quiz"} <HelpCircle size={14} /></>
             ) : (
@@ -507,7 +507,7 @@ export default function Landing() {
             to="/courses"
             className="group inline-flex items-center gap-1 text-sm font-medium text-zinc-600 hover:text-zinc-900 px-5 py-3 rounded-full border border-zinc-200 hover:border-zinc-300 bg-white transition-all duration-200"
           >
-            {ru ? "Все курсы" : "Browse all courses"}
+            {ru ? "Все курсы" : "Browse courses"}
             <ArrowUpRight size={14} className="text-zinc-400 group-hover:text-zinc-900 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
           </Link>
         </motion.div>
@@ -523,10 +523,10 @@ export default function Landing() {
           className="relative flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-16"
         >
           {[
-            ru ? `Бесплатных уроков: ${TOTAL_LESSONS}` : `${TOTAL_LESSONS} free lessons`,
-            ru ? `Языков: ${COURSE_CARDS.length}` : `${COURSE_CARDS.length} languages`,
-            ru ? "10 проверок ИИ в день" : "10 code reviews/day",
-            ru ? "Без регистрации" : "No signup needed",
+            ru ? `${TOTAL_LESSONS} бесплатных уроков` : `${TOTAL_LESSONS} free lessons`,
+            ru ? `${COURSE_CARDS.length} языков программирования` : `${COURSE_CARDS.length} programming languages`,
+            ru ? "10 проверок ИИ в день с аккаунтом" : "10 AI reviews/day with an account",
+            ru ? "Начните без регистрации" : "Start without an account",
           ].map((item) => (
             <span key={item} className="flex items-center gap-1.5 text-xs text-zinc-500">
               <Check size={12} strokeWidth={3} className="text-emerald-500" />
@@ -540,7 +540,7 @@ export default function Landing() {
       <section id="how" className="px-6 py-24 max-w-5xl mx-auto w-full scroll-mt-16">
         <motion.div {...inView()} className="mb-14 text-center">
           <p className="text-xs font-medium tracking-widest text-zinc-400 uppercase mb-4">
-            {ru ? "Как устроено обучение" : "Process"}
+            {ru ? "Как устроено обучение" : "The learning process"}
           </p>
           <h2 className="text-4xl font-bold tracking-tight">{ru ? "Как это работает" : "How it works"}</h2>
         </motion.div>
@@ -597,14 +597,14 @@ export default function Landing() {
               {ru ? "Программа" : "Curriculum"}
             </p>
             <h2 className="text-4xl font-bold tracking-tight">
-              {ru ? `${COURSE_CARDS.length} языков.` : `${COURSE_CARDS.length} languages.`}
+              {ru ? `${COURSE_CARDS.length} языков` : `${COURSE_CARDS.length} languages`}
               <br />
-              {ru ? "Создано для практики." : "Built around practice."}
+              {ru ? "для практики" : "to practice"}
             </h2>
           </div>
           <p className="text-sm text-zinc-400 md:text-right md:pb-1">
-            {ru ? `Уроков: ${TOTAL_LESSONS} · Языков: ${COURSE_CARDS.length}` : `${TOTAL_LESSONS} lessons across ${COURSE_CARDS.length} languages`}
-            <br className="hidden md:block" /> {ru ? "— всё бесплатно." : "and all of it is free."}
+            {ru ? `${TOTAL_LESSONS}` : `${TOTAL_LESSONS} lessons,`}
+            <br className="hidden md:block" /> {ru ? "бесплатных уроков" : "all free"}
           </p>
         </motion.div>
 
@@ -653,7 +653,7 @@ export default function Landing() {
 
                   <div className="flex items-center justify-between pt-3 border-t border-zinc-100 mt-auto">
                     <span className="text-xs text-zinc-400">
-                      {ru ? (moreCount > 0 ? `+ ещё модулей: ${moreCount}` : `Модулей: ${course.modules.length}`) : (moreCount > 0 ? `+ ${moreCount} more modules` : `${course.modules.length} modules`)}
+                      {ru ? (moreCount > 0 ? `Ещё модулей: ${moreCount}` : `Модулей: ${course.modules.length}`) : (moreCount > 0 ? `${moreCount} more modules` : `${course.modules.length} modules`)}
                     </span>
                     <span className="text-xs font-medium text-zinc-500 bg-zinc-100 px-2.5 py-1 rounded-full tabular-nums">
                       {ru ? `Уроков: ${totalLessons}` : `${totalLessons} lessons`}
@@ -683,7 +683,7 @@ export default function Landing() {
           />
           <div className="relative">
             <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-white mb-4">
-              {ru ? 'Готовы начать?' : 'Ready to start?'}
+              {ru ? 'Начните с первой строки' : 'Start with your first line'}
             </h2>
             <p className="text-zinc-400 mb-9 text-sm">
               {ru ? 'Попробуйте урок и посмотрите, как вам. Регистрация не нужна.' : 'Try a lesson and see how it feels. No account required.'}
@@ -694,15 +694,15 @@ export default function Landing() {
                 className="group inline-flex items-center gap-2 bg-white text-zinc-900 px-6 py-3 rounded-full text-sm font-semibold hover:bg-zinc-200 transition-all duration-200"
               >
                 {isSignedIn ? (
-                  <>{ru ? "В личный кабинет" : "Go to Dashboard"} <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" /></>
+                  <>{ru ? "В личный кабинет" : "Go to dashboard"} <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" /></>
                 ) : (
-                  <>{ru ? "Начать программировать" : "Start coding now"} <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" /></>
+                  <>{ru ? "Начать учиться" : "Start learning"} <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" /></>
                 )}
               </button>
               {!isSignedIn && (
                 <SignInButton mode="modal">
                   <button className="text-sm text-zinc-400 hover:text-white transition-colors duration-200">
-                    {ru ? "Уже есть аккаунт? →" : "Already have an account? →"}
+                    {ru ? "Уже есть аккаунт? Войти" : "Already have an account? Log in"}
                   </button>
                 </SignInButton>
               )}
@@ -711,7 +711,7 @@ export default function Landing() {
             {/* Support link folded into the panel */}
             <div className="mt-12 pt-8 border-t border-white/10 flex flex-col items-center gap-3">
               <p className="text-xs text-zinc-500 max-w-sm leading-relaxed">
-                {ru ? "FluentlyCode всегда бесплатен. Если он вам помогает, поддержите проект — это поможет нам оплачивать серверы." : "FluentlyCode is free forever. If it helps you, consider supporting us to keep the servers running."}
+                {ru ? "FluentlyCode бесплатен. Если проект вам помогает, поддержите его — это поможет оплачивать серверы." : "FluentlyCode is free to use. If it helps you, consider supporting the project to keep the servers running."}
               </p>
               <a
                 href="https://boosty.to/fluentcode/donate"
@@ -736,7 +736,7 @@ export default function Landing() {
                 <Wordmark />
               </div>
               <p className="text-xs text-zinc-400 leading-relaxed max-w-xs">
-                {ru ? "Практикуйтесь на коротких уроках и заданиях с настоящим кодом, получайте обратную связь. Пользуйтесь бесплатно, без платного доступа." : "Practice with short lessons, real coding exercises, and feedback when you need it. Free to use, with no paywall."}
+                {ru ? "Короткие уроки, задания с настоящим кодом и обратная связь. Учитесь бесплатно, без платного доступа." : "Short lessons, real coding exercises, and feedback when you need it. Free to use, with no paywall."}
               </p>
             </div>
 
@@ -755,7 +755,7 @@ export default function Landing() {
                   {ru ? 'Условия использования' : 'Terms of Service'}
                 </Link>
                 <Link to="/privacy" className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors">
-                  {ru ? 'Политика конфиденциальности' : 'Privacy Policy'}
+                  {ru ? 'Конфиденциальность' : 'Privacy Policy'}
                 </Link>
               </div>
             </div>
@@ -801,7 +801,7 @@ export default function Landing() {
 
           <div className="border-t border-zinc-200 pt-6 flex flex-col md:flex-row items-center justify-between gap-3">
             <p className="text-xs text-zinc-400">
-              © {new Date().getFullYear()} fluentlycode — {ru ? "учитесь на практике." : "learn by doing."}
+              © {new Date().getFullYear()} fluentlycode — {ru ? "учитесь на практике" : "learn by doing"}
             </p>
             <div className="flex items-center gap-4">
               <Link to="/terms" className="text-xs text-zinc-400 hover:text-zinc-900 transition-colors">
