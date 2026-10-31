@@ -9,7 +9,7 @@ import {
   jsonResponse,
 } from "../_shared/security.ts";
 
-const MODEL = "GigaChat";
+const MODEL = Deno.env.get("GIGACHAT_MODEL") || "GigaChat-2";
 const TIMEOUT_MS = 15000;  // 15 seconds – increased from 10s
 const MAX_CONTENT_LENGTH = 50000;
 const ALLOWED_LANGUAGES = ["python", "java", "csharp", "javascript", "ruby", "typescript", "cpp", "go", "rust", "sql", "html-css"];
