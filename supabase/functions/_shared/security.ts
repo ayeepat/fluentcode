@@ -65,6 +65,7 @@ export async function authenticateClerkRequest(req: Request): Promise<string | n
     const audience = Deno.env.get("CLERK_JWT_AUDIENCE");
     const { payload } = await jwtVerify(token, clerkJwks, {
       issuer,
+      algorithms: ["RS256"],
       ...(audience ? { audience } : {}),
     });
     return typeof payload.sub === "string" && payload.sub ? payload.sub : null;

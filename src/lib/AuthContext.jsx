@@ -83,8 +83,9 @@ export function AuthProvider({ children }) {
     isAuthenticated: !!isSignedIn,
     isLoading,
     supabaseClient,
-    getToken: async () =>
-      session ? session.getToken({ template: "supabase_prod" }) : null,
+    // AI Edge Functions verify Clerk session tokens against Clerk JWKS.
+    // The Supabase database client above uses its separate database JWT template.
+    getToken: async () => session ? session.getToken() : null,
   };
 
   return (
