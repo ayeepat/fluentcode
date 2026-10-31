@@ -87,7 +87,7 @@ export default function Privacy() {
               <li><strong>{<LocalizedText text={"Clerk:"} />}</strong>{<LocalizedText text={" Authentication and user account management."} />}</li>
               <li><strong>{<LocalizedText text={"Supabase:"} />}</strong>{<LocalizedText text={" Database hosting and backend services."} />}</li>
               <li><strong>{<LocalizedText text={"Stripe:"} />}</strong>{<LocalizedText text={" Payment processing and subscription management."} />}</li>
-              <li><strong>{<LocalizedText text={"Groq:"} />}</strong>{<LocalizedText text={" AI model provider for code evaluation and tutoring feedback. Code you submit may be sent to Groq's API for processing. Groq's privacy policy applies to their handling of this data."} />}</li>
+              <li><strong>{<LocalizedText text={"GigaChat:"} />}</strong>{<LocalizedText text={" AI model provider for code evaluation and tutoring feedback. Code you submit may be sent to GigaChat's API for processing. GigaChat's privacy policy applies to their handling of this data."} />}</li>
             </ul>
             <p className="mt-2">{<LocalizedText text={"Each third-party provider operates under their own privacy policies and data processing agreements. We encourage you to review their respective privacy policies."} />}</p>
           </section>
@@ -144,7 +144,7 @@ export default function Privacy() {
 
           <section>
             <h2 className="text-base font-semibold text-zinc-900 mb-2">{<LocalizedText text={"9. International Data Transfers"} />}</h2>
-            <p>{<LocalizedText text={"Your data may be transferred to and processed in countries outside your country of residence, including the United States. Our service providers (Clerk, Supabase, Stripe, Groq) may process data in various jurisdictions. Where data is transferred outside the EEA, we ensure appropriate safeguards are in place, such as Standard Contractual Clauses or the service provider's certification under recognized data protection frameworks."} />}</p>
+            <p>{<LocalizedText text={"Your data may be transferred to and processed in countries outside your country of residence, including the United States. Our service providers (Clerk, Supabase, Stripe, GigaChat) may process data in various jurisdictions. Where data is transferred outside the EEA, we ensure appropriate safeguards are in place, such as Standard Contractual Clauses or the service provider's certification under recognized data protection frameworks."} />}</p>
           </section>
 
           <section>

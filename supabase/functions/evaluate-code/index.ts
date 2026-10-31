@@ -1,3 +1,4 @@
+import { gigachatCompletion } from "../_shared/gigachat.ts";
 // supabase/functions/evaluate-code/index.ts
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import {
@@ -8,8 +9,7 @@ import {
   jsonResponse,
 } from "../_shared/security.ts";
 
-const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
-const MODEL = "llama-3.3-70b-versatile";
+const MODEL = "GigaChat";
 const TIMEOUT_MS = 15000;  // 15 seconds – increased from 10s
 const MAX_CONTENT_LENGTH = 50000;
 const ALLOWED_LANGUAGES = ["python", "java", "csharp", "javascript", "ruby", "typescript", "cpp", "go", "rust", "sql", "html-css"];
@@ -98,8 +98,8 @@ serve(async (req) => {
       return jsonResponse({ error: "Invalid lesson data" }, 400, headers);
     }
 
-    const groqApiKey = Deno.env.get("GROQ_API_KEY");
-    if (!groqApiKey) {
+    const gigachatKey = Deno.env.get("GIGACHAT_AUTH_KEY");
+    if (!gigachatKey) {
       // Server misconfiguration, not a real evaluation — non-200 so the
       // client doesn't mistake this for a completed AI review and charge quota.
       return jsonResponse(
@@ -168,16 +168,10 @@ Return exactly this JSON shape:
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
-    let groqRes: Response;
+    let gigachatRes: Response;
 
     try {
-      groqRes = await fetch(GROQ_API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${groqApiKey}`,
-        },
-        body: JSON.stringify({
+      gigachatRes = await gigachatCompletion(gigachatKey, {
           model: MODEL,
           messages: [
             {
@@ -192,15 +186,13 @@ Return exactly this JSON shape:
           ],
           temperature: 0.2,
           max_tokens: 500,
-        }),
-        signal: controller.signal,
-      });
+        }, controller.signal);
     } finally {
       clearTimeout(timeoutId);
     }
 
-    if (!groqRes.ok) {
-      console.error("Groq API error:", groqRes.status, await groqRes.text());
+    if (!gigachatRes.ok) {
+      console.error("GigaChat API error:", gigachatRes.status, "upstream request failed");
       // Upstream provider failure, not a real evaluation — non-200 so the
       // client doesn't mistake this for a completed AI review and charge quota.
       return jsonResponse(
@@ -213,8 +205,8 @@ Return exactly this JSON shape:
       );
     }
 
-    const groqData = await groqRes.json();
-    const content = groqData?.choices?.[0]?.message?.content || "";
+    const gigachatData = await gigachatRes.json();
+    const content = gigachatData?.choices?.[0]?.message?.content || "";
     const parsed = extractJson(content);
 
     if (!parsed) {

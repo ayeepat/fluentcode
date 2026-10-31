@@ -6,7 +6,7 @@ FluentlyCode teaches people to code by actually coding. Instead of passive video
 
 ## Platform Overview
 
-FluentlyCode is a web-based coding education platform built with React, Vite, and Supabase. It features an interactive Monaco code editor, Groq-powered AI feedback, quiz generation, progress tracking, and a supportive community-first approach.
+FluentlyCode is a web-based coding education platform built with React, Vite, and Supabase. It features an interactive Monaco code editor, GigaChat-powered AI feedback, quiz generation, progress tracking, and a supportive community-first approach.
 
 Website: https://fluentlycode.xyz
 Created by: Solo developer
@@ -18,7 +18,7 @@ Frontend: React, Vite, Tailwind CSS, Framer Motion (animations)
 Editor: Monaco Editor (VS Code engine)
 Authentication: Clerk
 Backend/Database: Supabase
-AI API: Groq API (LLM: Llama 3.3 70B Versatile)
+AI API: GigaChat API (LLM: GigaChat)
 Deployment: Vercel
 Analytics: Vercel Analytics
 UI Components: Radix UI, shadcn/ui
@@ -247,7 +247,7 @@ LESSON 8: Dictionary Methods and Iteration
 - Hint system (debugging tips for each exercise)
 
 ### AI Feedback System
-- Groq API (Llama 3.3 70B Versatile model)
+- GigaChat API (GigaChat model)
 - Evaluates submitted code against exercise requirements
 - Provides personalized feedback on code correctness
 - Identifies common mistake patterns
@@ -320,7 +320,7 @@ LESSON 8: Dictionary Methods and Iteration
 - **Sanitization**: User input sanitized before LLM prompts to prevent injection
 - **Timeouts**: 10-second timeout on all AI API calls
 - **Error Handling**: Safe error messages that don't leak system info
-- **Environment Variables**: All secrets (GROQ_API_KEY) stored securely in Vercel
+- **Environment Variables**: All secrets (GIGACHAT_AUTH_KEY) stored securely in Supabase Edge Function secrets
 - **No Hardcoded Secrets**: Zero credentials in source code
 
 ## Supported Languages
@@ -380,7 +380,7 @@ LESSON 8: Dictionary Methods and Iteration
 1. **No Setup Barrier**: Start coding in 10 seconds without signup
 2. **No Cost Barrier**: Completely free forever with optional donations
 3. **Hands-On Learning**: Every lesson has a code exercise, not just reading
-4. **Real AI Tutor**: Groq-powered AI gives personalized feedback, not just right/wrong
+4. **Real AI Tutor**: GigaChat-powered AI gives personalized feedback, not just right/wrong
 5. **Immediate Output**: Code editor shows results instantly
 6. **Built by a Developer**: Solo developer prioritizing learning quality over profit
 7. **Focus on Understanding**: Emphasis on deep learning of concepts, not syntax memorization
@@ -419,10 +419,10 @@ LESSON 8: Dictionary Methods and Iteration
 - **State Management**: React Query
 - **Backend**: Supabase (PostgreSQL)
 - **Authentication**: Clerk
-- **LLM API**: Groq (Llama 3.3 70B)
+- **LLM API**: GigaChat (GigaChat)
 - **Deployment**: Vercel
 - **Analytics**: Vercel Analytics
-- **Hosting**: Vercel, Supabase, Groq Cloud
+- **Hosting**: Vercel, Supabase, GigaChat
 
 ## Key Stats
 

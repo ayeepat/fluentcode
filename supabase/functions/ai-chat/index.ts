@@ -1,3 +1,4 @@
+import { gigachatCompletion } from "../_shared/gigachat.ts";
 // supabase/functions/ai-chat/index.ts
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import {
@@ -8,7 +9,7 @@ import {
   jsonResponse,
 } from "../_shared/security.ts";
 
-const MODEL = "llama-3.3-70b-versatile";
+const MODEL = "GigaChat";
 const TIMEOUT_MS = 15000;  // 15 seconds – increased from 10s
 const MAX_CONTENT_LENGTH = 50000;
 
@@ -62,9 +63,9 @@ serve(async (req) => {
       return jsonResponse({ error: "Prompt too long" }, 400, headers);
     }
 
-    const groqApiKey = Deno.env.get("GROQ_API_KEY");
+    const gigachatKey = Deno.env.get("GIGACHAT_AUTH_KEY");
 
-    if (!groqApiKey) {
+    if (!gigachatKey) {
       // Server misconfiguration, not a real reply — non-200 so the client
       // doesn't mistake this for a completed AI response and charge quota.
       return jsonResponse({ reply: "AI is not configured on the server." }, 500, headers);
@@ -88,13 +89,7 @@ serve(async (req) => {
 
     let res: Response;
     try {
-      res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${groqApiKey}`,
-        },
-        body: JSON.stringify({
+      res = await gigachatCompletion(gigachatKey, {
           model: MODEL,
           messages: [
             {
@@ -109,15 +104,13 @@ serve(async (req) => {
           ],
           temperature: 0.7,
           max_tokens: 300,
-        }),
-        signal: controller.signal,
-      });
+        }, controller.signal);
     } finally {
       clearTimeout(timeoutId);
     }
 
     if (!res.ok) {
-      console.error("Groq API error:", res.status, await res.text());
+      console.error("GigaChat API error:", res.status, "upstream request failed");
       // Upstream provider failure, not a real reply — non-200 so the client
       // doesn't mistake this for a completed AI response and charge quota.
       return jsonResponse({ reply: "Sorry, I'm having trouble right now. Please try again." }, 502, headers);
