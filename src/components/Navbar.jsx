@@ -74,10 +74,13 @@ export default function Navbar({ streak = 0, backTo = null, backLabel = null, mo
         </Link>
         <StreakBadge streak={streak} />
       </div>
-      <div className="flex w-full sm:w-auto items-center justify-end gap-1">
+      <div className="flex flex-wrap w-full sm:w-auto items-center justify-end gap-1">
         <LanguageSwitch />
         <NavBtn to="/courses" icon={<BookOpen size={12} />}>
           {ru ? "Курсы" : "Courses"}
+        </NavBtn>
+        <NavBtn to="/subscription">
+          {ru ? "Подписка" : "Plans"}
         </NavBtn>
         {isSignedIn ? (
           <>

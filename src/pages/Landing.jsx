@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { getGuestLessonIds } from "@/lib/guestAccess";
 import { useUser, SignUpButton, SignInButton, useClerk } from "@clerk/clerk-react";
+import SubscriptionPlans from "@/components/SubscriptionPlans";
 import Wordmark from "@/components/Wordmark";
 import LanguageSwitch from "@/components/LanguageSwitch";
 import { useLanguage } from "@/lib/LanguageContext";
@@ -365,6 +366,7 @@ export default function Landing() {
           <NavLink href="#how">{ru ? "Как это работает" : "How it works"}</NavLink>
           <NavLink href="#courses">{ru ? "Программа" : "Curriculum"}</NavLink>
           <NavLink to="/courses">{ru ? "Курсы" : "Courses"}</NavLink>
+          <NavLink href="#pricing">{ru ? "Подписка" : "Plans"}</NavLink>
           {isSignedIn && (
             <>
               <NavLink to="/dashboard">{ru ? "Личный кабинет" : "Dashboard"}</NavLink>
@@ -424,6 +426,9 @@ export default function Landing() {
           </MobileNavLink>
           <MobileNavLink to="/courses" onClick={() => setMobileMenuOpen(false)}>
             {ru ? "Курсы" : "Courses"}
+          </MobileNavLink>
+          <MobileNavLink href="#pricing" onClick={() => setMobileMenuOpen(false)}>
+            {ru ? "Подписка" : "Plans"}
           </MobileNavLink>
           {isSignedIn && (
             <>
@@ -666,6 +671,8 @@ export default function Landing() {
         </div>
       </section>
 
+      <SubscriptionPlans />
+
       {/* ── CTA panel ── */}
       <section className="px-6 pb-24 max-w-5xl mx-auto w-full">
         <motion.div
@@ -749,7 +756,7 @@ export default function Landing() {
                   {ru ? 'Курсы' : 'Courses'}
                 </Link>
                 <Link to="/upgrade" className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors">
-                  {ru ? 'Поддержать нас' : 'Support us'}
+                  {ru ? 'Подписка и поддержка' : 'Plans & support'}
                 </Link>
                 <Link to="/terms" className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors">
                   {ru ? 'Условия использования' : 'Terms of Service'}
