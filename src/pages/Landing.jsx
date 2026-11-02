@@ -1,3 +1,4 @@
+import { PUBLIC_SUPPORT_ENABLED } from "@/lib/publicFeatures";
 // src/pages/Landing.jsx
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -370,9 +371,11 @@ export default function Landing() {
           {isSignedIn && (
             <>
               <NavLink to="/dashboard">{ru ? "Личный кабинет" : "Dashboard"}</NavLink>
-              <NavLink to="/upgrade" icon={<Heart size={12} className="text-rose-500" />}>
-                {ru ? "Поддержать" : "Support"}
-              </NavLink>
+              {PUBLIC_SUPPORT_ENABLED && (
+                <NavLink to="/upgrade" icon={<Heart size={12} className="text-rose-500" />}>
+                  {ru ? "Поддержать" : "Support"}
+                </NavLink>
+              )}
             </>
           )}
           <div className="w-px h-4 bg-zinc-200 mx-2" />
@@ -435,9 +438,11 @@ export default function Landing() {
               <MobileNavLink to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
                 {ru ? "Личный кабинет" : "Dashboard"}
               </MobileNavLink>
-              <MobileNavLink to="/upgrade" onClick={() => setMobileMenuOpen(false)}>
-                {ru ? "Поддержать нас" : "Support us"}
-              </MobileNavLink>
+              {PUBLIC_SUPPORT_ENABLED && (
+                <MobileNavLink to="/upgrade" onClick={() => setMobileMenuOpen(false)}>
+                  {ru ? "Поддержать нас" : "Support us"}
+                </MobileNavLink>
+              )}
             </>
           )}
           <div className="w-full h-px bg-zinc-100 my-2" />
@@ -716,20 +721,22 @@ export default function Landing() {
             </div>
 
             {/* Support link folded into the panel */}
-            <div className="mt-12 pt-8 border-t border-white/10 flex flex-col items-center gap-3">
-              <p className="text-xs text-zinc-500 max-w-sm leading-relaxed">
-                {ru ? "FluentlyCode бесплатен. Если проект вам помогает, поддержите его. Это поможет оплачивать серверы." : "FluentlyCode is free to use. If it helps you, consider supporting the project to keep the servers running."}
-              </p>
-              <a
-                href="https://boosty.to/fluentcode/donate"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm font-medium text-zinc-300 hover:text-white border border-white/15 hover:border-white/30 px-4 py-2 rounded-full transition-all duration-200"
-              >
-                <Heart size={13} className="text-rose-400" fill="currentColor" />
-                {ru ? 'Поддержать на Boosty' : 'Support on Boosty'}
-              </a>
-            </div>
+            {PUBLIC_SUPPORT_ENABLED && (
+              <div className="mt-12 pt-8 border-t border-white/10 flex flex-col items-center gap-3">
+                <p className="text-xs text-zinc-500 max-w-sm leading-relaxed">
+                  {ru ? "FluentlyCode бесплатен. Если проект вам помогает, поддержите его. Это поможет оплачивать серверы." : "FluentlyCode is free to use. If it helps you, consider supporting the project to keep the servers running."}
+                </p>
+                <a
+                  href="https://boosty.to/fluentcode/donate"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-zinc-300 hover:text-white border border-white/15 hover:border-white/30 px-4 py-2 rounded-full transition-all duration-200"
+                >
+                  <Heart size={13} className="text-rose-400" fill="currentColor" />
+                  {ru ? 'Поддержать на Boosty' : 'Support on Boosty'}
+                </a>
+              </div>
+            )}
           </div>
         </motion.div>
       </section>
@@ -755,9 +762,11 @@ export default function Landing() {
                 <Link to="/courses" className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors">
                   {ru ? 'Курсы' : 'Courses'}
                 </Link>
-                <Link to="/upgrade" className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors">
-                  {ru ? 'Подписка и поддержка' : 'Plans & support'}
-                </Link>
+                {PUBLIC_SUPPORT_ENABLED && (
+                  <Link to="/upgrade" className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors">
+                    {ru ? 'Подписка и поддержка' : 'Plans & support'}
+                  </Link>
+                )}
                 <Link to="/terms" className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors">
                   {ru ? 'Условия использования' : 'Terms of Service'}
                 </Link>

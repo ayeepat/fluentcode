@@ -1,3 +1,4 @@
+import { PUBLIC_SUPPORT_ENABLED } from "@/lib/publicFeatures";
 // src/components/Navbar.jsx
 import { Link } from "react-router-dom";
 import { BookOpen, Heart, User, LogOut, Flame, ArrowLeft } from "lucide-react";
@@ -79,14 +80,18 @@ export default function Navbar({ streak = 0, backTo = null, backLabel = null, mo
         <NavBtn to="/courses" icon={<BookOpen size={12} />}>
           {ru ? "Курсы" : "Courses"}
         </NavBtn>
-        <NavBtn to="/subscription">
-          {ru ? "Подписка" : "Plans"}
-        </NavBtn>
+        {PUBLIC_SUPPORT_ENABLED && (
+          <NavBtn to="/subscription">
+            {ru ? "Подписка" : "Plans"}
+          </NavBtn>
+        )}
         {isSignedIn ? (
           <>
-            <NavBtn to="/upgrade" icon={<Heart size={12} className="text-rose-500" />}>
-              {ru ? "Поддержать" : "Support"}
-            </NavBtn>
+            {PUBLIC_SUPPORT_ENABLED && (
+              <NavBtn to="/upgrade" icon={<Heart size={12} className="text-rose-500" />}>
+                {ru ? "Поддержать" : "Support"}
+              </NavBtn>
+            )}
             {!hideProfile && (
               <NavBtn to="/profile" icon={<User size={12} />}>
                 {ru ? "Профиль" : "Profile"}

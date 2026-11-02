@@ -23,12 +23,14 @@
     <priority>0.8</priority>
   </url>
 
+  <!-- Support listing temporarily hidden; restore with PUBLIC_SUPPORT_ENABLED.
   <url>
     <loc>https://fluentlycode.xyz/upgrade</loc>
     <lastmod>2024-05-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+  -->
 
   <!-- Python Phase 0 Lessons -->
   <url>

@@ -1,7 +1,8 @@
+import { PUBLIC_SUPPORT_ENABLED } from "@/lib/publicFeatures";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClientInstance } from "@/lib/query-client";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-dom";
 import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
 import PageNotFound from "./lib/PageNotFound";
 import { AuthProvider } from "@/lib/AuthContext";
@@ -50,11 +51,12 @@ function App() {
                 <Route path="/" element={<Landing />} />
                 <Route path="/sign-in/*" element={<SignInPage />} />
                 <Route path="/sign-up/*" element={<SignUpPage />} />
-                <Route path="/upgrade" element={<Upgrade />} />
+                <Route path="/upgrade" element={PUBLIC_SUPPORT_ENABLED ? <Upgrade /> : <Navigate to="/" replace />} />
+                <Route path="/support" element={PUBLIC_SUPPORT_ENABLED ? <Upgrade /> : <Navigate to="/" replace />} />
                 <Route path="/courses" element={<Courses />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/privacy" element={<Privacy />} />
-                <Route path="/subscription" element={<Subscription />} />
+                <Route path="/subscription" element={PUBLIC_SUPPORT_ENABLED ? <Subscription /> : <Navigate to="/" replace />} />
 
                 {/* Guest routes */}
                 <Route path="/lesson/:language/:lessonId" element={<Lesson />} />

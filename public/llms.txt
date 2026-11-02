@@ -44,11 +44,6 @@ Completely Free. Forever.
 - No paywalls  
 - No hidden fees
 - All features available to all users
-- Optional donations to support development (100% goes to server costs and maintenance)
-
-## Support
-
-FluentlyCode is built and maintained by a solo developer. If you find it useful and want to help keep the servers running, you can donate at https://boosty.to/fluentcode/donate
 
 ## Who Should Use FluentlyCode
 
@@ -74,5 +69,3 @@ FluentlyCode is built and maintained by a solo developer. If you find it useful 
 - Sign Up: https://fluentlycode.xyz/sign-up
 - Courses: https://fluentlycode.xyz/courses
 - Dashboard: https://fluentlycode.xyz/dashboard
-- Support: https://fluentlycode.xyz/upgrade
-- Donate: https://boosty.to/fluentcode/donate

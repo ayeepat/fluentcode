@@ -6,7 +6,10 @@ Allow: /lesson/
 Allow: /code/
 Allow: /quiz/
 Allow: /quiz-hub
-Allow: /upgrade
+# Support discovery temporarily hidden (was Allow: /upgrade)
+Disallow: /upgrade
+Disallow: /support
+Disallow: /subscription
 Allow: /terms
 Allow: /privacy
 

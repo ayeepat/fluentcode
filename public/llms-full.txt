@@ -10,7 +10,7 @@ FluentlyCode is a web-based coding education platform built with React, Vite, an
 
 Website: https://fluentlycode.xyz
 Created by: Solo developer
-Model: Free forever with optional donations
+Model: Free forever
 
 ## Technology Stack
 
@@ -36,7 +36,6 @@ UI Components: Radix UI, shadcn/ui
 9. Tracks progress in Supabase (when logged in)
 10. Can generate quizzes for any lesson
 11. Builds learning streaks
-12. Can support project via donations
 
 ## Complete Python Curriculum
 
@@ -355,11 +354,6 @@ LESSON 8: Dictionary Methods and Iteration
   - Code editor with real-time execution
   - All features available
 
-- **Optional Support**: Donations via Boosty
-  - 100% goes to server costs and development
-  - No pressure, no obligation
-  - Unlock "unlimited AI requests" status
-  - Support continued development
 
 - **No Subscriptions**: No tiered plans, no paywalls, no premium-only features
 - **Target Audience**: Everyone wanting to learn coding, particularly beginners and self-learners
@@ -378,7 +372,7 @@ LESSON 8: Dictionary Methods and Iteration
 ## What Makes FluentlyCode Unique
 
 1. **No Setup Barrier**: Start coding in 10 seconds without signup
-2. **No Cost Barrier**: Completely free forever with optional donations
+2. **No Cost Barrier**: Completely free forever
 3. **Hands-On Learning**: Every lesson has a code exercise, not just reading
 4. **Real AI Tutor**: GigaChat-powered AI gives personalized feedback, not just right/wrong
 5. **Immediate Output**: Code editor shows results instantly
@@ -402,7 +396,6 @@ LESSON 8: Dictionary Methods and Iteration
 ## Support & Community
 
 - Email: fluentcodesupport@gmail.com
-- Donation: https://boosty.to/fluentcode/donate
 - TikTok: @fluentcodeweb
 - GitHub: (open source, if applicable)
 - Discord: (community, if planned)

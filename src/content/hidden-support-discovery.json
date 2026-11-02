@@ -1,0 +1,15 @@
+{
+  "llms.txt": [
+    "- Optional donations to support development (100% goes to server costs and maintenance)\n",
+    "## Support\n\nFluentlyCode is built and maintained by a solo developer. If you find it useful and want to help keep the servers running, you can donate at https://boosty.to/fluentcode/donate\n\n",
+    "- Support: https://fluentlycode.xyz/upgrade\n",
+    "- Donate: https://boosty.to/fluentcode/donate\n"
+  ],
+  "llms-full.txt": [
+    "- **Optional Support**: Donations via Boosty\n  - 100% goes to server costs and development\n  - No pressure, no obligation\n  - Unlock \"unlimited AI requests\" status\n  - Support continued development\n",
+    "- Donation: https://boosty.to/fluentcode/donate\n",
+    "Model: Free forever with optional donations",
+    "12. Can support project via donations\n",
+    "2. **No Cost Barrier**: Completely free forever with optional donations"
+  ]
+}

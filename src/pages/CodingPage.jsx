@@ -1,3 +1,4 @@
+import { PUBLIC_SUPPORT_ENABLED } from "@/lib/publicFeatures";
 import { translateContent, translateFeedback } from "@/lib/translateContent";
 import LanguageSwitch from "@/components/LanguageSwitch";
 import LocalizedText from "@/components/LocalizedText";
@@ -878,12 +879,14 @@ export default function CodingPage() {
       {limitReached && !isGuest && (
         <div className="px-4 py-3 bg-amber-50 border-b border-amber-100 shrink-0">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-amber-700">{<LocalizedText text="Daily AI limit reached. Come back tomorrow or support the project." />}</p>
-            <Link
+            <p className="text-sm text-amber-700">{<LocalizedText text={PUBLIC_SUPPORT_ENABLED ? "Daily AI limit reached. Come back tomorrow or support the project." : "Daily AI limit reached. Come back tomorrow."} />}</p>
+            {PUBLIC_SUPPORT_ENABLED && (
+              <Link
               to="/upgrade"
               className="inline-flex items-center gap-1.5 text-xs font-medium bg-zinc-900 text-white px-3 py-1.5 rounded-full hover:bg-zinc-700 transition-all shrink-0 ml-3"
             >
               <Heart size={11} />{<LocalizedText text=" Support" />}</Link>
+            )}
           </div>
         </div>
       )}
