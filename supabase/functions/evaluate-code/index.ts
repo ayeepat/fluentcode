@@ -1,4 +1,4 @@
-import { gigachatCompletion } from "../_shared/gigachat.ts";
+import { GROQ_MODEL, groqCompletion } from "../_shared/groq.ts";
 // supabase/functions/evaluate-code/index.ts
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import {
@@ -9,7 +9,7 @@ import {
   jsonResponse,
 } from "../_shared/security.ts";
 
-const MODEL = Deno.env.get("GIGACHAT_MODEL") || "GigaChat-2";
+const MODEL = GROQ_MODEL;
 const TIMEOUT_MS = 15000;  // 15 seconds – increased from 10s
 const MAX_CONTENT_LENGTH = 50000;
 const ALLOWED_LANGUAGES = ["python", "java", "csharp", "javascript", "ruby", "typescript", "cpp", "go", "rust", "sql", "html-css"];
@@ -98,8 +98,8 @@ serve(async (req) => {
       return jsonResponse({ error: "Invalid lesson data" }, 400, headers);
     }
 
-    const gigachatKey = Deno.env.get("GIGACHAT_AUTH_KEY");
-    if (!gigachatKey) {
+    const groqApiKey = Deno.env.get("GROQ_API_KEY");
+    if (!groqApiKey) {
       // Server misconfiguration, not a real evaluation - non-200 so the
       // client doesn't mistake this for a completed AI review and charge quota.
       return jsonResponse(
@@ -168,10 +168,10 @@ Return exactly this JSON shape:
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
-    let gigachatRes: Response;
+    let groqRes: Response;
 
     try {
-      gigachatRes = await gigachatCompletion(gigachatKey, {
+      groqRes = await groqCompletion(groqApiKey, {
           model: MODEL,
           messages: [
             {
@@ -191,8 +191,8 @@ Return exactly this JSON shape:
       clearTimeout(timeoutId);
     }
 
-    if (!gigachatRes.ok) {
-      console.error("GigaChat API error:", gigachatRes.status, "upstream request failed");
+    if (!groqRes.ok) {
+      console.error("Groq API error:", groqRes.status, "upstream request failed");
       // Upstream provider failure, not a real evaluation - non-200 so the
       // client doesn't mistake this for a completed AI review and charge quota.
       return jsonResponse(
@@ -205,8 +205,8 @@ Return exactly this JSON shape:
       );
     }
 
-    const gigachatData = await gigachatRes.json();
-    const content = gigachatData?.choices?.[0]?.message?.content || "";
+    const groqData = await groqRes.json();
+    const content = groqData?.choices?.[0]?.message?.content || "";
     const parsed = extractJson(content);
 
     if (!parsed) {

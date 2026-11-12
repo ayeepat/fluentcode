@@ -1,4 +1,4 @@
-import { gigachatCompletion } from "../_shared/gigachat.ts";
+import { GROQ_MODEL, groqCompletion } from "../_shared/groq.ts";
 // supabase/functions/ai-chat/index.ts
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import {
@@ -9,7 +9,7 @@ import {
   jsonResponse,
 } from "../_shared/security.ts";
 
-const MODEL = Deno.env.get("GIGACHAT_MODEL") || "GigaChat-2";
+const MODEL = GROQ_MODEL;
 const TIMEOUT_MS = 15000;  // 15 seconds – increased from 10s
 const MAX_CONTENT_LENGTH = 50000;
 
@@ -63,9 +63,9 @@ serve(async (req) => {
       return jsonResponse({ error: "Prompt too long" }, 400, headers);
     }
 
-    const gigachatKey = Deno.env.get("GIGACHAT_AUTH_KEY");
+    const groqApiKey = Deno.env.get("GROQ_API_KEY");
 
-    if (!gigachatKey) {
+    if (!groqApiKey) {
       // Server misconfiguration, not a real reply - non-200 so the client
       // doesn't mistake this for a completed AI response and charge quota.
       return jsonResponse({ reply: "AI is not configured on the server." }, 500, headers);
@@ -89,7 +89,7 @@ serve(async (req) => {
 
     let res: Response;
     try {
-      res = await gigachatCompletion(gigachatKey, {
+      res = await groqCompletion(groqApiKey, {
           model: MODEL,
           messages: [
             {
@@ -110,7 +110,7 @@ serve(async (req) => {
     }
 
     if (!res.ok) {
-      console.error("GigaChat API error:", res.status, "upstream request failed");
+      console.error("Groq API error:", res.status, "upstream request failed");
       // Upstream provider failure, not a real reply - non-200 so the client
       // doesn't mistake this for a completed AI response and charge quota.
       return jsonResponse({ reply: "Sorry, I'm having trouble right now. Please try again." }, 502, headers);
