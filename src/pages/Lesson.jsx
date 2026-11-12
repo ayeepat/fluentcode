@@ -42,6 +42,7 @@ export default function Lesson() {
   const [streak, setStreak] = useState(0);
   const [showSignupPrompt, setShowSignupPrompt] = useState(false);
   const [curriculumVersion, setCurriculumVersion] = useState(1);
+  const [versionResolved, setVersionResolved] = useState(false);
   const isMobile = useIsMobile();
 
   const isGuest = !isSignedIn;
@@ -82,13 +83,10 @@ export default function Lesson() {
         setStreak(guestData.streak_days || 0);
         // Guests use version 2 only if the language has it, otherwise version 1
         setCurriculumVersion(hasVersion2(language) ? 2 : 1);
-        setIsLoading(false);
+        setVersionResolved(true);
         return;
       }
-      if (!supabaseClient || !user) {
-        setIsLoading(false);
-        return;
-      }
+      if (!supabaseClient || !user) return;
       try {
         const data = await progressDb.getProgress(
           supabaseClient,
@@ -102,19 +100,36 @@ export default function Lesson() {
       } catch (err) {
         console.error("Failed to load progress:", err);
       } finally {
-        setIsLoading(false);
+        setVersionResolved(true);
       }
     };
     load();
   }, [isLoaded, isGuest, supabaseClient, user, language]);
 
+  // Resolve the lesson only once the curriculum version is known, and make
+  // sure that version's chunk is loaded first. If the id belongs to the other
+  // Python curriculum version, fall back to it instead of "Lesson not found".
   useEffect(() => {
-    if (!isLoaded || !curriculumReady) return;
+    if (!isLoaded || !curriculumReady || !versionResolved) return;
+    let cancelled = false;
     setIsLoading(true);
-    const data = getLessonById(language, lessonId, curriculumVersion);
-    setResult(data);
-    setIsLoading(false);
-  }, [language, lessonId, curriculumVersion, isLoaded, curriculumReady]);
+    (async () => {
+      await loadCurriculum(language, curriculumVersion).catch(() => {});
+      let data = getLessonById(language, lessonId, curriculumVersion);
+      if (!data && hasVersion2(language)) {
+        const other = curriculumVersion === 2 ? 1 : 2;
+        await loadCurriculum(language, other).catch(() => {});
+        data = getLessonById(language, lessonId, other);
+        if (data && !cancelled) setCurriculumVersion(other);
+      }
+      if (cancelled) return;
+      setResult(data);
+      setIsLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [language, lessonId, curriculumVersion, isLoaded, curriculumReady, versionResolved]);
 
   useEffect(() => {
     if (!isGuest) return;

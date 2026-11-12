@@ -203,13 +203,15 @@ export default function CodingPage() {
     [language, lessonId, curriculumVersion]
   );
 
-  const result = useMemo(
-    () =>
-      curriculumVersion && curriculumReady
-        ? getLessonById(language, lessonId, curriculumVersion)
-        : null,
-    [language, lessonId, curriculumVersion, curriculumReady]
-  );
+  // isLoading is a dependency on purpose: the progress loader awaits
+  // loadCurriculum() for the user's version, which fills the cache without
+  // necessarily changing curriculumVersion, so recompute once loading ends.
+  const result = useMemo(() => {
+    if (!curriculumVersion || !curriculumReady) return null;
+    const found = getLessonById(language, lessonId, curriculumVersion);
+    if (found || !hasVersion2(language)) return found;
+    return getLessonById(language, lessonId, curriculumVersion === 2 ? 1 : 2);
+  }, [language, lessonId, curriculumVersion, curriculumReady, isLoading]);
 
   // ------------------------------------------------------------------
   // Guards - wait for the curriculum cache before judging guest access,
