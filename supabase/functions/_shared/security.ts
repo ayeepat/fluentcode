@@ -108,16 +108,36 @@ export async function consumeAiQuota(clerkUserId: string): Promise<
     return null;
   }
 
+  // Retry briefly when the database API is unreachable (gateway/unavailable
+  // statuses, e.g. while the project wakes up), so a transient blip doesn't
+  // fail the request. Those statuses mean the RPC never ran, so a retry can't
+  // double-charge quota. Other failures still fail closed.
+  const RETRYABLE = new Set([502, 503, 504, 520, 521, 522, 523, 524]);
+  const delays = [0, 400, 1200];
+  let response: Response | null = null;
+  for (const delay of delays) {
+    if (delay) await new Promise((r) => setTimeout(r, delay));
+    try {
+      response = await fetch(`${supabaseUrl}/rest/v1/rpc/consume_ai_request`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: serviceRoleKey,
+          Authorization: `Bearer ${serviceRoleKey}`,
+        },
+        body: JSON.stringify({ p_clerk_user_id: clerkUserId, p_daily_limit: 10 }),
+      });
+    } catch (error) {
+      console.error("AI quota RPC error:", error);
+      response = null;
+      continue;
+    }
+    if (response.ok || !RETRYABLE.has(response.status)) break;
+    console.error("AI quota RPC failed, retrying:", response.status);
+  }
+  if (!response) return null;
+
   try {
-    const response = await fetch(`${supabaseUrl}/rest/v1/rpc/consume_ai_request`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: serviceRoleKey,
-        Authorization: `Bearer ${serviceRoleKey}`,
-      },
-      body: JSON.stringify({ p_clerk_user_id: clerkUserId, p_daily_limit: 10 }),
-    });
     if (!response.ok) {
       console.error("AI quota RPC failed:", response.status);
       return null;
